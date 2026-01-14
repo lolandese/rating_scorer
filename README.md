@@ -134,7 +134,7 @@ This limitation is inherent to Views' architecture when sorting by calculated/vi
 The module includes PHPUnit tests for both unit and functional testing:
 
 ```bash
-ddev php vendor/bin/phpunit --configuration modules/custom/rating_scorer/phpunit.xml
+ddev php vendor/bin/phpunit --configuration web/modules/custom/rating_scorer/phpunit.xml
 ```
 
 Tests cover:
