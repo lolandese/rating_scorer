@@ -1,0 +1,6 @@
+This software is Copyright (c) 2026 by Martin Postma and is dual-licensed under:
+
+1. GNU General Public License v2.0 (GPL-2.0)
+2. GNU General Public License v3.0 or later (GPL-3.0+)
+
+This module is part of the Drupal project. For more information, see https://www.drupal.org/

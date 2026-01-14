@@ -1,0 +1,9 @@
+rating_scorer.settings:
+  route_name: rating_scorer.settings
+  title: 'Settings'
+  base_route: rating_scorer.settings
+
+rating_scorer.calculator:
+  route_name: rating_scorer.calculator
+  title: 'Calculator'
+  base_route: rating_scorer.settings

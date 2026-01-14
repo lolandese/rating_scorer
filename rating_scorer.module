@@ -1,0 +1,62 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Rating Scorer module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function rating_scorer_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.rating_scorer':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('The Rating Scorer module provides a calculator for combining ratings and number of ratings using various scoring methods.') . '</p>';
+      $output .= '<h3>' . t('Uses') . '</h3>';
+      $output .= '<dl>';
+      $output .= '<dt>' . t('Calculating scores') . '</dt>';
+      $output .= '<dd>' . t('Use the calculator at <a href=":calculator">Rating Scorer</a> to see how different scoring methods combine rating values with the number of ratings.', [':calculator' => '/admin/config/rating-scorer']) . '</dd>';
+      $output .= '<dt>' . t('Configuring defaults') . '</dt>';
+      $output .= '<dd>' . t('Users with the "Administer rating scorer settings" permission can configure default parameters at <a href=":settings">Rating Scorer Settings</a>.', [':settings' => '/admin/config/rating-scorer/settings']) . '</dd>';
+      $output .= '</dl>';
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function rating_scorer_theme($existing, $type, $theme, $path) {
+  return [
+    'rating_scorer' => [
+      'variables' => [],
+      'template' => 'rating-scorer',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_views_data().
+ */
+function rating_scorer_views_data() {
+  $data = [];
+
+  // Add the rating score field to all entity base tables.
+  foreach (\Drupal::entityTypeManager()->getDefinitions() as $entity_type) {
+    if ($base_table = $entity_type->getBaseTable()) {
+      $data[$base_table]['rating_score'] = [
+        'title' => t('Rating Score'),
+        'help' => t('Calculate a fair rating score using various scoring methods. Requires two numeric fields: number of ratings and average rating.'),
+        'field' => [
+          'id' => 'rating_score',
+        ],
+      ];
+    }
+  }
+
+  return $data;
+}

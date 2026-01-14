@@ -1,0 +1,15 @@
+rating_scorer.settings:
+  path: '/admin/config/rating-scorer'
+  defaults:
+    _form: '\Drupal\rating_scorer\Form\RatingScorerSettingsForm'
+    _title: 'Rating Scorer Settings'
+  requirements:
+    _permission: 'administer rating scorer'
+
+rating_scorer.calculator:
+  path: '/admin/config/rating-scorer/calculator'
+  defaults:
+    _controller: '\Drupal\rating_scorer\Controller\RatingScorerController::calculator'
+    _title: 'Calculator'
+  requirements:
+    _permission: 'administer rating scorer'

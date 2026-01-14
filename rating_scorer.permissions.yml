@@ -1,0 +1,4 @@
+administer rating scorer:
+  title: 'Administer rating scorer settings'
+  description: 'Configure default minimum ratings threshold and other rating scorer parameters'
+  restrict access: true

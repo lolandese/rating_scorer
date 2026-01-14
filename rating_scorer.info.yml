@@ -1,0 +1,5 @@
+name: Rating Scorer
+type: module
+description: 'Provides a rating scoring calculator with configurable parameters'
+core_version_requirement: ^11
+package: Custom

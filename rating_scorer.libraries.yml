@@ -1,0 +1,10 @@
+calculator:
+  version: 1.x
+  css:
+    theme:
+      css/rating-scorer.css: {}
+  js:
+    js/rating-scorer.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
