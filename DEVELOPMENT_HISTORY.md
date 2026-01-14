@@ -121,7 +121,43 @@ After successful Views field discovery:
 4. Add "Rating Score" field from the field selection
 5. Configure with the field aliases from step 2
 
-### Phase 7: Documentation Generation
+### Phase 8: Views Field Sorting Implementation
+**Date**: January 15, 2026
+
+**Objective**: Enable sorting by the calculated rating_score field in Views displays.
+
+**Approach Attempted**: 
+1. First attempt: PHP-based sorting in preRender hook
+   - Problem: Only sorted current page, not globally across all pages
+   
+2. Second attempt: Remove LIMIT/OFFSET via hook_views_query_alter using Reflection
+   - Problem: Drupal 11's typed properties can't be safely accessed/modified via Reflection when uninitialized
+   
+3. Third attempt: Materialized column approach
+   - Add rating_score column to node table
+   - Calculate scores on presave via hook_entity_presave()
+   - Problem: Database schema addIndex() API incompatibility, presave hook causing navigation module errors
+
+**Final Solution**: Per-page sorting implementation
+- `hook_views_pre_render()` sorts current page's results by cached score
+- Respects ASC/DESC sort order
+- Maintains proper pagination and pager
+- Clean, stable implementation without database schema changes
+
+**Key Learnings**:
+- Views' sorting architecture assumes database-backed fields
+- Reflection with typed properties is fragile in Drupal 11
+- Per-page sorting is acceptable for most use cases where large page sizes are used
+- Materialized columns require careful schema API usage
+
+**Sorting Limitation Documentation**:
+- Updated README.md with clear explanation of per-page sorting behavior
+- Documented limitations and suggested workarounds
+- Added note about global sorting requiring materialized columns
+
+---
+
+
 **Prompts 11-12**: "Write a concise project page for this application to be published on Drupal.org" and "Generate a markdown text file that lists all the previously used prompts"
 
 **Documentation Files Created**:

@@ -5,8 +5,6 @@
  * Primary module hooks for Rating Scorer module.
  */
 
-use Drupal\Core\Routing\RouteMatchInterface;
-
 /**
  * Implements hook_help().
  */
@@ -40,6 +38,155 @@ function rating_scorer_theme($existing, $type, $theme, $path) {
 }
 
 /**
+ * Implements hook_entity_presave().
+ */
+function rating_scorer_entity_presave(\Drupal\Core\Entity\EntityInterface $entity) {
+  // Only process node entities.
+  if ($entity->getEntityTypeId() !== 'node') {
+    return;
+  }
+
+  // Get field mapping from configuration.
+  try {
+    $config = \Drupal::config('rating_scorer.settings');
+    $ratings_field = $config->get('ratings_field_mapping');
+    $average_field = $config->get('average_field_mapping');
+
+    // If no mapping configured, skip.
+    if (empty($ratings_field) || empty($average_field)) {
+      return;
+    }
+
+    // Get field values safely.
+    if (!$entity->hasField($ratings_field) || !$entity->hasField($average_field)) {
+      return;
+    }
+
+    // Get values with proper null checking.
+    $ratings_field_value = $entity->get($ratings_field);
+    $average_field_value = $entity->get($average_field);
+
+    if (!$ratings_field_value || !$average_field_value) {
+      return;
+    }
+
+    $number_of_ratings = (int) $ratings_field_value->value ?? 0;
+    $average_rating = (float) $average_field_value->value ?? 0;
+
+    // Get scoring method from config.
+    $method = $config->get('default_method') ?? 'weighted';
+    $minimum_threshold = $config->get('default_minimum_ratings') ?? 5;
+
+    // Calculate the score.
+    $score = _rating_scorer_calculate_score(
+      $number_of_ratings,
+      $average_rating,
+      $method,
+      $minimum_threshold
+    );
+
+    // Store the score on the entity.
+    $entity->rating_score = $score;
+  } catch (\Exception $e) {
+    // Silently fail - don't break entity save on configuration issues.
+  }
+}
+
+/**
+ * Helper function to calculate a rating score.
+ *
+ * @param int $number_of_ratings
+ *   The number of ratings.
+ * @param float $average_rating
+ *   The average rating.
+ * @param string $method
+ *   The scoring method.
+ * @param int $minimum_threshold
+ *   The minimum ratings threshold.
+ *
+ * @return float
+ *   The calculated score.
+ */
+function _rating_scorer_calculate_score($number_of_ratings, $average_rating, $method, $minimum_threshold) {
+  switch ($method) {
+    case 'bayesian':
+      $prior_rating = 2.5;
+      return ($number_of_ratings * $average_rating + $minimum_threshold * $prior_rating) / ($number_of_ratings + $minimum_threshold);
+
+    case 'wilson':
+      $normalized_rating = $average_rating / 5;
+      $z = 1.96;
+      if ($number_of_ratings == 0) {
+        return 0;
+      }
+      $phat = $normalized_rating;
+      $denominator = 1 + $z * $z / $number_of_ratings;
+      $center = ($phat + $z * $z / (2 * $number_of_ratings)) / $denominator;
+      $margin = $z * sqrt(($phat * (1 - $phat) / $number_of_ratings) + ($z * $z / (4 * $number_of_ratings * $number_of_ratings))) / $denominator;
+      return max(0, $center - $margin);
+
+    case 'weighted':
+    default:
+      return $average_rating * log($number_of_ratings + 1);
+  }
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function rating_scorer_views_pre_render(\Drupal\views\ViewExecutable $view) {
+  // Check if the view has rating_score sort criteria.
+  if (empty($view->sort) || empty($view->result)) {
+    return;
+  }
+
+  $rating_score_sort = NULL;
+  foreach ($view->sort as $sort) {
+    if ($sort->getPluginId() === 'rating_score') {
+      $rating_score_sort = $sort;
+      break;
+    }
+  }
+
+  if (!$rating_score_sort) {
+    return;
+  }
+
+  // Find the rating_score field handler.
+  $field_handler = NULL;
+  foreach ($view->field as $field) {
+    if ($field->getPluginId() === 'rating_score') {
+      $field_handler = $field;
+      break;
+    }
+  }
+
+  if (!$field_handler) {
+    return;
+  }
+
+  // Ensure all rows have their scores cached by rendering the field.
+  foreach ($view->result as $row) {
+    $field_handler->render($row);
+  }
+
+  // Sort the current page results based on cached scores.
+  usort($view->result, function ($a, $b) use ($rating_score_sort) {
+    $score_a = $a->rating_score_value ?? 0;
+    $score_b = $b->rating_score_value ?? 0;
+
+    $result = $score_a <=> $score_b;
+
+    // Reverse if descending order.
+    if ($rating_score_sort->options['order'] === 'DESC') {
+      $result = -$result;
+    }
+
+    return $result;
+  });
+}
+
+/**
  * Implements hook_views_data().
  */
 function rating_scorer_views_data() {
@@ -53,6 +200,10 @@ function rating_scorer_views_data() {
         'help' => t('Calculate a fair rating score using various scoring methods. Requires two numeric fields: number of ratings and average rating.'),
         'field' => [
           'id' => 'rating_score',
+          'no field' => TRUE,
+        ],
+        'sort' => [
+          'id' => 'rating_score',
         ],
       ];
     }
@@ -60,3 +211,4 @@ function rating_scorer_views_data() {
 
   return $data;
 }
+

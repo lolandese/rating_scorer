@@ -116,11 +116,18 @@ For additional visibility or demonstration purposes, place the calculator on any
    - If using Bayesian, set the minimum ratings threshold
 4. Save the view
 
-## Permissions
+### Sorting Behavior
 
-Configure permissions at **Administration > People > Permissions**:
+The "Rating Score" field can be used as a sort criterion in Views. **Important:** Due to the calculated nature of this field, sorting is applied per-page rather than globally across all results:
 
-- **Administer rating scorer settings** - Access calculator, view settings, place blocks, and configure Views fields (restricted access recommended)
+- Results within each page are sorted by rating score (globally if only 1 page)
+- When paginating, each page shows its items sorted by rating score
+- For true global sorting across all pages, consider:
+  - Setting a high items-per-page limit to show most results on one page
+  - Using a custom view with `hook_views_data_alter()` to expose a materialized score column
+  - Pre-calculating scores into a database field via a batch process
+
+This limitation is inherent to Views' architecture when sorting by calculated/virtual fields that don't exist in the database.
 
 ## Testing
 

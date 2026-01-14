@@ -18,6 +18,13 @@ class RatingScore extends FieldPluginBase {
   /**
    * {@inheritdoc}
    */
+  public function query() {
+    // This is a calculated field - don't add anything to the query.
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   protected function defineOptions() {
     $options = parent::defineOptions();
 
@@ -89,6 +96,9 @@ class RatingScore extends FieldPluginBase {
       $this->options['scoring_method'],
       $this->options['minimum_ratings_threshold']
     );
+
+    // Cache the score on the row for sorting purposes.
+    $values->rating_score_value = $score;
 
     return round($score, 2);
   }
