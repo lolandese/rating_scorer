@@ -11,34 +11,14 @@ use Drupal\Core\Database\Database;
  * Implements hook_install().
  */
 function rating_scorer_install() {
-  // Add rating_score column to node base table.
-  $schema = Database::getConnection()->schema();
-  if (!$schema->fieldExists('node', 'rating_score')) {
-    $schema->addField('node', 'rating_score', [
-      'type' => 'numeric',
-      'precision' => 10,
-      'scale' => 2,
-      'not null' => FALSE,
-      'description' => 'Cached rating score for sorting.',
-    ]);
-    
-    // Create an index for efficient sorting.
-    if (!$schema->indexExists('node', 'idx_rating_score')) {
-      $schema->addIndex('node', 'idx_rating_score', ['rating_score']);
-    }
-  }
+  // NOTE: We use per-page sorting via hook_views_pre_render() instead of
+  // materialized columns. No database schema changes needed.
 }
 
 /**
  * Implements hook_uninstall().
  */
 function rating_scorer_uninstall() {
-  // Remove rating_score column from node table.
-  $schema = Database::getConnection()->schema();
-  if ($schema->fieldExists('node', 'rating_score')) {
-    if ($schema->indexExists('node', 'idx_rating_score')) {
-      $schema->dropIndex('node', 'idx_rating_score');
-    }
-    $schema->dropField('node', 'rating_score');
-  }
+  // NOTE: We use per-page sorting via hook_views_pre_render() instead of
+  // materialized columns. No database schema cleanup needed.
 }

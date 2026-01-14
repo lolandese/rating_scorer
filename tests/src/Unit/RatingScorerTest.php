@@ -2,14 +2,21 @@
 
 namespace Drupal\Tests\rating_scorer\Unit;
 
-use Drupal\KernelTests\KernelTestBase;
+use Drupal\Tests\BrowserTestBase;
 
 /**
  * Tests for the Rating Scorer module.
  *
  * @group rating_scorer
  */
-class RatingScorerTest extends KernelTestBase {
+class RatingScorerTest extends BrowserTestBase {
+
+  /**
+   * The theme to use when running the test.
+   *
+   * @var string
+   */
+  protected $defaultTheme = 'stark';
 
   /**
    * Modules to enable.
@@ -27,8 +34,6 @@ class RatingScorerTest extends KernelTestBase {
    */
   protected function setUp(): void {
     parent::setUp();
-    $this->installEntitySchema('user');
-    $this->installSchema('system', ['sequences']);
   }
 
   /**
