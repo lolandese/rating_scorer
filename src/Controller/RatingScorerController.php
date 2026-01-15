@@ -61,12 +61,11 @@ class RatingScorerController extends ControllerBase {
     
     $render = $list_builder->render();
     
-    // Ensure the render array has proper metadata and cache settings
-    // This helps the theme system understand and render local tasks
-    $render['#cache']['contexts'][] = 'route';
-    $render['#attached']['library'][] = 'core/drupal.ui';
-    
-    return $render;
+    // Wrap in a proper page wrapper to ensure theme renders local tasks
+    return [
+      '#type' => 'page',
+      'content' => $render,
+    ];
   }
 
   /**
