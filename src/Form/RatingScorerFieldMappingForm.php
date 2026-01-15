@@ -18,14 +18,7 @@ class RatingScorerFieldMappingForm extends EntityForm {
    *
    * @var \Drupal\Core\Entity\EntityFieldManagerInterface
    */
-  protected EntityFieldManagerInterface $fieldManager;
-
-  /**
-   * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected EntityTypeManagerInterface $entityTypeManager;
+  protected $fieldManager;
 
   /**
    * Constructs the form.
