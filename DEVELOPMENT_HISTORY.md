@@ -473,31 +473,49 @@ Tests validate:
 
 ## Status
 
-✅ **Main Branch COMPLETE** - Views handler implementation is fully functional:
-- Settings form for configurable defaults
-- Calculator admin interface
-- Reusable block plugin
-- Views field handler discoverable and usable
-- Three scoring algorithms
-- PHPUnit test infrastructure (32 tests)
-- Per-page sorting via hook_views_pre_render()
+✅ **MAIN BRANCH COMPLETE** - Computed field implementation fully functional and merged:
 
-🔄 **Feature Branch IN PROGRESS** - Computed field implementation:
-- Custom field type with numeric storage ✅
-- Configuration entity for per-content-type mapping ✅
-- RatingScoreCalculator service ✅
-- Field widget and formatter ✅
-- Configuration form with AJAX ✅
-- 13 new unit tests ✅
-- Admin routing and UI hooks ✅
-- **Next**: Testing and refinement on feature branch
-- **Future**: Merge to main after validation
+**Phase Summaries**:
+- **Phase 1 (Session 1)**: Computed field with auto-calculation ✅
+- **Phase 2 (Sessions 2-3)**: Settings cleanup, auto-recalculation on Field Mapping save ✅
+- **Phase 3 (Session 3)**: ID format fix (dot→underscore), Views handler removal ✅
+- **Phase 4 (Session 3)**: Admin UI restructuring and UX improvements ✅
+- **Phase 5 (Session 4)**: Comprehensive test coverage (6 new test files, 25+ tests) ✅
 
-**Next Steps**:
-1. Integration testing with actual Drupal field creation
-2. Verify score calculation during entity save
-3. Test sorting and filtering in Views with new field type
-4. Performance testing with large datasets
-5. Merge to main branch once validation complete
-6. Update README with computed field setup instructions
-7. Optional: Deprecate Views handler after computed field adoption
+**Latest Status (Session 4)**:
+- 🔄 **Test Implementation**: Created 6 comprehensive test files with 25+ unit tests
+  - Tests for forms, controllers, ListBuilder, blocks, admin interface, recalculation logic
+  - All syntax validated, 25 unit tests passing
+  - Ready for full Drupal test database execution
+  
+- ✅ **Documentation**: Updated README.md and DEVELOPMENT_HISTORY.md to reflect current state
+  - README now documents computed field as primary feature
+  - Removed Views handler documentation
+  - Updated configuration examples and test instructions
+  - Added comprehensive test coverage documentation
+
+**Key Implementation Details** (Current State):
+- **Scoring**: 3 algorithms (Weighted, Bayesian, Wilson) with per-content-type configuration
+- **Auto-Calculation**: 
+  - `hook_entity_presave()` for initial score calculation on content save
+  - `hook_entity_update()` for recalculation when Field Mapping config changes
+- **Admin UI**: 3-tab structure (Field Mappings parent, Calculator, Defaults)
+- **Field Storage**: Numeric field with decimal precision (10,2)
+- **Configuration**: Per-content-type entities with ID format `node_{bundle}`
+- **Service**: `rating_scorer.calculator` for reusable score calculation
+- **Testing**: 12 total test files (6 original + 6 new from Session 4)
+- **Test Data**: 50 rating_test nodes with realistic scores and review counts
+
+**Merged to Main**:
+- feature/computed-field-integration (Session 1)
+- feature/field-mappings-tab (Sessions 2-3)
+- feature/remove-views-handler (Session 3)
+- feature/update-tests (Session 4) ✅ Last merge
+
+**Next Steps** (Future Enhancement):
+1. Run full functional test suite with proper Drupal test database setup
+2. Deploy to production and monitor performance
+3. Gather feedback on field mapping UX
+4. Consider additional algorithm options if needed
+5. Update theme template if needed for tab rendering
+

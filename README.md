@@ -2,39 +2,46 @@
 
 ## Introduction
 
-Rating Scorer provides a Views field integration to calculate and display fair rating scores in your content listings. The module prevents items with few reviews from dominating rankings by combining average rating with review volume using sophisticated algorithms. Rank and sort items equitably by implementing proven scoring methods (Weighted, Bayesian, and Wilson Score) used by major platforms like IMDB and Reddit. Includes an interactive calculator and reusable block for testing and demonstration.
+Rating Scorer calculates and stores fair rating scores as computed fields on your content. The module prevents items with few reviews from dominating rankings by combining average rating with review volume using sophisticated algorithms. Scores are automatically calculated when content is created or modified, making them globally sortable and filterable. Rank and sort items equitably by implementing proven scoring methods (Weighted, Bayesian, and Wilson Score) used by major platforms like IMDB and Reddit. Includes an interactive calculator and reusable block for testing and demonstration.
 
-## Primary Feature: Fair Rating Scores in Views
+## Primary Feature: Computed Rating Score Fields
 
-The main purpose of this module is to calculate equitable rating scores in Views displays that prevent unfair rankings. Without fair scoring:
+The main purpose of this module is to calculate equitable rating scores as stored fields on your content, preventing unfair rankings in both Views and programmatic access. Without fair scoring:
 - A single 5-star review can rank an item above products with 100 4-star reviews
 - New items with one positive review appear above established quality content
 - Extreme outliers skew rankings unpredictably
 
-Add a "Rating Score" field to any Views display to automatically compute fair scores based on your content's rating data. This allows you to:
+Define per-content-type field mappings that automatically calculate fair scores based on your content's rating data. Scores are calculated when content is created or when field mappings are updated. This allows you to:
 
 - **Prevent vote manipulation** - Items with few reviews are scored conservatively
 - **Reward quality over hype** - Established items with many ratings rank fairly
 - **Use proven algorithms** - Bayesian (IMDB-style), Weighted, and Wilson Score methods
-- **Configure per-view** - Different scoring strategies for different content types
-- **Sort fairly** - Display and sort items by calculated score for equitable rankings
+- **Configure per-content-type** - Different scoring strategies for different content types
+- **Sort fairly** - Display and sort items globally by calculated score for equitable rankings
+- **Access programmatically** - Calculated scores available via field API, not just Views
 
-See [Using in Views](#using-in-views) section below for detailed setup instructions.
+See [Configuration](#configuration) section below for detailed setup instructions.
 
 ## Features
 
-- **Views Field Handler** - Calculate and display fair rating scores directly in Views displays with configurable fields and algorithms
+- **Computed Rating Score Field** - Automatic calculation and storage of fair rating scores on content with configurable algorithms
   - **Weighted Score** - Logarithmic weighting favoring items with many ratings
   - **Bayesian Average** - IMDB-style scoring that requires confidence through volume, preventing items with few ratings from ranking unfairly high
   - **Wilson Score** - Confidence interval approach used by Reddit and others, conservative scoring for low-review items
 
-- **Interactive Calculator Interface** - Real-time visualization at `/admin/config/rating-scorer/calculator` for testing algorithms
+- **Field Mapping Configuration** - Per-content-type configuration mapping your rating and review count fields to a rating score field
+  - Separate configuration entity per content type
+  - Choose scoring method and algorithm parameters per content type
+  - Scores auto-calculate on content save
+  - Scores auto-recalculate when field mappings are updated
+
+- **Interactive Calculator Interface** - Real-time visualization at `/admin/config/rating-scorer/calculator` for testing algorithms before applying to content
 
 - **Reusable Block** - Place the calculator on any page via the block layout system
 
-- **Configurable Defaults** - Site administrators can set default parameters including minimum ratings threshold for Bayesian scoring
+- **Configurable Defaults** - Site administrators can set default parameters for calculator including minimum ratings threshold for Bayesian scoring
 
-- **Tabbed Interface** - Settings and Calculator organized in intuitive tabs
+- **Tabbed Admin Interface** - Field Mappings, Calculator, and Defaults organized in intuitive tabs
 
 - **Granular Permissions** - Single "Administer rating scorer" permission controls access to all functionality
 
@@ -57,13 +64,14 @@ Install as you would normally install a contributed Drupal module. Visit https:/
 
 ## Configuration
 
-### Using in Views (Primary Use Case)
+### Field Mappings (Primary Use Case)
 
-The main workflow for this module is integrating fair calculated rating scores into your Views displays to prevent unfair rankings:
+The main workflow for this module is creating field mappings that automatically calculate and store fair rating scores:
 
-1. Create or edit a Views display that contains your rating data (number of ratings and average rating)
-2. Add a new field and search for **"Rating Score"**
-3. Configure the field settings:
+1. Navigate to **Administration > Configuration > Content authoring > Rating Scorer** (Field Mappings tab)
+2. Click **"+ Add a field mapping"** to create a new mapping for your content type
+3. Configure the field mapping:
+   - **Content Type** - Select which content type this mapping applies to
    - **Number of Ratings Field** - Select the field containing the count of ratings
    - **Average Rating Field** - Select the field containing the average rating value
    - **Scoring Method** - Choose your fairness approach:
@@ -71,32 +79,40 @@ The main workflow for this module is integrating fair calculated rating scores i
      - **Bayesian Average** - **Recommended for fairness** - Prevents items with few ratings from ranking unfairly high by applying a prior expectation
      - **Wilson Score** - Conservative confidence-interval approach, heavily penalizes low-review items
    - **Minimum Ratings Threshold** - (For Bayesian only) Set the minimum ratings needed to reach high scores
-4. Place this field in your view and configure sorting/filtering as needed
-5. Save the view
+4. Add a **Rating Score** field to your content type (if not already present)
+5. Save the field mapping
+
+**What happens:**
+- Scores are automatically calculated whenever content is created or modified
+- Scores are also recalculated whenever the field mapping is saved (useful after changing algorithms)
+- Calculated scores are stored in the Rating Score field and can be displayed, sorted, and filtered like any other field
 
 **Example:** With Bayesian Average and a 10-rating threshold, an item with 1 five-star review will score ~2.8, while an item with 100 four-star reviews scores ~3.98—preventing the single review from dominating rankings.
 
-This allows you to display a calculated "Rating Score" column that automatically ranks items fairly based on your chosen algorithm, without modifying your underlying data.
+This allows Rating Score to be used globally across Views, blocks, templates, and programmatically, without requiring per-view configuration.
 
-### Basic Settings
+### Calculator Defaults
 
-1. Navigate to **Administration > Configuration > Content authoring > Rating Scorer** (Settings tab)
-2. Configure default values for:
+1. Navigate to **Administration > Configuration > Content authoring > Rating Scorer > Defaults** (Defaults tab)
+2. Configure default values for the calculator widget:
    - Minimum ratings threshold (affects Bayesian average)
    - Default rating value
    - Default number of ratings
    - Default scoring method
 3. Save configuration
 
+**Note:** These defaults apply ONLY to the interactive Calculator widget, not to the automatic field calculation. Field mapping configuration controls automatic scoring.
+
 ### Testing with Calculator
 
-For testing and demonstrating different scoring algorithms before adding them to Views:
+For testing and demonstrating different scoring algorithms before applying them to field mappings:
 
 1. Navigate to **Administration > Configuration > Content authoring > Rating Scorer > Calculator** (Calculator tab)
 2. Adjust the inputs to see how different values affect the final score
 3. Switch between scoring methods to compare results
+4. Use this to determine which algorithm and threshold settings work best for your content types
 
-### Placing as a Block
+### Placing Calculator as a Block
 
 For additional visibility or demonstration purposes, place the calculator on any page:
 
@@ -107,41 +123,40 @@ For additional visibility or demonstration purposes, place the calculator on any
 
 ### Using in Views
 
+Since Rating Scores are stored fields, they work naturally in Views:
+
 1. Create or edit a Views display
-2. Add a field and search for "Rating Score"
-3. Configure the field settings:
-   - Select the field containing number of ratings
-   - Select the field containing average rating
-   - Choose the scoring method
-   - If using Bayesian, set the minimum ratings threshold
+2. Add the **Rating Score** field to your display
+3. Configure sorting and filtering as needed
 4. Save the view
 
-### Sorting Behavior
-
-The "Rating Score" field can be used as a sort criterion in Views. **Important:** Due to the calculated nature of this field, sorting is applied per-page rather than globally across all results:
-
-- Results within each page are sorted by rating score (globally if only 1 page)
-- When paginating, each page shows its items sorted by rating score
-- For true global sorting across all pages, consider:
-  - Setting a high items-per-page limit to show most results on one page
-  - Using a custom view with `hook_views_data_alter()` to expose a materialized score column
-  - Pre-calculating scores into a database field via a batch process
-
-This limitation is inherent to Views' architecture when sorting by calculated/virtual fields that don't exist in the database.
+Because scores are calculated and stored in the database (not virtual fields), they support:
+- Global sorting across all results
+- Filtering by score range
+- Grouping and aggregation
+- Exposed filters for users
 
 ## Testing
 
-The module includes PHPUnit tests for both unit and functional testing:
+The module includes comprehensive PHPUnit tests covering unit and functional scenarios:
 
 ```bash
 cd /home/martinus/ddev-projects/green
-ddev exec bash -c 'export SIMPLETEST_DB="mysql://db:db@db:3306/db" && export SIMPLETEST_BASE_URL="http://localhost" && php vendor/bin/phpunit --configuration web/modules/custom/rating_scorer/phpunit.xml'
+ddev exec bash -c 'export SIMPLETEST_BASE_URL="http://web" && php vendor/bin/phpunit --configuration web/modules/custom/rating_scorer/phpunit.xml'
 ```
 
-Tests cover:
-- User creation with proper permissions
-- Home page HTTP 200 response
-- Module functionality validation
+Test Coverage:
+- **25+ unit tests** validating scoring algorithms (Bayesian, Weighted, Wilson)
+- **Field type tests** ensuring computed field structure and schema
+- **Configuration entity tests** validating per-content-type mappings
+- **Form tests** validating settings and mapping forms
+- **Controller tests** validating admin page rendering
+- **ListBuilder tests** validating field mapping list display
+- **Block tests** validating calculator block functionality
+- **Functional tests** validating admin interface tabs and routing
+- **Recalculation tests** validating auto-calculation on content and mapping changes
+
+Tests validate algorithm correctness, field configuration, permissions, admin UI, and auto-recalculation behavior.
 
 ## Architecture
 
