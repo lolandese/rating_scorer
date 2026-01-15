@@ -38,6 +38,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "bayesian_threshold"
  *   },
  *   links = {
+ *     "add-form" = "/admin/config/rating-scorer/field-mappings/add",
  *     "edit-form" = "/admin/config/rating-scorer/field-mappings/{rating_scorer_field_mapping}/edit",
  *     "delete-form" = "/admin/config/rating-scorer/field-mappings/{rating_scorer_field_mapping}/delete",
  *     "collection" = "/admin/config/rating-scorer/field-mappings"
