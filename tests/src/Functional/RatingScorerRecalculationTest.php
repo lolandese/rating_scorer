@@ -31,7 +31,7 @@ class RatingScorerRecalculationTest extends BrowserTestBase {
   /**
    * Test that Field Mapping save triggers score recalculation.
    */
-  public function testFieldMappingSaveTriggers Recalculation(): void {
+  public function testFieldMappingSaveTriggersRecalculation(): void {
     // This test verifies that the hook_entity_update implementation
     // is called when a Field Mapping is saved.
     
