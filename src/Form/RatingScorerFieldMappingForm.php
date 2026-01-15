@@ -51,8 +51,12 @@ class RatingScorerFieldMappingForm extends EntityForm {
       '#default_value' => $mapping->id(),
       '#machine_name' => [
         'exists' => [$this, 'exist'],
+        'source' => ['content_type'],
+        'standalone' => FALSE,
       ],
       '#disabled' => !$mapping->isNew(),
+      '#description' => $this->t('Automatically generated as "node.[content_type]"'),
+      '#prefix' => 'node.',
     ];
 
     $form['content_type'] = [
@@ -124,8 +128,13 @@ class RatingScorerFieldMappingForm extends EntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     $mapping = $this->entity;
 
+    // Generate ID as node.{content_type}
+    $content_type = $form_state->getValue('content_type');
+    $id = 'node.' . $content_type;
+    
+    $mapping->set('id', $id);
     $mapping->set('label', $form_state->getValue('label'));
-    $mapping->set('content_type', $form_state->getValue('content_type'));
+    $mapping->set('content_type', $content_type);
     $mapping->set('number_of_ratings_field', $form_state->getValue('number_of_ratings_field'));
     $mapping->set('average_rating_field', $form_state->getValue('average_rating_field'));
     $mapping->set('scoring_method', $form_state->getValue('scoring_method'));
