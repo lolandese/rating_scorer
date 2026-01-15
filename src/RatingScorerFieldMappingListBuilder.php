@@ -4,6 +4,7 @@ namespace Drupal\rating_scorer;
 
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Url;
 
 /**
  * Provides a listing of rating scorer field mapping configurations.
@@ -28,6 +29,19 @@ class RatingScorerFieldMappingListBuilder extends ConfigEntityListBuilder {
     $row['content_type'] = $entity->get('content_type');
     $row['scoring_method'] = ucfirst($entity->get('scoring_method'));
     return $row + parent::buildRow($entity);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function render() {
+    $build = parent::render();
+    
+    // Add "Add a field mapping" link above the table
+    $add_url = Url::fromRoute('entity.rating_scorer_field_mapping.add_form');
+    $build['#prefix'] = '<p><a href="' . $add_url->toString() . '">Add a field mapping</a></p>';
+    
+    return $build;
   }
 
 }
