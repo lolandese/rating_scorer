@@ -238,5 +238,9 @@ function rating_scorer_entity_update(Drupal\Core\Entity\EntityInterface $entity)
       '@count' => $recalculated,
       '@bundle' => $bundle,
     ]);
+    \Drupal::messenger()->addStatus(\Drupal::translation()->translate(
+      'Rating scores have been recalculated for @count @bundle items with the new configuration.',
+      ['@count' => $recalculated, '@bundle' => $bundle]
+    ));
   }
 }
