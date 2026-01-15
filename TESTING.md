@@ -5,29 +5,35 @@ This document describes the test suite for the Rating Scorer module, including t
 ## Test Overview
 
 The module includes comprehensive tests covering:
-- **Algorithm Tests** (22 tests) - Validation of scoring calculations
-- **Views Integration Tests** (8 tests) - Hook implementation and plugin validation
-- **Functional Tests** (1 test) - HTTP response and page loading
-- **Integration Tests** (1 test) - User creation and permissions
+- **Algorithm Tests** (22 tests) - Validation of scoring calculations (Weighted, Bayesian, Wilson)
+- **Field Type Tests** (6 tests) - Computed field structure and configuration
+- **Field Mapping Tests** (3 tests) - Configuration entity validation
+- **Calculator Service Tests** (4 tests) - Score calculation service functionality
+- **Form Tests** (2 tests) - Settings and field mapping form validation
+- **Controller Tests** (3 tests) - Admin page rendering
+- **ListBuilder Tests** (3 tests) - Field mapping list display
+- **Block Tests** (3 tests) - Calculator block functionality
+- **Admin Interface Tests** (7 functional tests) - Routing, tabs, and UI elements
+- **Recalculation Tests** (2 functional tests) - Auto-calculation on content and mapping changes
 
-**Total: 32 tests, all passing**
+**Total: 55+ tests across 12 test files**
 
 ## Running Tests
 
 ### Prerequisites
 
-Ensure test dependencies are installed:
+Tests require Drupal to be set up with DDEV:
 
 ```bash
 cd /home/martinus/ddev-projects/green
-ddev composer require --dev drupal/core-dev:^11.3 phpunit/phpunit:^11.5.42
+ddev start
 ```
 
 ### Run All Tests
 
 ```bash
 cd /home/martinus/ddev-projects/green
-ddev exec bash -c 'export SIMPLETEST_DB="mysql://db:db@db:3306/db" && export SIMPLETEST_BASE_URL="http://localhost" && php vendor/bin/phpunit --configuration web/modules/custom/rating_scorer/phpunit.xml'
+ddev exec bash -c 'export SIMPLETEST_BASE_URL="http://web" && php vendor/bin/phpunit --configuration web/modules/custom/rating_scorer/phpunit.xml'
 ```
 
 ### Run Specific Test File
@@ -35,13 +41,19 @@ ddev exec bash -c 'export SIMPLETEST_DB="mysql://db:db@db:3306/db" && export SIM
 Run only algorithm tests:
 ```bash
 cd /home/martinus/ddev-projects/green
-ddev exec bash -c 'export SIMPLETEST_DB="mysql://db:db@db:3306/db" && export SIMPLETEST_BASE_URL="http://localhost" && php vendor/bin/phpunit --configuration web/modules/custom/rating_scorer/phpunit.xml --filter RatingScorerAlgorithmsTest'
+ddev exec bash -c 'export SIMPLETEST_BASE_URL="http://web" && php vendor/bin/phpunit --configuration web/modules/custom/rating_scorer/phpunit.xml --filter RatingScorerAlgorithmsTest'
 ```
 
-Run only functional/integration tests:
+Run only field mapping tests:
 ```bash
 cd /home/martinus/ddev-projects/green
-ddev exec bash -c 'export SIMPLETEST_DB="mysql://db:db@db:3306/db" && export SIMPLETEST_BASE_URL="http://localhost" && php vendor/bin/phpunit --configuration web/modules/custom/rating_scorer/phpunit.xml --filter RatingScorerTest'
+ddev exec bash -c 'export SIMPLETEST_BASE_URL="http://web" && php vendor/bin/phpunit --configuration web/modules/custom/rating_scorer/phpunit.xml --filter RatingScorerFieldMappingTest'
+```
+
+Run only admin interface functional tests:
+```bash
+cd /home/martinus/ddev-projects/green
+ddev exec bash -c 'export SIMPLETEST_BASE_URL="http://web" && php vendor/bin/phpunit --configuration web/modules/custom/rating_scorer/phpunit.xml --filter RatingScorerAdminInterfaceTest'
 ```
 
 ### Run Specific Test Method
@@ -49,7 +61,13 @@ ddev exec bash -c 'export SIMPLETEST_DB="mysql://db:db@db:3306/db" && export SIM
 Run a single algorithm test:
 ```bash
 cd /home/martinus/ddev-projects/green
-ddev exec bash -c 'export SIMPLETEST_DB="mysql://db:db@db:3306/db" && export SIMPLETEST_BASE_URL="http://localhost" && php vendor/bin/phpunit --configuration web/modules/custom/rating_scorer/phpunit.xml --filter testBayesianAverageBasic'
+ddev exec bash -c 'export SIMPLETEST_BASE_URL="http://web" && php vendor/bin/phpunit --configuration web/modules/custom/rating_scorer/phpunit.xml --filter testBayesianAverageBasic'
+```
+
+Run a single recalculation test:
+```bash
+cd /home/martinus/ddev-projects/green
+ddev exec bash -c 'export SIMPLETEST_BASE_URL="http://web" && php vendor/bin/phpunit --configuration web/modules/custom/rating_scorer/phpunit.xml --filter testFieldMappingSaveTriggersRecalculation'
 ```
 
 ## Test File Organization
@@ -57,16 +75,27 @@ ddev exec bash -c 'export SIMPLETEST_DB="mysql://db:db@db:3306/db" && export SIM
 ```
 tests/
 ├── src/
-│   └── Unit/
-│       ├── RatingScorerAlgorithmsTest.php    (22 algorithm tests)
-│       └── RatingScorerTest.php              (1 functional + 1 integration test)
+│   ├── Unit/
+│   │   ├── RatingScorerAlgorithmsTest.php      (22 algorithm tests)
+│   │   ├── RatingScoreFieldTypeTest.php        (6 field type tests)
+│   │   ├── RatingScorerFieldMappingTest.php    (3 config entity tests)
+│   │   ├── RatingScoreCalculatorTest.php       (4 service tests)
+│   │   ├── RatingScorerFormTest.php            (2 form tests)
+│   │   ├── RatingScorerControllerTest.php      (3 controller tests)
+│   │   ├── RatingScorerListBuilderTest.php     (3 listbuilder tests)
+│   │   ├── RatingScorerCalculatorBlockTest.php (3 block tests)
+│   │   └── RatingScorerTest.php                (1 basic test)
+│   └── Functional/
+│       ├── RatingScorerAdminInterfaceTest.php  (7 functional tests)
+│       ├── RatingScorerRecalculationTest.php   (2 recalculation tests)
+│       └── RatingScorerFunctionalTest.php      (1 functional test)
 ```
 
 ## Test Coverage
 
 ### Algorithm Tests (`RatingScorerAlgorithmsTest.php`)
 
-Tests for the three scoring algorithms exposed by `_rating_scorer_calculate_score()`.
+Tests for the three scoring algorithms used by the score calculation service.
 
 #### Weighted Score Tests (5 tests)
 Tests the logarithmic weighting algorithm: `score = average_rating * log(number_of_ratings + 1)`
@@ -117,36 +146,104 @@ Tests boundary conditions and unusual inputs.
 - **testDecimalRatings** - Properly handles decimal average ratings (e.g., 3.7)
 - **testBayesianLargeNumbers** - Handles millions of ratings without errors
 
-### Functional & Integration Tests (`RatingScorerTest.php`)
+### Field Type Tests (`RatingScoreFieldTypeTest.php`)
 
-Tests module integration with Drupal.
+Tests the computed rating score field type implementation.
 
-- **testHomePageLoads** - Verifies `/` returns HTTP 200 (functional test)
-- **testUserWithAdminPermission** - Creates user with "Administer site configuration" permission (integration test)
+- **testRatingScoreFieldTypeExists** - Field type is registered
+- **testRatingScoreFieldTypeHasCorrectConfiguration** - Configuration properties defined
+- **testRatingScoreFieldTypeSchemaCorrect** - Database schema with proper decimal precision (10,2)
+- **testRatingScoreWidgetExists** - Widget plugin is registered
+- **testRatingScoreFormatterExists** - Formatter plugin is registered
+- **testRatingScorePropertyDefinitions** - Field properties defined correctly
 
-### Views Integration Tests (`RatingScorerViewsTest.php`)
+### Field Mapping Tests (`RatingScorerFieldMappingTest.php`)
 
-Tests Views API integration for field and sort handlers.
+Tests the configuration entity for per-content-type field mappings.
 
-- **testRatingScorerModuleExists** - Verifies module is installed
-- **testModuleFileExists** - Confirms module file is present
-- **testHelperFunctionExists** - Checks `_rating_scorer_calculate_score()` function is callable
-- **testFieldHandlerClassExists** - Verifies field handler plugin class loads
-- **testSortHandlerClassExists** - Verifies sort handler plugin class loads
-- **testFieldHandlerExtendsFieldPluginBase** - Confirms field handler extends correct base class
-- **testSortHandlerExtendsSortPluginBase** - Confirms sort handler extends correct base class
-- **testHookViewsDataImplemented** - Verifies `hook_views_data()` is implemented
-- **testHookViewsPreRenderImplemented** - Verifies `hook_views_pre_render()` is implemented
-- **testCoreHooksImplemented** - Verifies `hook_help()` and `hook_theme()` are implemented
+- **testRatingScorerFieldMappingEntityCreation** - Config entity can be created and saved
+- **testRatingScorerFieldMappingEntityProperties** - Entity has required properties (bundle, number_of_ratings_field, average_rating_field, etc.)
+- **testRatingScorerFieldMappingEntityConfiguration** - Entity configuration is properly stored
+
+### Calculator Service Tests (`RatingScoreCalculatorTest.php`)
+
+Tests the centralized score calculation service.
+
+- **testRatingScoreCalculatorServiceExists** - Service is registered and callable
+- **testCalculateScoreForEntity** - Method calculates scores for entities with field mappings
+- **testUpdateScoreFieldsOnEntity** - Method updates all rating_score fields on entity
+- **testRecalculationWithDifferentAlgorithms** - Service supports all three algorithms
+
+### Form Tests (`RatingScorerFormTest.php`)
+
+Tests form validation and configuration.
+
+- **testSettingsFormHasClarifyingNote** - Defaults form displays clarifying note about calculator use
+- **testSettingsFormHasCalculatorDefaultFields** - Form includes required calculator default fields
+
+### Controller Tests (`RatingScorerControllerTest.php`)
+
+Tests admin page rendering.
+
+- **testFieldMappingsListMethodExists** - Controller method for field mappings list
+- **testCalculatorMethodExists** - Controller method for calculator page
+- **testControllerMethodsReturnRenderArrays** - Both methods return valid render arrays
+
+### ListBuilder Tests (`RatingScorerListBuilderTest.php`)
+
+Tests field mapping list builder customizations.
+
+- **testListBuilderHasRenderMethod** - Render method is implemented
+- **testListBuilderHasBuildHeaderMethod** - Build header method defines columns
+- **testListBuilderHasBuildRowMethod** - Build row method formats each mapping row
+
+### Block Tests (`RatingScorerCalculatorBlockTest.php`)
+
+Tests the calculator block plugin.
+
+- **testCalculatorBlockExists** - Block plugin is registered
+- **testCalculatorBlockHasBuildMethod** - Build method is implemented
+- **testCalculatorBlockExtendsBlockBase** - Proper inheritance from BlockBase
+
+### Admin Interface Tests (`RatingScorerAdminInterfaceTest.php`)
+
+Functional tests for admin UI routing and tabs.
+
+- **testFieldMappingsTabAtParentRoute** - Field Mappings tab accessible at parent route
+- **testCalculatorTabAccessible** - Calculator tab accessible
+- **testDefaultsTabAccessible** - Defaults tab accessible
+- **testAllTabsVisibleOnFieldMappingsPage** - All three tabs render on field mappings page
+- **testAddFieldMappingLinkVisible** - "+ Add a field mapping" link displays
+- **testSettingsFormHasNote** - Defaults form shows clarifying note
+- **testCalculatorPageHasPurposeMessage** - Calculator page shows purpose explanation
+
+### Recalculation Tests (`RatingScorerRecalculationTest.php`)
+
+Functional tests for auto-recalculation behavior.
+
+- **testFieldMappingSaveTriggersRecalculation** - Saving field mapping recalculates scores
+- **testRecalculationMessageAfterSave** - User message appears after recalculation
 
 ## Test Structure
 
-All tests extend `BrowserTestBase` for full Drupal environment access:
+All tests use the appropriate base class for their scope:
+
+### Unit Tests
+Unit tests extend appropriate base classes:
+- Form and service tests: `KernelTestBase` or direct class testing
+- Algorithm and field tests: Can use `BrowserTestBase` for full access to Drupal bootstrap
+
+### Functional Tests
+Functional tests extend `BrowserTestBase` for full Drupal environment:
 
 ```php
-class RatingScorerAlgorithmsTest extends BrowserTestBase {
+class RatingScorerAdminInterfaceTest extends BrowserTestBase {
   protected $defaultTheme = 'stark';
-  protected static $modules = ['system', 'user', 'rating_scorer'];
+  protected static $modules = [
+    'rating_scorer',
+    'field',
+    'node',
+  ];
 }
 ```
 
@@ -154,7 +251,7 @@ This ensures:
 - Database connection available
 - Drupal bootstrap complete
 - Module hooks initialized
-- Helper functions callable (`_rating_scorer_calculate_score()`)
+- Admin UI accessible for testing
 
 ## Contributing New Tests
 
@@ -206,7 +303,7 @@ public function testNewAlgorithmBasic() {
 }
 ```
 
-2. Implement algorithm in `rating_scorer.module`:
+2. Implement algorithm in `RatingScorerCalculator.php`:
 
 ```php
 case 'new_method':
@@ -216,7 +313,28 @@ case 'new_method':
 3. Run test:
 
 ```bash
-ddev exec bash -c 'export SIMPLETEST_DB="mysql://db:db@db:3306/db" && export SIMPLETEST_BASE_URL="http://localhost" && php vendor/bin/phpunit --configuration web/modules/custom/rating_scorer/phpunit.xml --filter testNewAlgorithmBasic'
+ddev exec bash -c 'export SIMPLETEST_BASE_URL="http://web" && php vendor/bin/phpunit --configuration web/modules/custom/rating_scorer/phpunit.xml --filter testNewAlgorithmBasic'
+```
+
+### Example: Adding Field Mapping Tests
+
+1. Create new test in `RatingScorerFieldMappingTest.php`:
+
+```php
+public function testNewMappingProperty() {
+  $mapping = RatingScorerFieldMapping::create([
+    'id' => 'test_mapping',
+    'content_type' => 'article',
+    'new_property' => 'test_value',
+  ]);
+  $this->assertEqual('test_value', $mapping->new_property);
+}
+```
+
+2. Run test:
+
+```bash
+ddev exec bash -c 'export SIMPLETEST_BASE_URL="http://web" && php vendor/bin/phpunit --configuration web/modules/custom/rating_scorer/phpunit.xml --filter testNewMappingProperty'
 ```
 
 ## Test Coverage Summary
@@ -226,64 +344,79 @@ ddev exec bash -c 'export SIMPLETEST_DB="mysql://db:db@db:3306/db" && export SIM
 | Weighted Score Algorithm | 5 | Basic, edge cases, volume sensitivity |
 | Bayesian Average Algorithm | 6 | Basic, thresholds, convergence, fairness |
 | Wilson Score Algorithm | 6 | Basic, conservativeness, bounds |
-| Edge Cases | 3 | Invalid methods, decimals, large numbers |
-| Views Integration | 8 | Plugin classes, hook implementations |
-| Functional Integration | 1 | Page loading |
-| User Permissions | 1 | User creation and roles |
-| **Total** | **32** | **Comprehensive algorithm & Views validation** |
+| Algorithm Edge Cases | 3 | Invalid methods, decimals, large numbers |
+| Field Type Plugin | 6 | Field registration, schema, widget, formatter |
+| Configuration Entity | 3 | Entity creation, properties, persistence |
+| Calculator Service | 4 | Service instantiation, calculation methods |
+| Forms | 2 | Settings/defaults form validation |
+| Controller | 3 | Admin page rendering |
+| ListBuilder | 3 | List display and customization |
+| Block | 3 | Block plugin structure and methods |
+| Admin UI (Functional) | 7 | Routing, tabs, links, forms, messages |
+| Recalculation (Functional) | 2 | Auto-recalculation on save |
+| Basic Integration | 1 | Module functionality |
+| **Total** | **55+** | **Comprehensive algorithm, plugin, service & UI validation** |
 
 ## Known Limitations
 
-- **Algorithm tests** use `BrowserTestBase` for access to Drupal functions, though tests don't require database transactions
-- **Functional tests** are minimal - could be expanded with Views integration testing
-- **No performance tests** - algorithms are generally fast, but could benchmark very large datasets
+- **Functional tests** require full Drupal test database setup with SIMPLETEST_BASE_URL
+- **Algorithm tests** use full Drupal bootstrap for access to service/hook system (could be optimized for unit-only tests)
+- **No end-to-end content scoring tests** - could add tests that create actual content and verify scores are calculated
 
 ## Future Test Improvements
 
 Potential areas for expansion:
 
-1. **Views Integration Tests**
-   - Field handler rendering
-   - Sort criteria functionality
-   - Field configuration validation
+1. **Auto-Calculation Tests**
+   - Test calculation happens on entity presave
+   - Test with missing field mappings
+   - Test with invalid field configuration
 
-2. **Settings Form Tests**
-   - Form submission and validation
-   - Default value persistence
-   - Invalid input handling
+2. **Permission Tests**
+   - Verify only admins can access field mapping admin
+   - Test access control on configuration pages
 
-3. **Block Plugin Tests**
-   - Block rendering
-   - Block configuration
+3. **Views Integration Tests**
+   - Field sorting and filtering in Views
+   - Field configuration in Views UI
+   - Multiple scores on same display
 
 4. **Performance Tests**
-   - Large dataset handling
-   - Batch operation efficiency
+   - Large dataset handling (1000+ nodes)
+   - Recalculation performance with many field mappings
+   - Service efficiency benchmarks
 
-5. **Permissions Tests**
-   - Admin-only access verification
-   - Non-admin denial
+5. **Edge Cases**
+   - Missing number_of_ratings or average_rating fields
+   - Field mapping for non-existent content type
+   - Orphaned field mapping after content type deletion
 
 ## Troubleshooting
 
-### Tests fail with "SIMPLETEST_DB not set"
-Make sure environment variables are exported:
+### Tests fail with "SIMPLETEST_BASE_URL not set"
+Make sure environment variable is exported:
 ```bash
-export SIMPLETEST_DB="mysql://db:db@db:3306/db"
-export SIMPLETEST_BASE_URL="http://localhost"
+export SIMPLETEST_BASE_URL="http://web"
 ```
 
 ### Tests fail with database connection error
 Verify DDEV is running:
 ```bash
 ddev status
+ddev start
 ```
 
 ### Specific test fails
 Run with verbose output:
 ```bash
-ddev exec bash -c 'export SIMPLETEST_DB="mysql://db:db@db:3306/db" && export SIMPLETEST_BASE_URL="http://localhost" && php vendor/bin/phpunit -v --configuration web/modules/custom/rating_scorer/phpunit.xml'
+ddev exec bash -c 'export SIMPLETEST_BASE_URL="http://web" && php vendor/bin/phpunit -v --configuration web/modules/custom/rating_scorer/phpunit.xml'
 ```
+
+### Functional tests fail with "SIMPLETEST_BASE_URL environment variable" error
+This is expected for functional tests that require full Drupal database. Ensure:
+1. DDEV container is running: `ddev start`
+2. Environment variable is set: `export SIMPLETEST_BASE_URL="http://web"`
+3. Drupal database exists and is accessible
 
 ### Float precision assertions fail
 Use `assertGreaterThan` and `assertLessThan` instead of `assertEquals` for float results:
