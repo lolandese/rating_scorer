@@ -46,7 +46,7 @@ class RatingScoreCalculator {
     // Get the field mapping configuration for this entity type.
     $bundle = $entity->bundle();
     $entity_type = $entity->getEntityTypeId();
-    $config_id = "{$entity_type}.{$bundle}";
+    $config_id = "{$entity_type}_{$bundle}";
 
     try {
       $mapping = $this->entityTypeManager

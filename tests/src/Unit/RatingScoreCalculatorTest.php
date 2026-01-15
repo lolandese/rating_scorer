@@ -78,7 +78,7 @@ class RatingScoreCalculatorTest extends UnitTestCase {
     $storage = $this->createMock(\Drupal\Core\Entity\EntityStorageInterface::class);
     $storage->expects($this->once())
       ->method('load')
-      ->with('node.article')
+      ->with('node_article')
       ->willReturn(NULL);
 
     $this->entityTypeManager->expects($this->once())

@@ -200,8 +200,8 @@ function rating_scorer_entity_update(Drupal\Core\Entity\EntityInterface $entity)
     return;
   }
 
-  // Extract content type from config ID (format: "node.{bundle}").
-  $id_parts = explode('.', $entity->id());
+  // Extract content type from config ID (format: "node_{bundle}").
+  $id_parts = explode('_', $entity->id());
   if (count($id_parts) !== 2 || $id_parts[0] !== 'node') {
     return;
   }

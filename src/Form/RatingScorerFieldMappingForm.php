@@ -68,8 +68,7 @@ class RatingScorerFieldMappingForm extends EntityForm {
         'standalone' => FALSE,
       ],
       '#disabled' => !$mapping->isNew(),
-      '#description' => $this->t('Automatically generated as "node.[content_type]"'),
-      '#prefix' => 'node.',
+      '#description' => $this->t('Automatically generated as "node_[content_type]"'),
     ];
 
     $form['field_options'] = [
@@ -128,9 +127,9 @@ class RatingScorerFieldMappingForm extends EntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     $mapping = $this->entity;
 
-    // Generate ID as node.{content_type}
+    // Generate ID as node_{content_type}
     $content_type = $form_state->getValue('content_type');
-    $id = 'node.' . $content_type;
+    $id = 'node_' . $content_type;
     
     $mapping->set('id', $id);
     $mapping->set('label', $form_state->getValue('label'));
