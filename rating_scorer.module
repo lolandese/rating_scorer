@@ -188,3 +188,55 @@ function rating_scorer_views_data() {
 
   return $data;
 }
+
+/**
+ * Implements hook_entity_update().
+ *
+ * Recalculates rating scores for all nodes of a content type when its Field
+ * Mapping configuration is updated.
+ */
+function rating_scorer_entity_update(Drupal\Core\Entity\EntityInterface $entity) {
+  if ($entity->getEntityTypeId() !== 'rating_scorer_field_mapping') {
+    return;
+  }
+
+  // Extract content type from config ID (format: "node.{bundle}").
+  $id_parts = explode('.', $entity->id());
+  if (count($id_parts) !== 2 || $id_parts[0] !== 'node') {
+    return;
+  }
+
+  $bundle = $id_parts[1];
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $calculator = \Drupal::service('rating_scorer.calculator');
+  $logger = \Drupal::logger('rating_scorer');
+
+  // Load all nodes of the affected content type.
+  $nids = $entity_type_manager
+    ->getStorage('node')
+    ->getQuery()
+    ->accessCheck(FALSE)
+    ->condition('type', $bundle)
+    ->execute();
+
+  if (empty($nids)) {
+    return;
+  }
+
+  $nodes = $entity_type_manager->getStorage('node')->loadMultiple($nids);
+  $recalculated = 0;
+
+  // Recalculate scores for each node.
+  foreach ($nodes as $node) {
+    $calculator->updateScoreFieldsOnEntity($node);
+    $node->save();
+    $recalculated++;
+  }
+
+  if ($recalculated > 0) {
+    $logger->info('Recalculated rating scores for @count nodes of type @bundle', [
+      '@count' => $recalculated,
+      '@bundle' => $bundle,
+    ]);
+  }
+}
