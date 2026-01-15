@@ -144,7 +144,20 @@ class RatingScorerFieldMappingForm extends EntityForm {
     if ($status === SAVED_NEW) {
       $this->messenger()->addMessage($this->t('Field mapping %label has been added.', ['%label' => $mapping->label()]));
     } else {
-      $this->messenger()->addMessage($this->t('Field mapping %label has been updated.', ['%label' => $mapping->label()]));
+      // Count affected nodes and add informative message
+      $entity_type_manager = \Drupal::entityTypeManager();
+      $nids = $entity_type_manager
+        ->getStorage('node')
+        ->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('type', $content_type)
+        ->execute();
+      
+      $count = count($nids);
+      $this->messenger()->addMessage($this->t('Field mapping %label has been updated. Rating scores have been recalculated for @count items with the new configuration.', [
+        '%label' => $mapping->label(),
+        '@count' => $count,
+      ]));
     }
 
     $form_state->setRedirectUrl($mapping->toUrl('collection'));
