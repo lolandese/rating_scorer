@@ -1,5 +1,5 @@
 rating_scorer.settings:
-  path: '/admin/config/rating-scorer'
+  path: '/admin/config/rating-scorer/settings'
   defaults:
     _form: '\Drupal\rating_scorer\Form\RatingScorerSettingsForm'
     _title: 'Settings'
@@ -7,7 +7,7 @@ rating_scorer.settings:
     _permission: 'administer rating scorer'
 
 rating_scorer.field_mappings:
-  path: '/admin/config/rating-scorer/field-mappings'
+  path: '/admin/config/rating-scorer'
   defaults:
     _controller: '\Drupal\rating_scorer\Controller\RatingScorerController::fieldMappingsList'
     _title: 'Field Mappings'

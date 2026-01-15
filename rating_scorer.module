@@ -5,6 +5,9 @@
  * Primary module hooks for Rating Scorer module.
  */
 
+use Drupal\Core\Link;
+use Drupal\Core\Url;
+
 /**
  * Implements hook_help().
  */
