@@ -30,16 +30,4 @@ class RatingScorerFieldMappingListBuilder extends ConfigEntityListBuilder {
     return $row + parent::buildRow($entity);
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function render() {
-    $render = parent::render();
-    
-    // Ensure the render array includes route context for proper theme rendering
-    $render['#cache']['contexts'][] = 'route';
-    
-    return $render;
-  }
-
 }
