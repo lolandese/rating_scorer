@@ -164,32 +164,6 @@ function rating_scorer_views_pre_render(\Drupal\views\ViewExecutable $view) {
 }
 
 /**
- * Implements hook_views_data().
- */
-function rating_scorer_views_data() {
-  $data = [];
-
-  // Add the rating score field to all entity base tables.
-  foreach (\Drupal::entityTypeManager()->getDefinitions() as $entity_type) {
-    if ($base_table = $entity_type->getBaseTable()) {
-      $data[$base_table]['rating_score'] = [
-        'title' => t('Rating Score'),
-        'help' => t('Calculate a fair rating score using various scoring methods. Requires two numeric fields: number of ratings and average rating.'),
-        'field' => [
-          'id' => 'rating_score',
-          'no field' => TRUE,
-        ],
-        'sort' => [
-          'id' => 'rating_score',
-        ],
-      ];
-    }
-  }
-
-  return $data;
-}
-
-/**
  * Implements hook_entity_update().
  *
  * Recalculates rating scores for all nodes of a content type when its Field
