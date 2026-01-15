@@ -6,10 +6,11 @@ This document describes the test suite for the Rating Scorer module, including t
 
 The module includes comprehensive tests covering:
 - **Algorithm Tests** (22 tests) - Validation of scoring calculations
+- **Views Integration Tests** (8 tests) - Hook implementation and plugin validation
 - **Functional Tests** (1 test) - HTTP response and page loading
 - **Integration Tests** (1 test) - User creation and permissions
 
-**Total: 24 tests, all passing**
+**Total: 32 tests, all passing**
 
 ## Running Tests
 
@@ -123,6 +124,21 @@ Tests module integration with Drupal.
 - **testHomePageLoads** - Verifies `/` returns HTTP 200 (functional test)
 - **testUserWithAdminPermission** - Creates user with "Administer site configuration" permission (integration test)
 
+### Views Integration Tests (`RatingScorerViewsTest.php`)
+
+Tests Views API integration for field and sort handlers.
+
+- **testRatingScorerModuleExists** - Verifies module is installed
+- **testModuleFileExists** - Confirms module file is present
+- **testHelperFunctionExists** - Checks `_rating_scorer_calculate_score()` function is callable
+- **testFieldHandlerClassExists** - Verifies field handler plugin class loads
+- **testSortHandlerClassExists** - Verifies sort handler plugin class loads
+- **testFieldHandlerExtendsFieldPluginBase** - Confirms field handler extends correct base class
+- **testSortHandlerExtendsSortPluginBase** - Confirms sort handler extends correct base class
+- **testHookViewsDataImplemented** - Verifies `hook_views_data()` is implemented
+- **testHookViewsPreRenderImplemented** - Verifies `hook_views_pre_render()` is implemented
+- **testCoreHooksImplemented** - Verifies `hook_help()` and `hook_theme()` are implemented
+
 ## Test Structure
 
 All tests extend `BrowserTestBase` for full Drupal environment access:
@@ -159,10 +175,10 @@ This ensures:
 public function testDescriptiveName() {
   // Arrange
   $input_value = someCalculation();
-  
+
   // Act
   $result = _rating_scorer_calculate_score($number, $average, $method, $threshold);
-  
+
   // Assert
   $this->assertGreaterThan(expected_min, $result);
   $this->assertLessThan(expected_max, $result);
@@ -211,9 +227,10 @@ ddev exec bash -c 'export SIMPLETEST_DB="mysql://db:db@db:3306/db" && export SIM
 | Bayesian Average Algorithm | 6 | Basic, thresholds, convergence, fairness |
 | Wilson Score Algorithm | 6 | Basic, conservativeness, bounds |
 | Edge Cases | 3 | Invalid methods, decimals, large numbers |
+| Views Integration | 8 | Plugin classes, hook implementations |
 | Functional Integration | 1 | Page loading |
 | User Permissions | 1 | User creation and roles |
-| **Total** | **24** | **Comprehensive algorithm validation** |
+| **Total** | **32** | **Comprehensive algorithm & Views validation** |
 
 ## Known Limitations
 
