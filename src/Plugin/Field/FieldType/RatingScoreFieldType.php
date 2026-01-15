@@ -14,8 +14,7 @@ use Drupal\Core\TypedData\DataDefinition;
  *   label = @Translation("Rating Score"),
  *   description = @Translation("Stores and computes fair rating scores based on average rating and number of ratings"),
  *   default_widget = "rating_score_widget",
- *   default_formatter = "rating_score_formatter",
- *   category = @Translation("Number")
+ *   default_formatter = "rating_score_formatter"
  * )
  */
 class RatingScoreFieldType extends FieldItemBase {
