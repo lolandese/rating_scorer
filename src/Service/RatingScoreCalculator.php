@@ -84,8 +84,8 @@ class RatingScoreCalculator {
 
     // Call the main module helper function to calculate score.
     return _rating_scorer_calculate_score(
-      $average_rating,
       $number_of_ratings,
+      $average_rating,
       $scoring_method,
       $bayesian_threshold
     );
