@@ -66,6 +66,8 @@ class RatingScoreWidget extends WidgetBase {
       '#default_value' => isset($items[$delta]->value) ? $items[$delta]->value : NULL,
       '#step' => $this->getSetting('step'),
       '#placeholder' => $this->getSetting('placeholder'),
+      '#disabled' => TRUE,
+      '#description' => t('This field is automatically calculated and cannot be edited manually.'),
     ];
 
     return $element;
