@@ -304,18 +304,200 @@ ddev drush php:eval "require 'vendor/bin/phpunit'; exit(system('vendor/bin/phpun
 
 ---
 
+## Phase 6: Computed Field Integration (In Progress - Feature Branch)
+
+**Branch**: `feature/computed-field-integration`
+
+### Problem Statement
+The current Views field handler implementation has a limitation: sorting is applied per-page rather than globally across all results. This occurs because calculated/virtual fields don't exist in the database, preventing database-level sorting.
+
+### Solution Architecture: Custom Field Type Approach
+Implement a Drupal custom field type (`rating_score`) that stores computed scores directly in the database, enabling:
+- Global database-level sorting across all results
+- Per-content-type field mapping configuration
+- Seamless entity integration via presave hooks
+- Backward compatibility with existing content
+
+### Implementation Components
+
+**1. RatingScoreFieldType Plugin** (`src/Plugin/Field/FieldType/RatingScoreFieldType.php`)
+- Extends `FieldItemBase` for numeric storage
+- Stores precision 10.2 (10 total digits, 2 decimal places)
+- Field settings:
+  - `number_of_ratings_field`: Source field for rating count
+  - `average_rating_field`: Source field for average rating
+  - `scoring_method`: Algorithm selection (weighted/bayesian/wilson)
+  - `bayesian_threshold`: Minimum ratings for Bayesian scoring
+
+**2. RatingScoreWidget Plugin** (`src/Plugin/Field/FieldWidget/RatingScoreWidget.php`)
+- Provides `number` input widget for field values
+- Supports configurable step and placeholder
+- Allows manual score entry or automatic calculation
+
+**3. RatingScoreFormatter Plugin** (`src/Plugin/Field/FieldFormatter/RatingScoreFormatter.php`)
+- Displays score values with 2 decimal precision
+- Format: `number_format($value, 2)`
+
+**4. RatingScorerFieldMapping Configuration Entity** (`src/Entity/RatingScorerFieldMapping.php`)
+- Stores per-content-type field mappings
+- Config ID pattern: `{entity_type}.{bundle}` (e.g., `node.article`)
+- Exports configuration to YAML for version control
+- Supports all three scoring algorithms and Bayesian threshold
+
+**5. RatingScoreCalculator Service** (`src/Service/RatingScoreCalculator.php`)
+- Injected via `rating_scorer.calculator` service
+- `calculateScoreForEntity()`: Computes single field score
+- `updateScoreFieldsOnEntity()`: Updates all rating_score fields on entity
+- Handles configuration lookup and validation
+
+**6. Admin UI Components**
+- `RatingScorerFieldMappingForm.php`: Configuration form with:
+  - AJAX field selection based on selected content type
+  - Scoring method dropdown
+  - Bayesian threshold configuration
+  - Automatic numeric field filtering
+- `RatingScorerFieldMappingListBuilder.php`: List of all configured mappings
+- Routes added to `rating_scorer.routing.yml` for CRUD operations
+
+**7. Integration Hooks**
+- `hook_entity_presave()`: Automatically calculates and updates scores when:
+  - Entity source fields are modified
+  - Entity is saved (by any process)
+  - Presave occurs before entity state changes
+
+**8. Service Registration**
+- `rating_scorer.services.yml`: Registers `RatingScoreCalculator` service
+
+### Configuration Workflow
+1. Navigate to `/admin/config/rating-scorer/field-mappings`
+2. Click "Add Field Mapping"
+3. Select content type (e.g., "Article")
+4. Select source fields for number of ratings and average rating
+5. Choose scoring method and Bayesian threshold if applicable
+6. Save configuration
+7. Add `rating_score` field to content type via field UI
+8. Future entity saves automatically calculate scores
+
+### Database Schema
+```sql
+-- rating_score field storage in content type tables
+ALTER TABLE node__field_rating_score ADD COLUMN field_rating_score_value NUMERIC(10, 2);
+CREATE INDEX idx_rating_score ON node__field_rating_score(field_rating_score_value);
+```
+
+### Score Calculation Flow
+1. Entity presave triggered
+2. Find all `rating_score` fields on entity
+3. For each field:
+   a. Load entity's content type mapping configuration
+   b. Get source field values
+   c. Call `_rating_scorer_calculate_score()` helper
+   d. Store result in field
+4. Field saved to database with entity
+
+### Testing
+Created 13 new unit tests:
+- `RatingScoreFieldTypeTest` (6 tests): Plugin structure and configuration
+- `RatingScorerFieldMappingTest` (3 tests): Config entity validation
+- `RatingScoreCalculatorTest` (4 tests): Service functionality
+
+Tests validate:
+- Plugin annotations and metadata
+- Field storage schema (precision/scale)
+- Property definitions
+- Entity configuration structure
+- Service instantiation and method signatures
+- Null handling for missing configurations
+
+### Key Design Decisions
+
+**1. Config Entity vs Settings Form**
+- Chosen: Config entities for per-content-type flexibility
+- Reason: Allows different algorithms/thresholds per content type
+- Alternative rejected: Single global settings form
+
+**2. Presave Hook Integration**
+- Chosen: Automatic calculation in `hook_entity_presave()`
+- Reason: Seamless integration, no manual trigger needed
+- Benefit: Works with all entity creation/modification methods
+
+**3. Service Layer Abstraction**
+- Chosen: Dedicated `RatingScoreCalculator` service
+- Reason: Reusable, testable, dependency injectable
+- Flexibility: Can be used outside presave hooks
+
+**4. Field Type vs Views Handler**
+- Computed Field Advantages:
+  - ✅ Global database-level sorting
+  - ✅ Works in all Views displays without configuration
+  - ✅ Queryable, filterable, sortable
+  - ✅ Exportable/importable via config management
+  - ✅ Works outside Views (blocks, templates, etc.)
+- Views Handler Limitations:
+  - ❌ Per-page sorting only
+  - ❌ Limited to Views displays
+  - ❌ Recalculates on every Views render
+
+### Migration Path (Planned)
+1. Test computed field implementation thoroughly
+2. Deploy to test/staging environment
+3. Verify score accuracy and performance
+4. Optionally keep Views handler for compatibility
+5. Future: Remove Views handler when computed field fully adopted
+
+### Files Created/Modified
+
+**New Files**:
+- `src/Plugin/Field/FieldType/RatingScoreFieldType.php`
+- `src/Plugin/Field/FieldWidget/RatingScoreWidget.php`
+- `src/Plugin/Field/FieldFormatter/RatingScoreFormatter.php`
+- `src/Entity/RatingScorerFieldMapping.php`
+- `src/Form/RatingScorerFieldMappingForm.php`
+- `src/RatingScorerFieldMappingListBuilder.php`
+- `src/Service/RatingScoreCalculator.php`
+- `rating_scorer.services.yml`
+- `tests/src/Unit/RatingScoreFieldTypeTest.php`
+- `tests/src/Unit/RatingScorerFieldMappingTest.php`
+- `tests/src/Unit/RatingScoreCalculatorTest.php`
+
+**Modified Files**:
+- `rating_scorer.module`: Updated entity_presave hook
+- `rating_scorer.routing.yml`: Added field mapping routes
+
+### Git Commits
+- `551a89b`: Initial computed field type implementation
+- `80b0070`: Fix parameter order and add routing
+- `f96a972`: Add unit tests for computed field
+
+---
+
 ## Status
 
-✅ **COMPLETE** - Module is fully functional with:
+✅ **Main Branch COMPLETE** - Views handler implementation is fully functional:
 - Settings form for configurable defaults
 - Calculator admin interface
 - Reusable block plugin
 - Views field handler discoverable and usable
 - Three scoring algorithms
-- PHPUnit test infrastructure
+- PHPUnit test infrastructure (32 tests)
+- Per-page sorting via hook_views_pre_render()
 
-**Next Steps** (Optional):
-- Run full test suite
-- Test with actual rating data
-- Performance testing with large datasets
-- Consider additional scoring algorithms
+🔄 **Feature Branch IN PROGRESS** - Computed field implementation:
+- Custom field type with numeric storage ✅
+- Configuration entity for per-content-type mapping ✅
+- RatingScoreCalculator service ✅
+- Field widget and formatter ✅
+- Configuration form with AJAX ✅
+- 13 new unit tests ✅
+- Admin routing and UI hooks ✅
+- **Next**: Testing and refinement on feature branch
+- **Future**: Merge to main after validation
+
+**Next Steps**:
+1. Integration testing with actual Drupal field creation
+2. Verify score calculation during entity save
+3. Test sorting and filtering in Views with new field type
+4. Performance testing with large datasets
+5. Merge to main branch once validation complete
+6. Update README with computed field setup instructions
+7. Optional: Deprecate Views handler after computed field adoption
