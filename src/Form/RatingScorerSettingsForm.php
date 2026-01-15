@@ -32,7 +32,7 @@ class RatingScorerSettingsForm extends ConfigFormBase {
 
     $form['info'] = [
       '#type' => 'markup',
-      '#markup' => '<div class="description"><p><strong>' . $this->t('Note:') . '</strong> ' . $this->t('These default settings apply only to the Calculator widget on the Calculator tab. For automatic scoring of content fields, configure Field Mappings on the Field Mappings tab instead.') . '</p></div>',
+      '#markup' => '<div class="description"><p><strong>' . $this->t('Note:') . '</strong> ' . $this->t('These default settings apply only to the Calculator widget. For automatic scoring of content fields, configure Field Mappings instead.') . '</p></div>',
     ];
 
     $form['default_minimum_ratings'] = [
