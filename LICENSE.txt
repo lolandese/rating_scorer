@@ -1,6 +1,62 @@
+RATING SCORER MODULE
+
 This software is Copyright (c) 2026 by Martin Postma and is dual-licensed under:
 
-1. GNU General Public License v2.0 (GPL-2.0)
-2. GNU General Public License v3.0 or later (GPL-3.0+)
+1. GNU General Public License v2.0 or later (GPL-2.0-or-later)
+2. MIT License
 
-This module is part of the Drupal project. For more information, see https://www.drupal.org/
+You may choose to use this software under either the GPL-2.0-or-later or the MIT License.
+If you do not specify which license you prefer, the software is provided under both licenses
+and you may use whichever license suits your needs best.
+
+
+================================================================================
+GNU GENERAL PUBLIC LICENSE VERSION 2.0 OR LATER (GPL-2.0-or-later)
+================================================================================
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1335, USA.
+
+http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+
+
+================================================================================
+MIT LICENSE
+================================================================================
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+================================================================================
+DRUPAL PROJECT
+================================================================================
+
+This module is part of the Drupal project and follows Drupal's licensing
+requirements. For more information, see https://www.drupal.org/

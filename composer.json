@@ -2,8 +2,11 @@
   "name": "drupal/rating_scorer",
   "description": "A Drupal module for rating and scoring functionality.",
   "type": "drupal-module",
-  "license": "GPL-2.0-or-later",
-  "authors": [
+    "license": [
+      "GPL-2.0-or-later",
+      "MIT"
+    ],
+    "authors": [
     {
       "name": "Martin Postma"
     }
