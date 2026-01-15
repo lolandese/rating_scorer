@@ -30,6 +30,11 @@ class RatingScorerSettingsForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('rating_scorer.settings');
 
+    $form['info'] = [
+      '#type' => 'markup',
+      '#markup' => '<div class="description"><p><strong>' . $this->t('Note:') . '</strong> ' . $this->t('These default settings apply only to the Calculator widget on the Calculator tab. For automatic scoring of content fields, configure Field Mappings on the Field Mappings tab instead.') . '</p></div>',
+    ];
+
     $form['default_minimum_ratings'] = [
       '#type' => 'number',
       '#title' => $this->t('Default minimum ratings threshold'),
