@@ -2,7 +2,15 @@ rating_scorer.settings:
   path: '/admin/config/rating-scorer'
   defaults:
     _form: '\Drupal\rating_scorer\Form\RatingScorerSettingsForm'
-    _title: 'Rating Scorer Settings'
+    _title: 'Settings'
+  requirements:
+    _permission: 'administer rating scorer'
+
+rating_scorer.field_mappings:
+  path: '/admin/config/rating-scorer/field-mappings'
+  defaults:
+    _controller: '\Drupal\rating_scorer\Controller\RatingScorerController::fieldMappingsList'
+    _title: 'Field Mappings'
   requirements:
     _permission: 'administer rating scorer'
 
@@ -13,16 +21,9 @@ rating_scorer.calculator:
     _title: 'Calculator'
   requirements:
     _permission: 'administer rating scorer'
-rating_scorer.field_mapping_collection:
-  path: '/admin/config/rating-scorer/field-mappings'
-  defaults:
-    _entity_list: 'rating_scorer_field_mapping'
-    _title: 'Field Mappings'
-  requirements:
-    _permission: 'administer rating scorer'
 
 rating_scorer.field_mapping_add:
-  path: '/admin/config/rating-scorer/field-mappings/add'
+  path: '/admin/config/rating-scorer/field-mapping/add'
   defaults:
     _entity_form: 'rating_scorer_field_mapping.add'
     _title: 'Add Field Mapping'
@@ -30,7 +31,7 @@ rating_scorer.field_mapping_add:
     _permission: 'administer rating scorer'
 
 rating_scorer.field_mapping_edit:
-  path: '/admin/config/rating-scorer/field-mappings/{rating_scorer_field_mapping}/edit'
+  path: '/admin/config/rating-scorer/field-mapping/{rating_scorer_field_mapping}/edit'
   defaults:
     _entity_form: 'rating_scorer_field_mapping.edit'
     _title: 'Edit Field Mapping'
@@ -38,7 +39,7 @@ rating_scorer.field_mapping_edit:
     _permission: 'administer rating scorer'
 
 rating_scorer.field_mapping_delete:
-  path: '/admin/config/rating-scorer/field-mappings/{rating_scorer_field_mapping}/delete'
+  path: '/admin/config/rating-scorer/field-mapping/{rating_scorer_field_mapping}/delete'
   defaults:
     _entity_form: 'rating_scorer_field_mapping.delete'
     _title: 'Delete Field Mapping'

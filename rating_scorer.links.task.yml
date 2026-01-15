@@ -2,8 +2,16 @@ rating_scorer.settings:
   route_name: rating_scorer.settings
   title: 'Settings'
   base_route: rating_scorer.settings
+  weight: 0
+
+rating_scorer.field_mappings:
+  route_name: rating_scorer.field_mappings
+  title: 'Field Mappings'
+  base_route: rating_scorer.settings
+  weight: 1
 
 rating_scorer.calculator:
   route_name: rating_scorer.calculator
   title: 'Calculator'
   base_route: rating_scorer.settings
+  weight: 2
