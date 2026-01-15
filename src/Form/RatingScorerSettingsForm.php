@@ -30,27 +30,6 @@ class RatingScorerSettingsForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('rating_scorer.settings');
 
-    $form['field_mapping'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Field Mapping (for auto-calculation)'),
-      '#description' => $this->t('Configure which fields contain the number of ratings and average rating. When configured, rating scores will be automatically calculated and cached on save.'),
-      '#open' => TRUE,
-    ];
-
-    $form['field_mapping']['ratings_field_mapping'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Number of Ratings Field (machine name)'),
-      '#description' => $this->t('e.g., field_num_ratings'),
-      '#default_value' => $config->get('ratings_field_mapping'),
-    ];
-
-    $form['field_mapping']['average_field_mapping'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Average Rating Field (machine name)'),
-      '#description' => $this->t('e.g., field_average_rating'),
-      '#default_value' => $config->get('average_field_mapping'),
-    ];
-
     $form['default_minimum_ratings'] = [
       '#type' => 'number',
       '#title' => $this->t('Default minimum ratings threshold'),
@@ -103,8 +82,6 @@ class RatingScorerSettingsForm extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->config('rating_scorer.settings')
-      ->set('ratings_field_mapping', $form_state->getValue('ratings_field_mapping'))
-      ->set('average_field_mapping', $form_state->getValue('average_field_mapping'))
       ->set('default_minimum_ratings', $form_state->getValue('default_minimum_ratings'))
       ->set('default_rating', $form_state->getValue('default_rating'))
       ->set('default_num_ratings', $form_state->getValue('default_num_ratings'))
