@@ -51,8 +51,21 @@ function rating_scorer_entity_presave(\Drupal\Core\Entity\EntityInterface $entit
   try {
     $calculator = \Drupal::service('rating_scorer.calculator');
     $calculator->updateScoreFieldsOnEntity($entity);
+    
+    // Log when scores are updated for debugging
+    \Drupal::logger('rating_scorer')->info(
+      'Updated rating scores for @type (@bundle)',
+      [
+        '@type' => $entity->getEntityTypeId(),
+        '@bundle' => $entity->bundle(),
+      ]
+    );
   } catch (\Exception $e) {
-    // Silently fail - don't break entity save on service issues.
+    // Log errors for debugging
+    \Drupal::logger('rating_scorer')->error(
+      'Error updating rating scores: @error',
+      ['@error' => $e->getMessage()]
+    );
   }
 }
 
