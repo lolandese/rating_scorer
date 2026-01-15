@@ -51,7 +51,7 @@ function rating_scorer_entity_presave(\Drupal\Core\Entity\EntityInterface $entit
   try {
     $calculator = \Drupal::service('rating_scorer.calculator');
     $calculator->updateScoreFieldsOnEntity($entity);
-    
+
     // Log when scores are updated for debugging
     \Drupal::logger('rating_scorer')->info(
       'Updated rating scores for @type (@bundle)',
