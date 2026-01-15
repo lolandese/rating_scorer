@@ -59,7 +59,14 @@ class RatingScorerController extends ControllerBase {
     $list_builder = $this->entityTypeManager
       ->getListBuilder('rating_scorer_field_mapping');
     
-    return $list_builder->render();
+    $render = $list_builder->render();
+    
+    // Ensure the render array has proper metadata and cache settings
+    // This helps the theme system understand and render local tasks
+    $render['#cache']['contexts'][] = 'route';
+    $render['#attached']['library'][] = 'core/drupal.ui';
+    
+    return $render;
   }
 
   /**

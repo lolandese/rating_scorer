@@ -188,4 +188,3 @@ function rating_scorer_views_data() {
 
   return $data;
 }
-
