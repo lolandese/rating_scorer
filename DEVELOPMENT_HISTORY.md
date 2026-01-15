@@ -126,13 +126,13 @@ After successful Views field discovery:
 
 **Objective**: Enable sorting by the calculated rating_score field in Views displays.
 
-**Approach Attempted**: 
+**Approach Attempted**:
 1. First attempt: PHP-based sorting in preRender hook
    - Problem: Only sorted current page, not globally across all pages
-   
+
 2. Second attempt: Remove LIMIT/OFFSET via hook_views_query_alter using Reflection
    - Problem: Drupal 11's typed properties can't be safely accessed/modified via Reflection when uninitialized
-   
+
 3. Third attempt: Materialized column approach
    - Add rating_score column to node table
    - Calculate scores on presave via hook_entity_presave()

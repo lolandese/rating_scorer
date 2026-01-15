@@ -115,10 +115,10 @@ class RatingScorerViewsTest extends BrowserTestBase {
    */
   public function testCoreHooksImplemented() {
     $functions = get_defined_functions()['user'];
-    
+
     // Should have help hook.
     $this->assertContains('rating_scorer_help', $functions);
-    
+
     // Should have theme hook.
     $this->assertContains('rating_scorer_theme', $functions);
   }

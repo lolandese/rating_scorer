@@ -1,0 +1,5 @@
+services:
+  rating_scorer.calculator:
+    class: Drupal\rating_scorer\Service\RatingScoreCalculator
+    arguments:
+      - '@entity_type.manager'

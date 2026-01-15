@@ -39,56 +39,20 @@ function rating_scorer_theme($existing, $type, $theme, $path) {
 
 /**
  * Implements hook_entity_presave().
+ *
+ * Update rating_score fields when source fields change using the
+ * RatingScoreCalculator service.
  */
 function rating_scorer_entity_presave(\Drupal\Core\Entity\EntityInterface $entity) {
-  // Only process node entities.
-  if ($entity->getEntityTypeId() !== 'node') {
+  if (!($entity instanceof \Drupal\Core\Entity\ContentEntityInterface)) {
     return;
   }
 
-  // Get field mapping from configuration.
   try {
-    $config = \Drupal::config('rating_scorer.settings');
-    $ratings_field = $config->get('ratings_field_mapping');
-    $average_field = $config->get('average_field_mapping');
-
-    // If no mapping configured, skip.
-    if (empty($ratings_field) || empty($average_field)) {
-      return;
-    }
-
-    // Get field values safely.
-    if (!$entity->hasField($ratings_field) || !$entity->hasField($average_field)) {
-      return;
-    }
-
-    // Get values with proper null checking.
-    $ratings_field_value = $entity->get($ratings_field);
-    $average_field_value = $entity->get($average_field);
-
-    if (!$ratings_field_value || !$average_field_value) {
-      return;
-    }
-
-    $number_of_ratings = (int) $ratings_field_value->value ?? 0;
-    $average_rating = (float) $average_field_value->value ?? 0;
-
-    // Get scoring method from config.
-    $method = $config->get('default_method') ?? 'weighted';
-    $minimum_threshold = $config->get('default_minimum_ratings') ?? 5;
-
-    // Calculate the score.
-    $score = _rating_scorer_calculate_score(
-      $number_of_ratings,
-      $average_rating,
-      $method,
-      $minimum_threshold
-    );
-
-    // Store the score on the entity.
-    $entity->rating_score = $score;
+    $calculator = \Drupal::service('rating_scorer.calculator');
+    $calculator->updateScoreFieldsOnEntity($entity);
   } catch (\Exception $e) {
-    // Silently fail - don't break entity save on configuration issues.
+    // Silently fail - don't break entity save on service issues.
   }
 }
 
