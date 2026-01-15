@@ -59,8 +59,23 @@ class RatingScorerController extends ControllerBase {
     $list_builder = $this->entityTypeManager
       ->getListBuilder('rating_scorer_field_mapping');
     
-    // Return the list builder render array directly - it handles all rendering
-    return $list_builder->render();
+    return [
+      'back_link' => [
+        '#type' => 'link',
+        '#title' => $this->t('← Back to Rating Scorer Configuration'),
+        '#url' => \Drupal\Core\Url::fromRoute('rating_scorer.settings'),
+        '#attributes' => ['class' => ['button', 'button--small']],
+        '#weight' => -100,
+      ],
+      'add_button' => [
+        '#type' => 'link',
+        '#title' => $this->t('+ Add Field Mapping'),
+        '#url' => \Drupal\Core\Url::fromRoute('entity.rating_scorer_field_mapping.add_form'),
+        '#attributes' => ['class' => ['button', 'button--primary']],
+        '#weight' => -99,
+      ],
+      'list' => $list_builder->render(),
+    ];
   }
 
   /**
