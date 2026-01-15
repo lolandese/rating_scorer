@@ -45,6 +45,19 @@ class RatingScorerFieldMappingForm extends EntityForm {
       '#required' => TRUE,
     ];
 
+    $form['content_type'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Content Type'),
+      '#options' => $this->getNodeTypeOptions(),
+      '#default_value' => $mapping->get('content_type'),
+      '#required' => TRUE,
+      '#ajax' => [
+        'callback' => [$this, 'updateFieldOptions'],
+        'event' => 'change',
+        'wrapper' => 'field-options-wrapper',
+      ],
+    ];
+
     $form['id'] = [
       '#type' => 'machine_name',
       '#title' => $this->t('Machine Name'),
@@ -57,19 +70,6 @@ class RatingScorerFieldMappingForm extends EntityForm {
       '#disabled' => !$mapping->isNew(),
       '#description' => $this->t('Automatically generated as "node.[content_type]"'),
       '#prefix' => 'node.',
-    ];
-
-    $form['content_type'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Content Type'),
-      '#options' => $this->getNodeTypeOptions(),
-      '#default_value' => $mapping->get('content_type'),
-      '#required' => TRUE,
-      '#ajax' => [
-        'callback' => [$this, 'updateFieldOptions'],
-        'event' => 'change',
-        'wrapper' => 'field-options-wrapper',
-      ],
     ];
 
     $form['field_options'] = [
