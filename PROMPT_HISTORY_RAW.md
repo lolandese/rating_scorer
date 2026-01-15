@@ -31,3 +31,15 @@
 15. Update DEVELOPMENT_HISTORY to include documentation generation and integrate the prompt history, showing the project evolution from stand-alone widget to Drupal module. Remove duplicated content.
 
 16. Add the used prompts from this session to the prompt history file.
+
+17. You are to quick again. Shouldn't we run the tests first?
+
+18. Are all documentation files up-to-date?
+
+19. How about TESTING.md. Is it up-to-date?
+
+20. Is the LICENSE.txt file according to what Drupal.org recommends or wants? I see some contrib modules with much bigger LICENSE.txt files.
+
+21. Take the LICENSE.txt from another Drupal module that is dual licensed and use it. (And update composer.json with proper dual licensing)
+
+22. Update the PROMPT_HISTORY file with all the new prompts from where we left off. Avoid duplicates.
