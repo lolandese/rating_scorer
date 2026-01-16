@@ -140,7 +140,6 @@
       function calculateScore() {
         const rating = parseFloat(ratingSlider.value);
         const numRatings = parseInt(numRatingsSlider.value);
-        const method = methodSelect.value;
         const minRatings = parseInt(minRatingsSlider.value);
 
         // Calculate all three methods for current input
@@ -180,8 +179,6 @@
         scenarioLowerWeighted.textContent = lowerWeighted.toFixed(2);
         scenarioLowerBayesian.textContent = lowerBayesian.toFixed(2);
         scenarioLowerWilson.textContent = lowerWilson.toFixed(2);
-
-        updateDescription(method);
       }
 
       function calculateWeightedScore(rating, numRatings) {
