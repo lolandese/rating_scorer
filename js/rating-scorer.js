@@ -82,6 +82,67 @@
               </tbody>
             </table>
           </div>
+
+          <div class="rating-scorer-scenario-comparison">
+            <h3>${Drupal.t('Impact of Rating Changes on Scores')}</h3>
+            <p class="scenario-intro">${Drupal.t('Compare how different rating patterns affect each scoring method:')}</p>
+            
+            <div class="scenario-container">
+              <div class="scenario-box current">
+                <h4>${Drupal.t('Current Input')}</h4>
+                <div class="scenario-params">
+                  <div class="param">Rating: <strong id="scenario-current-rating">4.50</strong>/5</div>
+                  <div class="param">Reviews: <strong id="scenario-current-reviews">100</strong></div>
+                </div>
+                <table class="scenario-table">
+                  <thead>
+                    <tr><th>${Drupal.t('Method')}</th><th>${Drupal.t('Score')}</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>${Drupal.t('Weighted')}</td><td><strong id="scenario-current-weighted">0.00</strong></td></tr>
+                    <tr class="recommended"><td>${Drupal.t('Bayesian')}</td><td><strong id="scenario-current-bayesian">0.00</strong></td></tr>
+                    <tr><td>${Drupal.t('Wilson')}</td><td><strong id="scenario-current-wilson">0.00</strong></td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="scenario-box higher-rating">
+                <h4>${Drupal.t('Higher Rating, Fewer Reviews')}</h4>
+                <div class="scenario-params">
+                  <div class="param">Rating: <strong id="scenario-higher-rating">4.73</strong>/5 <span class="change">+5%</span></div>
+                  <div class="param">Reviews: <strong id="scenario-higher-reviews">70</strong> <span class="change">-30%</span></div>
+                </div>
+                <table class="scenario-table">
+                  <thead>
+                    <tr><th>${Drupal.t('Method')}</th><th>${Drupal.t('Score')}</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>${Drupal.t('Weighted')}</td><td><strong id="scenario-higher-weighted">0.00</strong></td></tr>
+                    <tr class="recommended"><td>${Drupal.t('Bayesian')}</td><td><strong id="scenario-higher-bayesian">0.00</strong></td></tr>
+                    <tr><td>${Drupal.t('Wilson')}</td><td><strong id="scenario-higher-wilson">0.00</strong></td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="scenario-box lower-rating">
+                <h4>${Drupal.t('Lower Rating, More Reviews')}</h4>
+                <div class="scenario-params">
+                  <div class="param">Rating: <strong id="scenario-lower-rating">4.27</strong>/5 <span class="change">-5%</span></div>
+                  <div class="param">Reviews: <strong id="scenario-lower-reviews">130</strong> <span class="change">+30%</span></div>
+                </div>
+                <table class="scenario-table">
+                  <thead>
+                    <tr><th>${Drupal.t('Method')}</th><th>${Drupal.t('Score')}</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>${Drupal.t('Weighted')}</td><td><strong id="scenario-lower-weighted">0.00</strong></td></tr>
+                    <tr class="recommended"><td>${Drupal.t('Bayesian')}</td><td><strong id="scenario-lower-bayesian">0.00</strong></td></tr>
+                    <tr><td>${Drupal.t('Wilson')}</td><td><strong id="scenario-lower-wilson">0.00</strong></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
       `;
 
@@ -99,6 +160,25 @@
       const compareBayesian = document.getElementById('compare-bayesian');
       const compareWilson = document.getElementById('compare-wilson');
 
+      // Scenario elements
+      const scenarioCurrentRating = document.getElementById('scenario-current-rating');
+      const scenarioCurrentReviews = document.getElementById('scenario-current-reviews');
+      const scenarioCurrentWeighted = document.getElementById('scenario-current-weighted');
+      const scenarioCurrentBayesian = document.getElementById('scenario-current-bayesian');
+      const scenarioCurrentWilson = document.getElementById('scenario-current-wilson');
+
+      const scenarioHigherRating = document.getElementById('scenario-higher-rating');
+      const scenarioHigherReviews = document.getElementById('scenario-higher-reviews');
+      const scenarioHigherWeighted = document.getElementById('scenario-higher-weighted');
+      const scenarioHigherBayesian = document.getElementById('scenario-higher-bayesian');
+      const scenarioHigherWilson = document.getElementById('scenario-higher-wilson');
+
+      const scenarioLowerRating = document.getElementById('scenario-lower-rating');
+      const scenarioLowerReviews = document.getElementById('scenario-lower-reviews');
+      const scenarioLowerWeighted = document.getElementById('scenario-lower-weighted');
+      const scenarioLowerBayesian = document.getElementById('scenario-lower-bayesian');
+      const scenarioLowerWilson = document.getElementById('scenario-lower-wilson');
+
       methodSelect.value = defaultMethod;
 
       function calculateScore() {
@@ -107,10 +187,24 @@
         const method = methodSelect.value;
         const minRatings = parseInt(minRatingsSlider.value);
 
-        // Calculate all three methods
+        // Calculate all three methods for current input
         const weightedScore = calculateWeightedScore(rating, numRatings);
         const bayesianScore = calculateBayesianScore(rating, numRatings, minRatings);
         const wilsonScore = calculateWilsonScore(rating, numRatings);
+
+        // Calculate scenarios
+        const higherRating = rating * 1.05;
+        const higherReviews = Math.round(numRatings * 0.70);
+        const lowerRating = rating * 0.95;
+        const lowerReviews = Math.round(numRatings * 1.30);
+
+        const higherWeighted = calculateWeightedScore(higherRating, higherReviews);
+        const higherBayesian = calculateBayesianScore(higherRating, higherReviews, minRatings);
+        const higherWilson = calculateWilsonScore(higherRating, higherReviews);
+
+        const lowerWeighted = calculateWeightedScore(lowerRating, lowerReviews);
+        const lowerBayesian = calculateBayesianScore(lowerRating, lowerReviews, minRatings);
+        const lowerWilson = calculateWilsonScore(lowerRating, lowerReviews);
 
         // Update the final score based on selected method
         let score = 0;
@@ -130,6 +224,26 @@
         compareWeighted.textContent = weightedScore.toFixed(2);
         compareBayesian.textContent = bayesianScore.toFixed(2);
         compareWilson.textContent = wilsonScore.toFixed(2);
+
+        // Update scenario displays
+        scenarioCurrentRating.textContent = rating.toFixed(2);
+        scenarioCurrentReviews.textContent = numRatings;
+        scenarioCurrentWeighted.textContent = weightedScore.toFixed(2);
+        scenarioCurrentBayesian.textContent = bayesianScore.toFixed(2);
+        scenarioCurrentWilson.textContent = wilsonScore.toFixed(2);
+
+        scenarioHigherRating.textContent = higherRating.toFixed(2);
+        scenarioHigherReviews.textContent = higherReviews;
+        scenarioHigherWeighted.textContent = higherWeighted.toFixed(2);
+        scenarioHigherBayesian.textContent = higherBayesian.toFixed(2);
+        scenarioHigherWilson.textContent = higherWilson.toFixed(2);
+
+        scenarioLowerRating.textContent = lowerRating.toFixed(2);
+        scenarioLowerReviews.textContent = lowerReviews;
+        scenarioLowerWeighted.textContent = lowerWeighted.toFixed(2);
+        scenarioLowerBayesian.textContent = lowerBayesian.toFixed(2);
+        scenarioLowerWilson.textContent = lowerWilson.toFixed(2);
+
         updateDescription(method);
       }
 
