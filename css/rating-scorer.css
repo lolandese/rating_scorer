@@ -174,6 +174,17 @@
   border-top: 2px solid #ddd;
 }
 
+.scenario-comparison-table .threshold-row {
+  background-color: #f9f9f9;
+  font-size: 0.9rem;
+  border-top: 2px solid #ddd;
+}
+
+.scenario-comparison-table .assumed-average-row {
+  background-color: #f9f9f9;
+  font-size: 0.9rem;
+}
+
 .scenario-comparison-table .table-footer {
   text-align: center;
 }

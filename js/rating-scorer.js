@@ -91,6 +91,18 @@
                 </tr>
               </tbody>
               <tfoot>
+                <tr class="threshold-row">
+                  <td colspan="3" class="threshold-label">${Drupal.t('Min. Ratings Threshold:')}</td>
+                  <td class="threshold-value">${Drupal.t('N/A')}</td>
+                  <td class="threshold-value recommended"><strong id="threshold-value">${minRatings}</strong></td>
+                  <td class="threshold-value">${Drupal.t('N/A')}</td>
+                </tr>
+                <tr class="assumed-average-row">
+                  <td colspan="3" class="threshold-label">${Drupal.t('Assumed Average:')}</td>
+                  <td class="threshold-value">${Drupal.t('N/A')}</td>
+                  <td class="threshold-value recommended"><strong id="assumed-average-value">${bayesianAssumedAverage.toFixed(1)}</strong></td>
+                  <td class="threshold-value">${Drupal.t('N/A')}</td>
+                </tr>
                 <tr class="table-footer">
                   <td colspan="6" class="footer-text">★ = Highest score in that method column</td>
                 </tr>
@@ -134,6 +146,7 @@
       const minRatingsValue = document.getElementById('min-ratings-value');
       const bayesianHeader = document.getElementById('bayesian-header');
       const thresholdValue = document.getElementById('threshold-value');
+      const assumedAverageValue = document.getElementById('assumed-average-value');
 
       // Scenario elements
       const scenarioCurrentRating = document.getElementById('scenario-current-rating');
