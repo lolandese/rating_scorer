@@ -20,44 +20,57 @@
       container.innerHTML = `
         <div class="rating-scorer-container">
           <h2>${Drupal.t('Rating Score Calculator')}</h2>
-          
-          <div class="rating-scorer-controls">
-            <div class="control-group">
-              <label>${Drupal.t('Average Rating')}: <span id="rating-value">${defaultRating.toFixed(2)}</span> / 5.00</label>
-              <input type="range" id="rating-slider" min="0" max="5" step="0.01" value="${defaultRating}">
+
+          <div class="rating-scorer-main">
+            <div class="rating-scorer-controls">
+              <div class="control-group">
+                <label>${Drupal.t('Average Rating')}: <span id="rating-value">${defaultRating.toFixed(2)}</span> / 5.00</label>
+                <div class="slider-with-buttons">
+                  <button class="adjust-btn adjust-down" data-field="rating" data-delta="-0.1" title="${Drupal.t('Decrease rating')}">−</button>
+                  <input type="range" id="rating-slider" min="0" max="5" step="0.01" value="${defaultRating}">
+                  <button class="adjust-btn adjust-up" data-field="rating" data-delta="0.1" title="${Drupal.t('Increase rating')}">+</button>
+                </div>
+              </div>
+
+              <div class="control-group">
+                <label>${Drupal.t('Number of Ratings')}: <span id="num-ratings-value">${defaultNumRatings}</span></label>
+                <div class="slider-with-buttons">
+                  <button class="adjust-btn adjust-down" data-field="num-ratings" data-delta="-10" title="${Drupal.t('Decrease count')}">−</button>
+                  <input type="range" id="num-ratings-slider" min="0" max="1000" step="1" value="${defaultNumRatings}">
+                  <button class="adjust-btn adjust-up" data-field="num-ratings" data-delta="10" title="${Drupal.t('Increase count')}">+</button>
+                </div>
+              </div>
+
+              <div class="control-group">
+                <label>${Drupal.t('Minimum Ratings Threshold')}: <span id="min-ratings-value">${minRatings}</span></label>
+                <p class="help-text">${Drupal.t('(Used by Bayesian Average method)')}</p>
+                <div class="slider-with-buttons">
+                  <button class="adjust-btn adjust-down" data-field="min-ratings" data-delta="-1" title="${Drupal.t('Decrease threshold')}">−</button>
+                  <input type="range" id="min-ratings-slider" min="1" max="100" step="1" value="${minRatings}">
+                  <button class="adjust-btn adjust-up" data-field="min-ratings" data-delta="1" title="${Drupal.t('Increase threshold')}">+</button>
+                </div>
+              </div>
             </div>
-            
-            <div class="control-group">
-              <label>${Drupal.t('Number of Ratings')}: <span id="num-ratings-value">${defaultNumRatings}</span></label>
-              <input type="range" id="num-ratings-slider" min="0" max="1000" step="1" value="${defaultNumRatings}">
-            </div>
-            
-            <div class="control-group">
-              <label>${Drupal.t('Minimum Ratings Threshold')}: <span id="min-ratings-value">${minRatings}</span></label>
-              <p class="help-text">${Drupal.t('(Used by Bayesian Average method)')}</p>
-              <input type="range" id="min-ratings-slider" min="1" max="100" step="1" value="${minRatings}">
-            </div>
-          </div>
-          
-          <div class="rating-scorer-scenario-comparison">
-            <h3>${Drupal.t('Impact of Rating Changes on Scores')}</h3>
-            <p class="scenario-intro">${Drupal.t('Compare how different rating patterns affect each scoring method:')}</p>
-            
-            <table class="scenario-comparison-table">
-              <thead>
-                <tr>
-                  <th colspan="3" class="scenario-group">${Drupal.t('Scenario Details')}</th>
-                  <th colspan="3" class="methods-group">${Drupal.t('Scoring Methods')}</th>
-                </tr>
-                <tr>
-                  <th>${Drupal.t('Scenario')}</th>
-                  <th>${Drupal.t('Rating')}</th>
-                  <th>${Drupal.t('Reviews')}</th>
-                  <th>${Drupal.t('Weighted')}</th>
-                  <th><span id="bayesian-header" class="bayesian-header-text">${Drupal.t('Bayesian')}</span></th>
-                  <th>${Drupal.t('Wilson')}</th>
-                </tr>
-              </thead>
+
+            <div class="rating-scorer-scenario-comparison">
+              <h3>${Drupal.t('Impact of Rating Changes on Scores')}</h3>
+              <p class="scenario-intro">${Drupal.t('Compare how different rating patterns affect each scoring method:')}</p>
+
+              <table class="scenario-comparison-table">
+                <thead>
+                  <tr>
+                    <th colspan="3" class="scenario-group">${Drupal.t('Scenario Details')}</th>
+                    <th colspan="3" class="methods-group">${Drupal.t('Scoring Methods')}</th>
+                  </tr>
+                  <tr>
+                    <th>${Drupal.t('Scenario')}</th>
+                    <th>${Drupal.t('Rating')}</th>
+                    <th>${Drupal.t('Reviews')}</th>
+                    <th>${Drupal.t('Weighted')}</th>
+                    <th><span id="bayesian-header" class="bayesian-header-text">${Drupal.t('Bayesian')}</span></th>
+                    <th>${Drupal.t('Wilson')}</th>
+                  </tr>
+                </thead>
               <tbody>
                 <tr class="current-row">
                   <td><strong>${Drupal.t('Current Input')}</strong></td>
@@ -103,33 +116,34 @@
               </tfoot>
             </table>
           </div>
-
-          <div class="rating-scorer-comparison">
-            <h3>${Drupal.t('About the Scoring Methods')}</h3>
-            <table class="comparison-table">
-              <thead>
-                <tr>
-                  <th>${Drupal.t('Method')}</th>
-                  <th>${Drupal.t('Description')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>${Drupal.t('Weighted Score')}</strong></td>
-                  <td class="desc-cell">${Drupal.t('Multiplies the average rating by the logarithm of the number of ratings. This gives higher scores to items with both good ratings and many reviews.')}</td>
-                </tr>
-                <tr class="recommended">
-                  <td><strong>${Drupal.t('Bayesian Average')}</strong> <span class="recommended-badge">★ ${Drupal.t('Recommended')}</span></td>
-                  <td class="desc-cell">${Drupal.t('Blends the actual rating with an assumed average (') + bayesianAssumedAverage.toFixed(1) + Drupal.t('), weighted by the number of ratings. Requires more ratings to pull away from the average. Configurable via the Minimum Ratings Threshold.')}</td>
-                </tr>
-                <tr>
-                  <td><strong>${Drupal.t('Wilson Score')}</strong></td>
-                  <td class="desc-cell">${Drupal.t('A confidence-based approach that calculates the lower bound of a confidence interval. This naturally handles uncertainty from low rating counts. Most conservative method.')}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
         </div>
+
+        <div class="rating-scorer-comparison">
+          <h3>${Drupal.t('About the Scoring Methods')}</h3>
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>${Drupal.t('Method')}</th>
+                <th>${Drupal.t('Description')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>${Drupal.t('Weighted Score')}</strong></td>
+                <td class="desc-cell">${Drupal.t('Multiplies the average rating by the logarithm of the number of ratings. This gives higher scores to items with both good ratings and many reviews.')}</td>
+              </tr>
+              <tr class="recommended">
+                <td><strong>${Drupal.t('Bayesian Average')}</strong> <span class="recommended-badge">★ ${Drupal.t('Recommended')}</span></td>
+                <td class="desc-cell">${Drupal.t('Blends the actual rating with an assumed average (') + bayesianAssumedAverage.toFixed(1) + Drupal.t('), weighted by the number of ratings. Requires more ratings to pull away from the average. Configurable via the Minimum Ratings Threshold.')}</td>
+              </tr>
+              <tr>
+                <td><strong>${Drupal.t('Wilson Score')}</strong></td>
+                <td class="desc-cell">${Drupal.t('A confidence-based approach that calculates the lower bound of a confidence interval. This naturally handles uncertainty from low rating counts. Most conservative method.')}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
       `;
 
       const ratingSlider = document.getElementById('rating-slider');
@@ -211,7 +225,7 @@
       }
 
       function highlightScoreExtremes(method, scores) {
-        const elements = method === 'weighted' 
+        const elements = method === 'weighted'
           ? [scenarioCurrentWeighted, scenarioHigherWeighted, scenarioLowerWeighted]
           : method === 'bayesian'
           ? [scenarioCurrentBayesian, scenarioHigherBayesian, scenarioLowerBayesian]
@@ -285,6 +299,33 @@
         minRatingsValue.textContent = this.value;
         updateBayesianHeader();
         calculateScore();
+      });
+
+      // Handle +/- buttons
+      const adjustButtons = document.querySelectorAll('.adjust-btn');
+      adjustButtons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          const field = this.dataset.field;
+          const delta = parseFloat(this.dataset.delta);
+          
+          if (field === 'rating') {
+            const newValue = Math.max(0, Math.min(5, parseFloat(ratingSlider.value) + delta));
+            ratingSlider.value = newValue;
+            ratingValue.textContent = newValue.toFixed(2);
+          } else if (field === 'num-ratings') {
+            const newValue = Math.max(0, Math.min(1000, parseInt(numRatingsSlider.value) + delta));
+            numRatingsSlider.value = newValue;
+            numRatingsValue.textContent = newValue;
+          } else if (field === 'min-ratings') {
+            const newValue = Math.max(1, Math.min(100, parseInt(minRatingsSlider.value) + delta));
+            minRatingsSlider.value = newValue;
+            minRatingsValue.textContent = newValue;
+          }
+          
+          updateBayesianHeader();
+          calculateScore();
+        });
       });
 
       updateBayesianHeader();

@@ -123,13 +123,13 @@ class RatingScorerCalculatorForm extends FormBase {
     if ($num_ratings == 0) {
       return 0;
     }
-    
+
     $p = $avg_rating / 5;
     $z = 1.96; // 95% confidence interval
-    
+
     $numerator = $p + ($z * $z) / (2 * $num_ratings) - $z * sqrt(($p * (1 - $p) + ($z * $z) / (4 * $num_ratings)) / $num_ratings);
     $denominator = 1 + ($z * $z) / $num_ratings;
-    
+
     return ($numerator / $denominator) * 5; // Scale back to 0-5
   }
 

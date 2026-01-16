@@ -27,8 +27,36 @@
   padding-bottom: 0.5rem;
 }
 
-.rating-scorer-controls {
+/* Two-column layout for controls and results */
+.rating-scorer-main {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
   margin: 2rem 0;
+}
+
+@media (min-width: 1024px) {
+  .rating-scorer-main {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.rating-scorer-controls {
+  order: 1;
+}
+
+.rating-scorer-scenario-comparison {
+  order: 2;
+}
+
+@media (min-width: 1024px) {
+  .rating-scorer-scenario-comparison {
+    order: 2;
+  }
+}
+
+.rating-scorer-controls {
+  margin: 0;
 }
 
 .control-group {
@@ -48,6 +76,41 @@
   border-radius: 4px;
   background: #e0e0e0;
   outline: none;
+}
+
+.slider-with-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.slider-with-buttons input[type="range"] {
+  flex: 1;
+  margin: 0;
+}
+
+.adjust-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid #0073e6;
+  background-color: #fff;
+  color: #0073e6;
+  border-radius: 4px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.adjust-btn:hover {
+  background-color: #0073e6;
+  color: #fff;
+}
+
+.adjust-btn:active {
+  transform: scale(0.95);
 }
 
 .control-group select {
