@@ -45,6 +45,10 @@
             <table class="scenario-comparison-table">
               <thead>
                 <tr>
+                  <th colspan="3" class="scenario-group">${Drupal.t('Scenario Details')}</th>
+                  <th colspan="3" class="methods-group">${Drupal.t('Scoring Methods')}</th>
+                </tr>
+                <tr>
                   <th>${Drupal.t('Scenario')}</th>
                   <th>${Drupal.t('Rating')}</th>
                   <th>${Drupal.t('Reviews')}</th>

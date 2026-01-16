@@ -113,10 +113,27 @@
   font-weight: bold;
 }
 
+.scenario-comparison-table thead tr:first-child th {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #333;
+  background-color: #e8f0ff;
+  border-bottom: 3px solid #0073e6;
+}
+
+.scenario-group {
+  background-color: #f5f5f5;
+}
+
+.methods-group {
+  background-color: #e8f0ff;
+}
+
 .bayesian-header-text {
   display: block;
   white-space: normal;
-  word-spacing: 100vw;
+  max-width: 60px;
+  margin: 0 auto;
 }
 
 .rating-scorer-scenario-comparison {
