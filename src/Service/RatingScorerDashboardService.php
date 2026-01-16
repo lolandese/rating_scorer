@@ -120,20 +120,29 @@ class RatingScorerDashboardService {
    *   The number of entities with rating score field values.
    */
   protected function getRatingScoreFieldCount($bundle) {
-    $field_storage = $this->entityTypeManager
-      ->getStorage('field_storage_config')
-      ->load('node.field_rating_score');
-
-    if (!$field_storage) {
-      return 0;
-    }
-
     try {
+      // Get field definitions for this content type to find rating_score fields
+      $field_definitions = \Drupal::service('entity_field.manager')
+        ->getFieldDefinitions('node', $bundle);
+
+      $rating_score_field = NULL;
+      foreach ($field_definitions as $field_definition) {
+        if ($field_definition->getType() === 'rating_score') {
+          $rating_score_field = $field_definition->getName();
+          break;
+        }
+      }
+
+      // If no rating_score field found, return 0
+      if (!$rating_score_field) {
+        return 0;
+      }
+
       $query = $this->entityTypeManager->getStorage('node')
         ->getQuery()
         ->accessCheck(FALSE)
         ->condition('type', $bundle)
-        ->exists('field_rating_score');
+        ->exists($rating_score_field);
 
       return $query->count()->execute();
     }
@@ -153,11 +162,28 @@ class RatingScorerDashboardService {
    */
   protected function getLastRecalculationTime($bundle) {
     try {
+      // Get field definitions for this content type to find rating_score fields
+      $field_definitions = \Drupal::service('entity_field.manager')
+        ->getFieldDefinitions('node', $bundle);
+
+      $rating_score_field = NULL;
+      foreach ($field_definitions as $field_definition) {
+        if ($field_definition->getType() === 'rating_score') {
+          $rating_score_field = $field_definition->getName();
+          break;
+        }
+      }
+
+      // If no rating_score field found, return NULL
+      if (!$rating_score_field) {
+        return NULL;
+      }
+
       $query = $this->entityTypeManager->getStorage('node')
         ->getQuery()
         ->accessCheck(FALSE)
         ->condition('type', $bundle)
-        ->exists('field_rating_score')
+        ->exists($rating_score_field)
         ->sort('changed', 'DESC')
         ->range(0, 1);
 
