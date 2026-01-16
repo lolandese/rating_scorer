@@ -102,8 +102,6 @@
   font-weight: 600;
   color: #333;
   font-size: 0.9em;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .mapping-table tbody tr {
@@ -197,16 +195,12 @@
   font-style: italic;
 }
 
-.mapping-table .actions {
+.mapping-table .operations {
   text-align: right;
 }
 
-.mapping-table .actions a {
+.mapping-table .operations a {
   margin-left: 10px;
-}
-
-.mapping-table .actions a:first-child {
-  margin-left: 0;
 }
 
 .dashboard-insights {

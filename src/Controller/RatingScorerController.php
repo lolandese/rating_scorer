@@ -120,6 +120,23 @@ class RatingScorerController extends ControllerBase {
     $stats = $this->dashboardService->getDashboardStatistics();
     $mappings = $this->dashboardService->getFieldMappingsWithStatus();
 
+    // Render operations for each mapping
+    foreach ($mappings as &$mapping) {
+      $mapping['operations'] = [
+        '#type' => 'operations',
+        '#links' => [
+          'edit' => [
+            'title' => $this->t('Edit'),
+            'url' => \Drupal\Core\Url::fromRoute('rating_scorer.field_mapping_edit', ['rating_scorer_field_mapping' => $mapping['id']]),
+          ],
+          'recalculate' => [
+            'title' => $this->t('Recalculate'),
+            'url' => \Drupal\Core\Url::fromRoute('rating_scorer.recalculate_scores', ['bundle' => $mapping['content_type']]),
+          ],
+        ],
+      ];
+    }
+
     return [
       '#theme' => 'rating_scorer_dashboard',
       '#statistics' => $stats,
@@ -127,6 +144,7 @@ class RatingScorerController extends ControllerBase {
       '#attached' => [
         'library' => [
           'rating_scorer/dashboard',
+          'core/drupal.dropbutton',
         ],
       ],
     ];

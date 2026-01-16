@@ -44,7 +44,7 @@
             <th>{{ 'With Ratings'|t }}</th>
             <th>{{ 'Coverage'|t }}</th>
             <th>{{ 'Last Updated'|t }}</th>
-            <th>{{ 'Actions'|t }}</th>
+            <th>{{ 'Operations'|t }}</th>
           </tr>
         </thead>
         <tbody>
@@ -75,9 +75,8 @@
                   <span class="never-updated">{{ 'Never'|t }}</span>
                 {% endif %}
               </td>
-              <td class="actions">
-                <a href="/admin/config/rating-scorer/field-mapping/{{ mapping.id }}/edit">{{ 'Edit'|t }}</a>
-                <a href="/admin/config/rating-scorer/recalculate/{{ mapping.content_type }}">{{ 'Recalculate'|t }}</a>
+              <td class="operations">
+                {{ mapping.operations }}
               </td>
             </tr>
           {% endfor %}
