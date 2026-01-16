@@ -29,11 +29,15 @@ See [Configuration](#configuration) section below for detailed setup instruction
   - **Bayesian Average** - IMDB-style scoring that requires confidence through volume, preventing items with few ratings from ranking unfairly high
   - **Wilson Score** - Confidence interval approach used by Reddit and others, conservative scoring for low-review items
 
+- **Status Dashboard** - Monitor field mapping health and data quality metrics at a glance with coverage statistics and last-updated timestamps
+
 - **Field Mapping Configuration** - Per-content-type configuration mapping your rating and review count fields to a rating score field
   - Separate configuration entity per content type
   - Choose scoring method and algorithm parameters per content type
   - Scores auto-calculate on content save
   - Scores auto-recalculate when field mappings are updated
+
+- **Field Mapping Wizard** - Guided 4-step process for creating field mappings with automatic detection of numeric fields and optional auto-creation of Rating Score fields
 
 - **Interactive Calculator Interface** - Real-time visualization at `/admin/config/rating-scorer/calculator` for testing algorithms before applying to content
 
@@ -41,7 +45,7 @@ See [Configuration](#configuration) section below for detailed setup instruction
 
 - **Configurable Defaults** - Site administrators can set default parameters for calculator including minimum ratings threshold for Bayesian scoring
 
-- **Tabbed Admin Interface** - Field Mappings, Calculator, and Defaults organized in intuitive tabs
+- **Tabbed Admin Interface** - Dashboard, Field Mappings, Calculator, and Defaults organized in intuitive tabs
 
 - **Granular Permissions** - Single "Administer rating scorer" permission controls access to all functionality
 
@@ -63,6 +67,23 @@ See [Configuration](#configuration) section below for detailed setup instruction
 Install as you would normally install a contributed Drupal module. Visit https://www.drupal.org/node/1897420 for further information.
 
 ## Configuration
+
+### Status Dashboard
+
+Monitor the health and status of your rating scorer implementation:
+
+1. Navigate to **Administration > Configuration > Content authoring > Rating Scorer** (Dashboard tab)
+2. View real-time statistics:
+   - Total field mappings configured
+   - Total entities across all content types
+   - Number of entities with rating scores
+   - Overall coverage percentage
+3. Review per-mapping status including:
+   - Scoring method used
+   - Entity count and coverage for each content type
+   - Last updated timestamp
+
+The dashboard helps you identify coverage gaps and verify that ratings are being calculated correctly. See [DASHBOARD_FEATURE.md](DASHBOARD_FEATURE.md) for detailed information.
 
 ### Field Mappings (Primary Use Case)
 
