@@ -21,6 +21,11 @@ services:
       - '@entity_field.manager'
       - '@plugin.manager.field.field_type'
 
+  rating_scorer.rating_data_provider_manager:
+    class: Drupal\rating_scorer\Service\RatingDataProviderManager
+    arguments:
+      - '@module_handler'
+
   rating_scorer.dashboard:
     class: Drupal\rating_scorer\Service\RatingScorerDashboardService
     arguments:
