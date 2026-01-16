@@ -30,7 +30,7 @@
 
 .impact-section-title {
   color: #333;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.5rem 0 !important;
   font-size: 1.3em;
 }
 
@@ -335,7 +335,7 @@
 }
 
 .rating-scorer-scenario-comparison {
-  margin-top: 3rem;
+  margin-top: 0;
 }
 
 .rating-scorer-scenario-comparison h3 {
