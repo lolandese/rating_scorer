@@ -48,6 +48,13 @@
   font-size: 1rem;
 }
 
+.help-text {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0.25rem 0 0.5rem 0;
+  font-style: italic;
+}
+
 .rating-scorer-description {
   background: #f5f5f5;
   padding: 1rem;
@@ -104,6 +111,12 @@
 .recommended-badge {
   color: #0073e6;
   font-weight: bold;
+}
+
+.bayesian-header-text {
+  display: block;
+  white-space: normal;
+  word-spacing: 100vw;
 }
 
 .rating-scorer-scenario-comparison {

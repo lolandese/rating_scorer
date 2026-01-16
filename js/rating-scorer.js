@@ -32,21 +32,11 @@
             </div>
             
             <div class="control-group">
-              <label for="method-select">${Drupal.t('Scoring Method')}</label>
-              <select id="method-select">
-                <option value="weighted">${Drupal.t('Weighted Score')}</option>
-                <option value="bayesian" selected>${Drupal.t('Bayesian Average')}</option>
-                <option value="wilson">${Drupal.t('Wilson Score')}</option>
-              </select>
-            </div>
-            
-            <div class="control-group" id="min-ratings-control">
               <label>${Drupal.t('Minimum Ratings Threshold')}: <span id="min-ratings-value">${minRatings}</span></label>
+              <p class="help-text">${Drupal.t('(Used by Bayesian Average method)')}</p>
               <input type="range" id="min-ratings-slider" min="1" max="100" step="1" value="${minRatings}">
             </div>
           </div>
-          
-          <div class="rating-scorer-description" id="method-description"></div>
           
           <div class="rating-scorer-scenario-comparison">
             <h3>${Drupal.t('Impact of Rating Changes on Scores')}</h3>
@@ -59,7 +49,7 @@
                   <th>${Drupal.t('Rating')}</th>
                   <th>${Drupal.t('Reviews')}</th>
                   <th>${Drupal.t('Weighted')}</th>
-                  <th><span id="bayesian-header">${Drupal.t('Bayesian')}</span></th>
+                  <th><span id="bayesian-header" class="bayesian-header-text">${Drupal.t('Bayesian')}</span></th>
                   <th>${Drupal.t('Wilson')}</th>
                 </tr>
               </thead>
@@ -104,15 +94,15 @@
               <tbody>
                 <tr>
                   <td><strong>${Drupal.t('Weighted Score')}</strong></td>
-                  <td class="desc-cell">${Drupal.t('Favors high-volume ratings; simple to understand')}</td>
+                  <td class="desc-cell">${Drupal.t('Multiplies the average rating by the logarithm of the number of ratings. This gives higher scores to items with both good ratings and many reviews.')}</td>
                 </tr>
                 <tr class="recommended">
                   <td><strong>${Drupal.t('Bayesian Average')}</strong> <span class="recommended-badge">★ ${Drupal.t('Recommended')}</span></td>
-                  <td class="desc-cell">${Drupal.t('Prevents gaming; requires confidence through volume')}</td>
+                  <td class="desc-cell">${Drupal.t('Blends the actual rating with an assumed average (3.5), weighted by the number of ratings. Requires more ratings to pull away from the average. Configurable via the Minimum Ratings Threshold.')}</td>
                 </tr>
                 <tr>
                   <td><strong>${Drupal.t('Wilson Score')}</strong></td>
-                  <td class="desc-cell">${Drupal.t('Most conservative; penalizes items with few ratings')}</td>
+                  <td class="desc-cell">${Drupal.t('A confidence-based approach that calculates the lower bound of a confidence interval. This naturally handles uncertainty from low rating counts. Most conservative method.')}</td>
                 </tr>
               </tbody>
             </table>
@@ -124,11 +114,8 @@
       const ratingValue = document.getElementById('rating-value');
       const numRatingsSlider = document.getElementById('num-ratings-slider');
       const numRatingsValue = document.getElementById('num-ratings-value');
-      const methodSelect = document.getElementById('method-select');
       const minRatingsSlider = document.getElementById('min-ratings-slider');
       const minRatingsValue = document.getElementById('min-ratings-value');
-      const minRatingsControl = document.getElementById('min-ratings-control');
-      const methodDescription = document.getElementById('method-description');
       const bayesianHeader = document.getElementById('bayesian-header');
 
       // Scenario elements
@@ -149,8 +136,6 @@
       const scenarioLowerWeighted = document.getElementById('scenario-lower-weighted');
       const scenarioLowerBayesian = document.getElementById('scenario-lower-bayesian');
       const scenarioLowerWilson = document.getElementById('scenario-lower-wilson');
-
-      methodSelect.value = defaultMethod;
 
       function calculateScore() {
         const rating = parseFloat(ratingSlider.value);
@@ -222,25 +207,9 @@
         return ((left - right) / under) * maxRating;
       }
 
-      function updateDescription(method) {
+      function updateBayesianHeader() {
         const minRatings = parseInt(minRatingsSlider.value);
-        const descriptions = {
-          weighted: Drupal.t('Weighted Score: Multiplies the average rating by the logarithm of the number of ratings. This gives higher scores to items with both good ratings and many reviews.'),
-          bayesian: Drupal.t('Bayesian Average: Blends the actual rating with an assumed average (3.5), weighted by the number of ratings. The minimum ratings threshold is currently set to ') + minRatings + Drupal.t(' ratings. Items need more ratings to pull away from the average.'),
-          wilson: Drupal.t('Wilson Score: A confidence-based approach that calculates the lower bound of a confidence interval. This naturally handles uncertainty from low rating counts.')
-        };
-        methodDescription.textContent = descriptions[method];
-        
-        // Update Bayesian header with current threshold
-        if (method === 'bayesian') {
-          bayesianHeader.textContent = Drupal.t('Bayesian') + ' (threshold: ' + minRatings + ')';
-        } else {
-          bayesianHeader.textContent = Drupal.t('Bayesian');
-        }
-      }
-
-      function updateMinRatingsVisibility() {
-        minRatingsControl.style.display = methodSelect.value === 'bayesian' ? 'block' : 'none';
+        bayesianHeader.textContent = Drupal.t('Bayesian') + ' (threshold: ' + minRatings + ')';
       }
 
       ratingSlider.addEventListener('input', function() {
@@ -255,15 +224,11 @@
 
       minRatingsSlider.addEventListener('input', function() {
         minRatingsValue.textContent = this.value;
+        updateBayesianHeader();
         calculateScore();
       });
 
-      methodSelect.addEventListener('change', function() {
-        updateMinRatingsVisibility();
-        calculateScore();
-      });
-
-      updateMinRatingsVisibility();
+      updateBayesianHeader();
       calculateScore();
     }
   };
