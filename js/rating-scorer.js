@@ -59,7 +59,7 @@
                   <th>${Drupal.t('Rating')}</th>
                   <th>${Drupal.t('Reviews')}</th>
                   <th>${Drupal.t('Weighted')}</th>
-                  <th>${Drupal.t('Bayesian')}</th>
+                  <th><span id="bayesian-header">${Drupal.t('Bayesian')}</span></th>
                   <th>${Drupal.t('Wilson')}</th>
                 </tr>
               </thead>
@@ -129,6 +129,7 @@
       const minRatingsValue = document.getElementById('min-ratings-value');
       const minRatingsControl = document.getElementById('min-ratings-control');
       const methodDescription = document.getElementById('method-description');
+      const bayesianHeader = document.getElementById('bayesian-header');
 
       // Scenario elements
       const scenarioCurrentRating = document.getElementById('scenario-current-rating');
@@ -222,12 +223,20 @@
       }
 
       function updateDescription(method) {
+        const minRatings = parseInt(minRatingsSlider.value);
         const descriptions = {
           weighted: Drupal.t('Weighted Score: Multiplies the average rating by the logarithm of the number of ratings. This gives higher scores to items with both good ratings and many reviews.'),
-          bayesian: Drupal.t('Bayesian Average: Blends the actual rating with an assumed average (3.5), weighted by the number of ratings. Items need more ratings to pull away from the average.'),
+          bayesian: Drupal.t('Bayesian Average: Blends the actual rating with an assumed average (3.5), weighted by the number of ratings. The minimum ratings threshold is currently set to ') + minRatings + Drupal.t(' ratings. Items need more ratings to pull away from the average.'),
           wilson: Drupal.t('Wilson Score: A confidence-based approach that calculates the lower bound of a confidence interval. This naturally handles uncertainty from low rating counts.')
         };
         methodDescription.textContent = descriptions[method];
+        
+        // Update Bayesian header with current threshold
+        if (method === 'bayesian') {
+          bayesianHeader.textContent = Drupal.t('Bayesian') + ' (threshold: ' + minRatings + ')';
+        } else {
+          bayesianHeader.textContent = Drupal.t('Bayesian');
+        }
       }
 
       function updateMinRatingsVisibility() {
