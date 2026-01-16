@@ -61,3 +61,10 @@ rating_scorer.field_mapping_delete:
     _title: 'Delete Field Mapping'
   requirements:
     _permission: 'administer rating scorer'
+rating_scorer.recalculate_scores:
+  path: '/admin/config/rating-scorer/recalculate/{bundle}'
+  defaults:
+    _controller: '\Drupal\rating_scorer\Controller\RatingScorerController::recalculateScores'
+    _title: 'Recalculate Scores'
+  requirements:
+    _permission: 'administer rating scorer'

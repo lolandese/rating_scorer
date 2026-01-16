@@ -132,5 +132,64 @@ class RatingScorerController extends ControllerBase {
     ];
   }
 
-}
+  /**
+   * Recalculates all rating scores for a content type.
+   *
+   * @param string $bundle
+   *   The content type bundle.
+   *
+   * @return \Symfony\Component\HttpFoundation\RedirectResponse
+   *   Redirect back to dashboard.
+   */
+  public function recalculateScores($bundle) {
+    try {
+      $calculator = \Drupal::service('rating_scorer.calculator');
+      $storage = $this->entityTypeManager->getStorage('node');
 
+      // Load all nodes of this type
+      $query = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('type', $bundle);
+      $entity_ids = $query->execute();
+
+      if (empty($entity_ids)) {
+        \Drupal::messenger()->addStatus($this->t('No entities found for content type %type.', ['%type' => $bundle]));
+        return $this->redirect('rating_scorer.dashboard');
+      }
+
+      $nodes = $storage->loadMultiple($entity_ids);
+      $count = 0;
+
+      foreach ($nodes as $node) {
+        try {
+          $calculator->updateScoreFieldsOnEntity($node);
+          $node->save();
+          $count++;
+        }
+        catch (\Exception $e) {
+          \Drupal::logger('rating_scorer')->error(
+            'Error recalculating scores for node @nid: @error',
+            ['@nid' => $node->id(), '@error' => $e->getMessage()]
+          );
+        }
+      }
+
+      \Drupal::messenger()->addStatus($this->t('Recalculated rating scores for @count entities of type %type.', [
+        '@count' => $count,
+        '%type' => $bundle,
+      ]));
+
+      \Drupal::logger('rating_scorer')->info(
+        'Bulk recalculated rating scores for @count entities of type @bundle',
+        ['@count' => $count, '@bundle' => $bundle]
+      );
+    }
+    catch (\Exception $e) {
+      \Drupal::messenger()->addError($this->t('Error during recalculation: @error', ['@error' => $e->getMessage()]));
+      \Drupal::logger('rating_scorer')->error('Bulk recalculation failed: @error', ['@error' => $e->getMessage()]);
+    }
+
+    return $this->redirect('rating_scorer.dashboard');
+  }
+
+}
