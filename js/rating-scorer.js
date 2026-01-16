@@ -46,43 +46,8 @@
             </div>
           </div>
           
-          <div class="rating-scorer-result">
-            <div class="result-label">${Drupal.t('Final Score')}</div>
-            <div class="result-value" id="final-score">0.00</div>
-          </div>
-          
           <div class="rating-scorer-description" id="method-description"></div>
           
-          <div class="rating-scorer-comparison">
-            <h3>${Drupal.t('Comparison of All Scoring Methods')}</h3>
-            <table class="comparison-table">
-              <thead>
-                <tr>
-                  <th>${Drupal.t('Method')}</th>
-                  <th>${Drupal.t('Score')}</th>
-                  <th>${Drupal.t('Description')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>${Drupal.t('Weighted Score')}</strong></td>
-                  <td class="score-cell"><strong id="compare-weighted">0.00</strong></td>
-                  <td class="desc-cell">${Drupal.t('Favors high-volume ratings; simple to understand')}</td>
-                </tr>
-                <tr class="recommended">
-                  <td><strong>${Drupal.t('Bayesian Average')}</strong> <span class="recommended-badge">★ ${Drupal.t('Recommended')}</span></td>
-                  <td class="score-cell"><strong id="compare-bayesian">0.00</strong></td>
-                  <td class="desc-cell">${Drupal.t('Prevents gaming; requires confidence through volume')}</td>
-                </tr>
-                <tr>
-                  <td><strong>${Drupal.t('Wilson Score')}</strong></td>
-                  <td class="score-cell"><strong id="compare-wilson">0.00</strong></td>
-                  <td class="desc-cell">${Drupal.t('Most conservative; penalizes items with few ratings')}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
           <div class="rating-scorer-scenario-comparison">
             <h3>${Drupal.t('Impact of Rating Changes on Scores')}</h3>
             <p class="scenario-intro">${Drupal.t('Compare how different rating patterns affect each scoring method:')}</p>
@@ -126,6 +91,32 @@
               </tbody>
             </table>
           </div>
+
+          <div class="rating-scorer-comparison">
+            <h3>${Drupal.t('About the Scoring Methods')}</h3>
+            <table class="comparison-table">
+              <thead>
+                <tr>
+                  <th>${Drupal.t('Method')}</th>
+                  <th>${Drupal.t('Description')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>${Drupal.t('Weighted Score')}</strong></td>
+                  <td class="desc-cell">${Drupal.t('Favors high-volume ratings; simple to understand')}</td>
+                </tr>
+                <tr class="recommended">
+                  <td><strong>${Drupal.t('Bayesian Average')}</strong> <span class="recommended-badge">★ ${Drupal.t('Recommended')}</span></td>
+                  <td class="desc-cell">${Drupal.t('Prevents gaming; requires confidence through volume')}</td>
+                </tr>
+                <tr>
+                  <td><strong>${Drupal.t('Wilson Score')}</strong></td>
+                  <td class="desc-cell">${Drupal.t('Most conservative; penalizes items with few ratings')}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       `;
 
@@ -137,11 +128,7 @@
       const minRatingsSlider = document.getElementById('min-ratings-slider');
       const minRatingsValue = document.getElementById('min-ratings-value');
       const minRatingsControl = document.getElementById('min-ratings-control');
-      const finalScore = document.getElementById('final-score');
       const methodDescription = document.getElementById('method-description');
-      const compareWeighted = document.getElementById('compare-weighted');
-      const compareBayesian = document.getElementById('compare-bayesian');
-      const compareWilson = document.getElementById('compare-wilson');
 
       // Scenario elements
       const scenarioCurrentRating = document.getElementById('scenario-current-rating');
@@ -190,23 +177,9 @@
         const lowerWilson = calculateWilsonScore(lowerRating, lowerReviews);
 
         // Update the final score based on selected method
-        let score = 0;
-        switch (method) {
-          case 'weighted':
-            score = weightedScore;
-            break;
-          case 'bayesian':
-            score = bayesianScore;
-            break;
-          case 'wilson':
-            score = wilsonScore;
-            break;
-        }
-
-        finalScore.textContent = score.toFixed(2);
-        compareWeighted.textContent = weightedScore.toFixed(2);
-        compareBayesian.textContent = bayesianScore.toFixed(2);
-        compareWilson.textContent = wilsonScore.toFixed(2);
+        const lowerWeighted = calculateWeightedScore(lowerRating, lowerReviews);
+        const lowerBayesian = calculateBayesianScore(lowerRating, lowerReviews, minRatings);
+        const lowerWilson = calculateWilsonScore(lowerRating, lowerReviews);
 
         // Update scenario displays
         scenarioCurrentRating.textContent = rating.toFixed(2);
