@@ -37,6 +37,13 @@ function rating_scorer_theme($existing, $type, $theme, $path) {
       'variables' => [],
       'template' => 'rating-scorer',
     ],
+    'rating_scorer_dashboard' => [
+      'variables' => [
+        'statistics' => [],
+        'field_mappings' => [],
+      ],
+      'template' => 'rating-scorer-dashboard',
+    ],
   ];
 }
 
