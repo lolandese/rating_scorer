@@ -19,17 +19,18 @@
       // Create the calculator interface
       container.innerHTML = `
         <div class="rating-scorer-container">
-          <h2>${Drupal.t('Rating Score Calculator')}</h2>
+          <h3 class="impact-section-title">${Drupal.t('Impact of Rating Changes on Scores')}</h3>
+          <p class="scenario-intro">${Drupal.t('Compare how different rating patterns affect each scoring method:')}</p>
 
           <div class="rating-scorer-main">
             <div class="rating-scorer-controls">
               <div class="control-group">
                 <label for="rating-input">${Drupal.t('Average Rating')}</label>
                 <div class="slider-with-buttons">
-                  <button class="adjust-btn adjust-down" data-field="rating" data-delta="-0.1" title="${Drupal.t('Decrease rating')}">−</button>
+                  <button class="adjust-btn adjust-down" data-field="rating" data-delta="-0.01" title="${Drupal.t('Decrease rating')}">−</button>
                   <input type="number" id="rating-input" min="0" max="5" step="0.01" value="${defaultRating.toFixed(2)}" title="${Drupal.t('Average rating (0-5)')}">
                   <span class="input-unit">/5</span>
-                  <button class="adjust-btn adjust-up" data-field="rating" data-delta="0.1" title="${Drupal.t('Increase rating')}">+</button>
+                  <button class="adjust-btn adjust-up" data-field="rating" data-delta="0.01" title="${Drupal.t('Increase rating')}">+</button>
                 </div>
               </div>
 
@@ -44,7 +45,7 @@
 
               <div class="control-group">
                 <label for="min-ratings-input">${Drupal.t('Min. Ratings Threshold')}</label>
-                <p class="help-text">${Drupal.t('(Used by Bayesian Average method)')}</p>
+                <p class="help-text">${Drupal.t('(Bayesian only)')}</p>
                 <div class="slider-with-buttons">
                   <button class="adjust-btn adjust-down" data-field="min-ratings" data-delta="-1" title="${Drupal.t('Decrease threshold')}">−</button>
                   <input type="number" id="min-ratings-input" min="1" max="100" step="1" value="${minRatings}" title="${Drupal.t('Minimum ratings threshold')}">
@@ -54,9 +55,6 @@
             </div>
 
             <div class="rating-scorer-scenario-comparison">
-              <h3>${Drupal.t('Impact of Rating Changes on Scores')}</h3>
-              <p class="scenario-intro">${Drupal.t('Compare how different rating patterns affect each scoring method:')}</p>
-
               <table class="scenario-comparison-table">
                 <thead>
                   <tr>
@@ -306,7 +304,7 @@
           e.preventDefault();
           const field = this.dataset.field;
           const delta = parseFloat(this.dataset.delta);
-          
+
           if (field === 'rating') {
             const newValue = Math.max(0, Math.min(5, parseFloat(ratingInput.value) + delta));
             ratingInput.value = newValue.toFixed(2);
@@ -317,7 +315,7 @@
             const newValue = Math.max(1, Math.min(100, parseInt(minRatingsInput.value) + delta));
             minRatingsInput.value = newValue;
           }
-          
+
           updateBayesianHeader();
           calculateScore();
         });

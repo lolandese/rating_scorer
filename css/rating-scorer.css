@@ -25,6 +25,19 @@
   color: #333;
   border-bottom: 2px solid #0073e6;
   padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.impact-section-title {
+  color: #333;
+  margin: 0 0 0.5rem 0;
+  font-size: 1.3em;
+}
+
+.scenario-intro {
+  color: #666;
+  margin: 0 0 1rem 0;
+  font-size: 0.95em;
 }
 
 /* Two-column layout for controls and results */
@@ -32,12 +45,12 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 2rem;
-  margin: 2rem 0;
+  margin: 0 0;
 }
 
 @media (min-width: 1024px) {
   .rating-scorer-main {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: auto 1fr;
   }
 }
 
@@ -57,6 +70,8 @@
 
 .rating-scorer-controls {
   margin: 0;
+  min-width: 280px;
+  max-width: 350px;
 }
 
 .control-group {
