@@ -102,9 +102,9 @@ class RatingScorerFieldMappingForm extends EntityForm {
       '#type' => 'select',
       '#title' => $this->t('Scoring Method'),
       '#options' => [
-        'weighted' => $this->t('Weighted (Logarithmic)'),
-        'bayesian' => $this->t('Bayesian Average (Recommended)'),
-        'wilson' => $this->t('Wilson Score'),
+        'weighted' => $this->t('Weighted Score: Favors high-volume ratings; simple to understand'),
+        'bayesian' => $this->t('Bayesian Average (recommended): Prevents gaming; requires confidence through volume'),
+        'wilson' => $this->t('Wilson Score: Most conservative; penalizes items with few ratings'),
       ],
       '#default_value' => $mapping->get('scoring_method') ?? 'bayesian',
       '#required' => TRUE,

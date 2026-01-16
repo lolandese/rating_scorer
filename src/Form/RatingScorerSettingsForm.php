@@ -71,9 +71,9 @@ class RatingScorerSettingsForm extends ConfigFormBase {
       '#title' => $this->t('Default scoring method'),
       '#description' => $this->t('The default calculation method to use.'),
       '#options' => [
-        'weighted' => $this->t('Weighted Score'),
-        'bayesian' => $this->t('Bayesian Average'),
-        'wilson' => $this->t('Wilson Score'),
+        'weighted' => $this->t('Weighted Score: Favors high-volume ratings; simple to understand'),
+        'bayesian' => $this->t('Bayesian Average (recommended): Prevents gaming; requires confidence through volume'),
+        'wilson' => $this->t('Wilson Score: Most conservative; penalizes items with few ratings'),
       ],
       '#default_value' => $config->get('default_method'),
       '#required' => TRUE,
