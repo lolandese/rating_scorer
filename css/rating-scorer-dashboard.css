@@ -201,31 +201,12 @@
   text-align: right;
 }
 
-.action-dropdown {
-  padding: 6px 12px;
-  font-size: 0.85em;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #fff;
-  cursor: pointer;
-  min-width: 150px;
+.mapping-table .actions a {
+  margin-left: 10px;
 }
 
-.action-dropdown:hover {
-  border-color: #999;
-  background-color: #f9f9f9;
-}
-
-.action-dropdown:focus {
-  outline: none;
-  border-color: #0066cc;
-  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.1);
-}
-
-.button-small {
-  padding: 6px 12px;
-  font-size: 0.85em;
-  margin-left: 5px;
+.mapping-table .actions a:first-child {
+  margin-left: 0;
 }
 
 .dashboard-insights {

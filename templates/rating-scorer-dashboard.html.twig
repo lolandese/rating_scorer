@@ -76,11 +76,8 @@
                 {% endif %}
               </td>
               <td class="actions">
-                <select class="action-dropdown" onchange="if(this.value) window.location.href = this.value; this.value = '';" title="{{ 'Select an action'|t }}">
-                  <option value="">{{ 'Actions'|t }}</option>
-                  <option value="/admin/config/rating-scorer/field-mapping/{{ mapping.id }}/edit">{{ 'Edit Mapping'|t }}</option>
-                  <option value="/admin/config/rating-scorer/recalculate/{{ mapping.content_type }}">{{ 'Recalculate Scores'|t }}</option>
-                </select>
+                <a href="/admin/config/rating-scorer/field-mapping/{{ mapping.id }}/edit">{{ 'Edit'|t }}</a>
+                <a href="/admin/config/rating-scorer/recalculate/{{ mapping.content_type }}">{{ 'Recalculate'|t }}</a>
               </td>
             </tr>
           {% endfor %}
