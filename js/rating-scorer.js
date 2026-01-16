@@ -15,6 +15,10 @@
       const defaultRating = config.defaultRating || 4.5;
       const defaultNumRatings = config.defaultNumRatings || 100;
       const defaultMethod = config.defaultMethod || 'bayesian';
+      const higherRatingDeviation = config.higherRatingDeviation || 5;
+      const higherRatingReviewsDeviation = config.higherRatingReviewsDeviation || -30;
+      const moreReviewsRatingDeviation = config.moreReviewsRatingDeviation || -5;
+      const moreReviewsReviewsDeviation = config.moreReviewsReviewsDeviation || 30;
 
       // Create the calculator interface
       container.innerHTML = `
@@ -181,11 +185,11 @@
         const bayesianScore = calculateBayesianScore(rating, numRatings, minRatings);
         const wilsonScore = calculateWilsonScore(rating, numRatings);
 
-        // Calculate scenarios
-        const higherRating = rating * 1.05;
-        const higherReviews = Math.round(numRatings * 0.70);
-        const lowerRating = rating * 0.95;
-        const lowerReviews = Math.round(numRatings * 1.30);
+        // Calculate scenarios with configurable deviations
+        const higherRating = Math.min(5, rating * (1 + higherRatingDeviation / 100));
+        const higherReviews = Math.round(numRatings * (1 + higherRatingReviewsDeviation / 100));
+        const lowerRating = rating * (1 + moreReviewsRatingDeviation / 100);
+        const lowerReviews = Math.round(numRatings * (1 + moreReviewsReviewsDeviation / 100));
 
         const higherWeighted = calculateWeightedScore(higherRating, higherReviews);
         const higherBayesian = calculateBayesianScore(higherRating, higherReviews, minRatings);

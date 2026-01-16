@@ -90,6 +90,55 @@ class RatingScorerSettingsForm extends ConfigFormBase {
       '#required' => TRUE,
     ];
 
+    $form['scenario_deviations'] = [
+      '#type' => 'markup',
+      '#markup' => '<h3>' . $this->t('Scenario Deviations') . '</h3><p>' . $this->t('Configure the deviations for the comparison scenarios shown in the Impact table.') . '</p>',
+    ];
+
+    $form['higher_rating_deviation'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Higher Rating scenario - rating deviation (%)'),
+      '#description' => $this->t('Percentage deviation for the rating in the "Higher Rating" scenario.'),
+      '#default_value' => $config->get('higher_rating_deviation'),
+      '#min' => -100,
+      '#max' => 100,
+      '#step' => 0.1,
+      '#required' => TRUE,
+    ];
+
+    $form['higher_rating_reviews_deviation'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Higher Rating scenario - reviews deviation (%)'),
+      '#description' => $this->t('Percentage deviation for the number of reviews in the "Higher Rating" scenario.'),
+      '#default_value' => $config->get('higher_rating_reviews_deviation'),
+      '#min' => -100,
+      '#max' => 100,
+      '#step' => 0.1,
+      '#required' => TRUE,
+    ];
+
+    $form['more_reviews_rating_deviation'] = [
+      '#type' => 'number',
+      '#title' => $this->t('More Reviews scenario - rating deviation (%)'),
+      '#description' => $this->t('Percentage deviation for the rating in the "More Reviews" scenario.'),
+      '#default_value' => $config->get('more_reviews_rating_deviation'),
+      '#min' => -100,
+      '#max' => 100,
+      '#step' => 0.1,
+      '#required' => TRUE,
+    ];
+
+    $form['more_reviews_reviews_deviation'] = [
+      '#type' => 'number',
+      '#title' => $this->t('More Reviews scenario - reviews deviation (%)'),
+      '#description' => $this->t('Percentage deviation for the number of reviews in the "More Reviews" scenario.'),
+      '#default_value' => $config->get('more_reviews_reviews_deviation'),
+      '#min' => -100,
+      '#max' => 100,
+      '#step' => 0.1,
+      '#required' => TRUE,
+    ];
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -103,6 +152,10 @@ class RatingScorerSettingsForm extends ConfigFormBase {
       ->set('default_rating', $form_state->getValue('default_rating'))
       ->set('default_num_ratings', $form_state->getValue('default_num_ratings'))
       ->set('default_method', $form_state->getValue('default_method'))
+      ->set('higher_rating_deviation', $form_state->getValue('higher_rating_deviation'))
+      ->set('higher_rating_reviews_deviation', $form_state->getValue('higher_rating_reviews_deviation'))
+      ->set('more_reviews_rating_deviation', $form_state->getValue('more_reviews_rating_deviation'))
+      ->set('more_reviews_reviews_deviation', $form_state->getValue('more_reviews_reviews_deviation'))
       ->save();
 
     parent::submitForm($form, $form_state);

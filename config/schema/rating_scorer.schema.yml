@@ -18,3 +18,15 @@ rating_scorer.settings:
     default_method:
       type: string
       label: 'Default scoring method'
+    higher_rating_deviation:
+      type: float
+      label: 'Higher Rating scenario - rating deviation (%)'
+    higher_rating_reviews_deviation:
+      type: float
+      label: 'Higher Rating scenario - reviews deviation (%)'
+    more_reviews_rating_deviation:
+      type: float
+      label: 'More Reviews scenario - rating deviation (%)'
+    more_reviews_reviews_deviation:
+      type: float
+      label: 'More Reviews scenario - reviews deviation (%)'
