@@ -136,6 +136,35 @@
   margin: 0 auto;
 }
 
+.scenario-comparison-table th:nth-child(3) {
+  border-right: 3px solid #0073e6;
+}
+
+.scenario-comparison-table .threshold-row {
+  background-color: #f9f9f9;
+  font-size: 0.9rem;
+  border-top: 2px solid #ddd;
+}
+
+.scenario-comparison-table .threshold-label {
+  text-align: right;
+  font-weight: 600;
+  color: #555;
+  padding-right: 12px;
+}
+
+.scenario-comparison-table .threshold-value {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+}
+
+.scenario-comparison-table .threshold-value.recommended {
+  color: #0073e6;
+  font-style: normal;
+  font-weight: 600;
+}
+
 .rating-scorer-scenario-comparison {
   margin-top: 3rem;
 }

@@ -56,6 +56,12 @@
                   <th><span id="bayesian-header" class="bayesian-header-text">${Drupal.t('Bayesian')}</span></th>
                   <th>${Drupal.t('Wilson')}</th>
                 </tr>
+                <tr class="threshold-row">
+                  <td colspan="3" class="threshold-label">${Drupal.t('Min. Ratings Threshold:')}</td>
+                  <td class="threshold-value">${Drupal.t('N/A')}</td>
+                  <td class="threshold-value recommended"><strong id="threshold-value">${minRatings}</strong></td>
+                  <td class="threshold-value">${Drupal.t('N/A')}</td>
+                </tr>
               </thead>
               <tbody>
                 <tr class="current-row">
@@ -121,6 +127,7 @@
       const minRatingsSlider = document.getElementById('min-ratings-slider');
       const minRatingsValue = document.getElementById('min-ratings-value');
       const bayesianHeader = document.getElementById('bayesian-header');
+      const thresholdValue = document.getElementById('threshold-value');
 
       // Scenario elements
       const scenarioCurrentRating = document.getElementById('scenario-current-rating');
@@ -211,6 +218,7 @@
       function updateBayesianHeader() {
         const minRatings = parseInt(minRatingsSlider.value);
         bayesianHeader.textContent = Drupal.t('Bayesian') + ' (threshold: ' + minRatings + ')';
+        thresholdValue.textContent = minRatings;
       }
 
       ratingSlider.addEventListener('input', function() {
