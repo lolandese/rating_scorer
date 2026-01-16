@@ -6,9 +6,9 @@ The **Status Dashboard** provides a centralized view of your rating scorer field
 
 ## Access the Dashboard
 
-Navigate to: **Admin > Configuration > Rating Scorer > Dashboard**
+Navigate to: **Admin > Configuration > Rating Scorer**
 
-Or directly at: `/admin/config/rating-scorer/dashboard`
+Or directly at: `/admin/config/rating-scorer`
 
 The Dashboard tab appears first in the tab navigation (before Field Mappings, Calculator, and Defaults).
 
