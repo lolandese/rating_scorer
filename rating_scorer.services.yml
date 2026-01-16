@@ -14,6 +14,13 @@ services:
     arguments:
       - '@entity_type.manager'
 
+  rating_scorer.rating_module_detection:
+    class: Drupal\rating_scorer\Service\RatingModuleDetectionService
+    arguments:
+      - '@module_handler'
+      - '@entity_field.manager'
+      - '@plugin.manager.field.field_type'
+
   rating_scorer.dashboard:
     class: Drupal\rating_scorer\Service\RatingScorerDashboardService
     arguments:

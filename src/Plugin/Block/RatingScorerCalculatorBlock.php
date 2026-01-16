@@ -64,7 +64,6 @@ class RatingScorerCalculatorBlock extends BlockBase implements ContainerFactoryP
       'defaultMinimumRatings' => $config->get('default_minimum_ratings'),
       'defaultRating' => $config->get('default_rating'),
       'defaultNumRatings' => $config->get('default_num_ratings'),
-      'defaultMethod' => $config->get('default_method'),
       'bayesianAssumedAverage' => $config->get('bayesian_assumed_average'),
     ];
 

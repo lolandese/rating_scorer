@@ -15,9 +15,7 @@ rating_scorer.settings:
     default_num_ratings:
       type: integer
       label: 'Default number of ratings'
-    default_method:
-      type: string
-      label: 'Default scoring method'
+
     scenario_rating_deviation:
       type: float
       label: 'Scenario rating deviation (%)'

@@ -88,7 +88,6 @@ class RatingScorerController extends ControllerBase {
       'bayesianAssumedAverage' => $config->get('bayesian_assumed_average'),
       'defaultRating' => $config->get('default_rating'),
       'defaultNumRatings' => $config->get('default_num_ratings'),
-      'defaultMethod' => $config->get('default_method'),
       'scenarioRatingDeviation' => $config->get('scenario_rating_deviation'),
       'scenarioReviewsDeviation' => $config->get('scenario_reviews_deviation'),
     ];

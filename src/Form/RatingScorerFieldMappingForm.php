@@ -6,6 +6,7 @@ use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\rating_scorer\Service\RatingModuleDetectionService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -21,12 +22,20 @@ class RatingScorerFieldMappingForm extends EntityForm {
   protected $fieldManager;
 
   /**
+   * The rating module detection service.
+   *
+   * @var \Drupal\rating_scorer\Service\RatingModuleDetectionService
+   */
+  protected $ratingModuleDetectionService;
+
+  /**
    * Constructs the form.
    */
   public static function create(ContainerInterface $container) {
     $form = new static();
     $form->fieldManager = $container->get('entity_field.manager');
     $form->entityTypeManager = $container->get('entity_type.manager');
+    $form->ratingModuleDetectionService = $container->get('rating_scorer.rating_module_detection');
     return $form;
   }
 
@@ -78,12 +87,34 @@ class RatingScorerFieldMappingForm extends EntityForm {
 
     $content_type = $form_state->getValue('content_type') ?? $mapping->get('content_type');
 
+    // Display detected rating modules info
+    $detected_modules = $this->ratingModuleDetectionService->getDetectedRatingModules();
+    if ($detected_modules) {
+      $module_names = implode(', ', array_column($detected_modules, 'name'));
+      $form['rating_modules_detected'] = [
+        '#type' => 'markup',
+        '#markup' => '<div class="messages messages--info"><strong>' . $this->t('Rating modules detected:') . '</strong> ' . $module_names . '</div>',
+      ];
+    }
+
     if ($content_type) {
       $field_options = $this->getFieldOptions($content_type);
+      
+      // Get field suggestions based on detected rating modules
+      $suggestions = $this->ratingModuleDetectionService->getFieldSuggestionsForDisplay($content_type);
+      $suggestion_info = '';
+      if (!empty($suggestions)) {
+        $suggestion_info = '<br><small><strong>' . $this->t('Suggestions:') . '</strong> ';
+        foreach ($suggestions as $suggestion) {
+          $suggestion_info .= $suggestion['label'] . '; ';
+        }
+        $suggestion_info .= '</small>';
+      }
 
       $form['field_options']['number_of_ratings_field'] = [
         '#type' => 'select',
         '#title' => $this->t('Number of Ratings Field'),
+        '#description' => $this->t('Select the field containing the count of ratings/votes') . $suggestion_info,
         '#options' => $field_options,
         '#default_value' => $mapping->get('number_of_ratings_field'),
         '#required' => TRUE,
@@ -92,6 +123,7 @@ class RatingScorerFieldMappingForm extends EntityForm {
       $form['field_options']['average_rating_field'] = [
         '#type' => 'select',
         '#title' => $this->t('Average Rating Field'),
+        '#description' => $this->t('Select the field containing the average rating value'),
         '#options' => $field_options,
         '#default_value' => $mapping->get('average_rating_field'),
         '#required' => TRUE,

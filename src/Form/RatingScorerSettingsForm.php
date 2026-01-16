@@ -77,19 +77,6 @@ class RatingScorerSettingsForm extends ConfigFormBase {
       '#required' => TRUE,
     ];
 
-    $form['default_method'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Default scoring method'),
-      '#description' => $this->t('The default calculation method to use.'),
-      '#options' => [
-        'weighted' => $this->t('Weighted Score: Favors high-volume ratings; simple to understand'),
-        'bayesian' => $this->t('Bayesian Average (recommended): Prevents gaming; requires confidence through volume'),
-        'wilson' => $this->t('Wilson Score: Most conservative; penalizes items with few ratings'),
-      ],
-      '#default_value' => $config->get('default_method'),
-      '#required' => TRUE,
-    ];
-
     $form['scenario_deviations'] = [
       '#type' => 'markup',
       '#markup' => '<h3>' . $this->t('Scenario Deviations') . '</h3><p>' . $this->t('Configure the default deviations for the comparison scenarios shown in the Impact table. These values can also be adjusted in the calculator widget.') . '</p>',
@@ -129,7 +116,6 @@ class RatingScorerSettingsForm extends ConfigFormBase {
       ->set('bayesian_assumed_average', $form_state->getValue('bayesian_assumed_average'))
       ->set('default_rating', $form_state->getValue('default_rating'))
       ->set('default_num_ratings', $form_state->getValue('default_num_ratings'))
-      ->set('default_method', $form_state->getValue('default_method'))
       ->set('scenario_rating_deviation', $form_state->getValue('scenario_rating_deviation'))
       ->set('scenario_reviews_deviation', $form_state->getValue('scenario_reviews_deviation'))
       ->save();

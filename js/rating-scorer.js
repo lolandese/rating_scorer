@@ -14,7 +14,6 @@
       const bayesianAssumedAverage = config.bayesianAssumedAverage || 3.5;
       const defaultRating = config.defaultRating || 4.5;
       const defaultNumRatings = config.defaultNumRatings || 100;
-      const defaultMethod = config.defaultMethod || 'bayesian';
       const defaultScenarioRatingDeviation = config.scenarioRatingDeviation || 5;
       const defaultScenarioReviewsDeviation = config.scenarioReviewsDeviation || 30;
 
@@ -151,18 +150,19 @@
             <tbody>
               <tr>
                 <td><strong>${Drupal.t('Weighted Score')}</strong></td>
-                <td class="desc-cell">${Drupal.t('Multiplies the average rating by the logarithm of the number of ratings. This gives higher scores to items with both good ratings and many reviews.')}</td>
+                <td class="desc-cell">${Drupal.t('Multiplies the average rating by the logarithm of the number of ratings. This gives higher scores to items with both good ratings and many reviews.')}<br><br><em>${Drupal.t('Use case: Less common, but useful for simple content discovery scenarios.')}</em></td>
               </tr>
               <tr class="recommended">
                 <td><strong>${Drupal.t('Bayesian Average')}</strong> <span class="recommended-badge">★ ${Drupal.t('Recommended')}</span></td>
-                <td class="desc-cell">${Drupal.t('Blends the actual rating with an assumed average (') + bayesianAssumedAverage.toFixed(1) + Drupal.t('), weighted by the number of ratings. Requires more ratings to pull away from the average. Configurable via the Minimum Ratings Threshold.')}</td>
+                <td class="desc-cell">${Drupal.t('Blends the actual rating with an assumed average (') + bayesianAssumedAverage.toFixed(1) + Drupal.t('), weighted by the number of ratings. Requires more ratings to pull away from the average. Configurable via the Minimum Ratings Threshold.')}<br><br><em>${Drupal.t('Use case: Platforms like IMDB, Goodreads, and others that want to prevent new items with few reviews from ranking too high.')}</em></td>
               </tr>
               <tr>
                 <td><strong>${Drupal.t('Wilson Score')}</strong></td>
-                <td class="desc-cell">${Drupal.t('A confidence-based approach that calculates the lower bound of a confidence interval. This naturally handles uncertainty from low rating counts. Most conservative method.')}</td>
+                <td class="desc-cell">${Drupal.t('A confidence-based approach that calculates the lower bound of a confidence interval. This naturally handles uncertainty from low rating counts. Most conservative method.')}<br><br><em>${Drupal.t('Use case: Platforms like Reddit and Hacker News that need confidence-based ranking with limited vote counts.')}</em></td>
               </tr>
             </tbody>
           </table>
+          <p class="scoring-note"><strong>${Drupal.t('Note:')}</strong> ${Drupal.t('Some platforms use hybrid approaches combining multiple strategies. For example, Airbnb, Booking.com, and YouTube use weighted averages with recency weighting, credibility scoring, user engagement metrics, and verification factors to create more sophisticated ranking systems than the three basic methods shown here.')}</p>
         </div>
       </div>
       `;
