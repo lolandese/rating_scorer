@@ -217,7 +217,6 @@
 
       function updateBayesianHeader() {
         const minRatings = parseInt(minRatingsSlider.value);
-        bayesianHeader.textContent = Drupal.t('Bayesian') + ' (threshold: ' + minRatings + ')';
         thresholdValue.textContent = minRatings;
       }
 
