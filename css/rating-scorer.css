@@ -129,13 +129,6 @@
   background-color: #e8f0ff;
 }
 
-.bayesian-header-text {
-  display: block;
-  white-space: normal;
-  max-width: 60px;
-  margin: 0 auto;
-}
-
 .scenario-comparison-table th:nth-child(3) {
   border-right: 3px solid #0073e6;
 }
