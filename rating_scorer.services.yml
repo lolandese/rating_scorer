@@ -13,3 +13,11 @@ services:
     class: Drupal\rating_scorer\Service\FieldCreationService
     arguments:
       - '@entity_type.manager'
+
+  rating_scorer.dashboard:
+    class: Drupal\rating_scorer\Service\RatingScorerDashboardService
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@database'
+      - '@plugin.manager.field.field_type'

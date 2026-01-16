@@ -6,6 +6,14 @@ rating_scorer.settings:
   requirements:
     _permission: 'administer rating scorer'
 
+rating_scorer.dashboard:
+  path: '/admin/config/rating-scorer/dashboard'
+  defaults:
+    _controller: '\Drupal\rating_scorer\Controller\RatingScorerController::dashboard'
+    _title: 'Dashboard'
+  requirements:
+    _permission: 'administer rating scorer'
+
 rating_scorer.field_mappings:
   path: '/admin/config/rating-scorer'
   defaults:

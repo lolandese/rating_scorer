@@ -1,0 +1,111 @@
+{#
+  Rating Scorer Dashboard Template
+  Displays field mapping status, statistics, and data quality metrics.
+#}
+
+<div class="rating-scorer-dashboard">
+  {# Overall Statistics Section #}
+  <div class="dashboard-statistics">
+    <h2>{{ 'Overall Statistics'|t }}</h2>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value">{{ statistics.total_mappings }}</div>
+        <div class="stat-label">{{ 'Field Mappings'|t }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ statistics.total_entities }}</div>
+        <div class="stat-label">{{ 'Total Entities'|t }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ statistics.total_with_ratings }}</div>
+        <div class="stat-label">{{ 'Rated Entities'|t }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ statistics.coverage_percentage }}%</div>
+        <div class="stat-label">{{ 'Coverage'|t }}</div>
+      </div>
+    </div>
+  </div>
+
+  {# Field Mappings Status Section #}
+  <div class="dashboard-field-mappings">
+    <h2>{{ 'Field Mappings Status'|t }}</h2>
+    {% if field_mappings is empty %}
+      <div class="messages messages--status">
+        {{ 'No field mappings configured yet. <a href="@url">Create a new field mapping</a>.'|t({'@url': '/admin/config/rating-scorer'}) }}
+      </div>
+    {% else %}
+      <table class="mapping-table">
+        <thead>
+          <tr>
+            <th>{{ 'Content Type'|t }}</th>
+            <th>{{ 'Scoring Method'|t }}</th>
+            <th>{{ 'Total Entities'|t }}</th>
+            <th>{{ 'With Ratings'|t }}</th>
+            <th>{{ 'Coverage'|t }}</th>
+            <th>{{ 'Last Updated'|t }}</th>
+            <th>{{ 'Actions'|t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for mapping in field_mappings %}
+            {% set coverage = mapping.entity_count > 0 ? ((mapping.rating_score_count / mapping.entity_count) * 100)|round(1) : 0 %}
+            <tr>
+              <td class="content-type">{{ mapping.label }}</td>
+              <td class="method">
+                <span class="badge badge-{{ mapping.scoring_method }}">
+                  {{- mapping.scoring_method|capitalize -}}
+                </span>
+              </td>
+              <td class="entity-count">{{ mapping.entity_count }}</td>
+              <td class="rated-count">
+                <span class="progress-text">{{ mapping.rating_score_count }}</span>
+              </td>
+              <td class="coverage">
+                <div class="progress-bar-container">
+                  <div class="progress-bar" style="width: {{ coverage }}%;">
+                    <span class="progress-percentage">{{ coverage }}%</span>
+                  </div>
+                </div>
+              </td>
+              <td class="last-updated">
+                {% if mapping.last_recalculation %}
+                  <span class="timestamp" title="Last modified">{{ mapping.last_recalculation }}</span>
+                {% else %}
+                  <span class="never-updated">{{ 'Never'|t }}</span>
+                {% endif %}
+              </td>
+              <td class="actions">
+                <a href="/admin/config/rating-scorer/field-mapping/{{ mapping.id }}/edit" class="button button-small">{{ 'Edit'|t }}</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+  </div>
+
+  {# Data Quality Insights #}
+  <div class="dashboard-insights">
+    <h2>{{ 'Data Quality Insights'|t }}</h2>
+    <div class="insights-container">
+      {% if statistics.coverage_percentage < 50 %}
+        <div class="messages messages--warning">
+          <strong>{{ 'Low Coverage'|t }}:</strong> {{ 'Less than 50% of entities have been rated. Consider running a bulk recalculation or checking your field mappings.'|t }}
+        </div>
+      {% elseif statistics.coverage_percentage < 100 %}
+        <div class="messages messages--status">
+          <strong>{{ 'Partial Coverage'|t }}:</strong> {{ 'Not all entities have been rated yet. New entities will be automatically rated as they are created or updated.'|t }}
+        </div>
+      {% else %}
+        <div class="messages messages--status">
+          <strong>{{ 'Complete Coverage'|t }}:</strong> {{ 'All entities have rating scores. Data quality is optimal.'|t }}
+        </div>
+      {% endif %}
+
+      <p class="insight-note">
+        {{ 'Ratings are automatically calculated when entities are created or updated. The "Last Updated" column shows when each entity was last modified.'|t }}
+      </p>
+    </div>
+  </div>
+</div>

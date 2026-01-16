@@ -8,3 +8,10 @@ calculator:
   dependencies:
     - core/drupal
     - core/drupalSettings
+dashboard:
+  version: 1.x
+  css:
+    theme:
+      css/rating-scorer-dashboard.css: {}
+  dependencies:
+    - core/drupal

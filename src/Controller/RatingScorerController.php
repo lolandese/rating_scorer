@@ -27,16 +27,26 @@ class RatingScorerController extends ControllerBase {
   protected $entityTypeManager;
 
   /**
+   * The dashboard service.
+   *
+   * @var \Drupal\rating_scorer\Service\RatingScorerDashboardService
+   */
+  protected $dashboardService;
+
+  /**
    * Constructs a RatingScorerController object.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
+   * @param \Drupal\rating_scorer\Service\RatingScorerDashboardService $dashboard_service
+   *   The dashboard service.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager, \Drupal\rating_scorer\Service\RatingScorerDashboardService $dashboard_service) {
     $this->configFactory = $config_factory;
     $this->entityTypeManager = $entity_type_manager;
+    $this->dashboardService = $dashboard_service;
   }
 
   /**
@@ -45,7 +55,8 @@ class RatingScorerController extends ControllerBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('rating_scorer.dashboard')
     );
   }
 
@@ -94,6 +105,28 @@ class RatingScorerController extends ControllerBase {
           'drupalSettings' => [
             'ratingScorer' => $settings,
           ],
+        ],
+      ],
+    ];
+  }
+
+  /**
+   * Displays the rating scorer dashboard.
+   *
+   * @return array
+   *   A render array.
+   */
+  public function dashboard() {
+    $stats = $this->dashboardService->getDashboardStatistics();
+    $mappings = $this->dashboardService->getFieldMappingsWithStatus();
+
+    return [
+      '#theme' => 'rating_scorer_dashboard',
+      '#statistics' => $stats,
+      '#field_mappings' => $mappings,
+      '#attached' => [
+        'library' => [
+          'rating_scorer/dashboard',
         ],
       ],
     ];
