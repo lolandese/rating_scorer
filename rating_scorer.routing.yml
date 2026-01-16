@@ -2,7 +2,7 @@ rating_scorer.settings:
   path: '/admin/config/rating-scorer/settings'
   defaults:
     _form: '\Drupal\rating_scorer\Form\RatingScorerSettingsForm'
-    _title: 'Settings'
+    _title: 'Defaults'
   requirements:
     _permission: 'administer rating scorer'
 

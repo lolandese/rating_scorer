@@ -1,15 +1,15 @@
 .rating-scorer-wrapper {
-  max-width: 100%;
-  width: 100%;
-  margin: 2rem auto;
-  padding: 0 2rem;
-  box-sizing: border-box;
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 2rem auto !important;
+  padding: 0 2rem !important;
+  box-sizing: border-box !important;
 }
 
 @media (min-width: 768px) {
   .rating-scorer-wrapper {
-    max-width: 1200px;
-    padding: 0;
+    max-width: 1200px !important;
+    padding: 0 !important;
   }
 }
 
@@ -154,6 +154,18 @@
   font-weight: 600;
   color: #555;
   padding-right: 12px;
+}
+
+.scenario-comparison-table .threshold-label .configure-link {
+  margin-left: 8px;
+  font-size: 0.85em;
+  font-weight: normal;
+  color: #0073e6;
+  text-decoration: none;
+}
+
+.scenario-comparison-table .threshold-label .configure-link:hover {
+  text-decoration: underline;
 }
 
 .scenario-comparison-table .threshold-value {

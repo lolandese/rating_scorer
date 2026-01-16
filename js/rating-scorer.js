@@ -92,7 +92,7 @@
                   <td class="threshold-value">${Drupal.t('N/A')}</td>
                 </tr>
                 <tr class="assumed-average-row">
-                  <td colspan="3" class="threshold-label">${Drupal.t('Assumed Average:')}</td>
+                  <td colspan="3" class="threshold-label">${Drupal.t('Assumed Average:')} <a href="/admin/config/rating-scorer/settings" class="configure-link" title="${Drupal.t('Configure')}">${Drupal.t('(configure)')}</a></td>
                   <td class="threshold-value">${Drupal.t('N/A')}</td>
                   <td class="threshold-value recommended"><strong id="assumed-average-value">${bayesianAssumedAverage.toFixed(1)}</strong></td>
                   <td class="threshold-value">${Drupal.t('N/A')}</td>
