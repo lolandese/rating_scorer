@@ -32,7 +32,7 @@ class RatingScorerSettingsForm extends ConfigFormBase {
 
     $form['info'] = [
       '#type' => 'markup',
-      '#markup' => '<div class="description"><p><strong>' . $this->t('Note:') . '</strong> ' . $this->t('These default settings apply only to the Calculator widget displayed on admin pages. For automatic scoring of content fields, configure Field Mappings instead.') . '</p></div>',
+      '#markup' => '<div class="description"><p><strong>' . $this->t('Note:') . '</strong> ' . $this->t('These settings are used system-wide: the assumed average and minimum ratings threshold affect all Bayesian scoring calculations, including automatic field scoring and the calculator widget.') . '</p></div>',
     ];
 
     $form['default_minimum_ratings'] = [
