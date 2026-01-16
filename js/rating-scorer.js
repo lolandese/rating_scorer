@@ -24,29 +24,30 @@
           <div class="rating-scorer-main">
             <div class="rating-scorer-controls">
               <div class="control-group">
-                <label>${Drupal.t('Average Rating')}: <span id="rating-value">${defaultRating.toFixed(2)}</span> / 5.00</label>
+                <label for="rating-input">${Drupal.t('Average Rating')}</label>
                 <div class="slider-with-buttons">
                   <button class="adjust-btn adjust-down" data-field="rating" data-delta="-0.1" title="${Drupal.t('Decrease rating')}">−</button>
-                  <input type="range" id="rating-slider" min="0" max="5" step="0.01" value="${defaultRating}">
+                  <input type="number" id="rating-input" min="0" max="5" step="0.01" value="${defaultRating.toFixed(2)}" title="${Drupal.t('Average rating (0-5)')}">
+                  <span class="input-unit">/5</span>
                   <button class="adjust-btn adjust-up" data-field="rating" data-delta="0.1" title="${Drupal.t('Increase rating')}">+</button>
                 </div>
               </div>
 
               <div class="control-group">
-                <label>${Drupal.t('Number of Ratings')}: <span id="num-ratings-value">${defaultNumRatings}</span></label>
+                <label for="num-ratings-input">${Drupal.t('Number of Ratings')}</label>
                 <div class="slider-with-buttons">
                   <button class="adjust-btn adjust-down" data-field="num-ratings" data-delta="-10" title="${Drupal.t('Decrease count')}">−</button>
-                  <input type="range" id="num-ratings-slider" min="0" max="1000" step="1" value="${defaultNumRatings}">
+                  <input type="number" id="num-ratings-input" min="0" max="1000" step="1" value="${defaultNumRatings}" title="${Drupal.t('Number of ratings')}">
                   <button class="adjust-btn adjust-up" data-field="num-ratings" data-delta="10" title="${Drupal.t('Increase count')}">+</button>
                 </div>
               </div>
 
               <div class="control-group">
-                <label>${Drupal.t('Minimum Ratings Threshold')}: <span id="min-ratings-value">${minRatings}</span></label>
+                <label for="min-ratings-input">${Drupal.t('Min. Ratings Threshold')}</label>
                 <p class="help-text">${Drupal.t('(Used by Bayesian Average method)')}</p>
                 <div class="slider-with-buttons">
                   <button class="adjust-btn adjust-down" data-field="min-ratings" data-delta="-1" title="${Drupal.t('Decrease threshold')}">−</button>
-                  <input type="range" id="min-ratings-slider" min="1" max="100" step="1" value="${minRatings}">
+                  <input type="number" id="min-ratings-input" min="1" max="100" step="1" value="${minRatings}" title="${Drupal.t('Minimum ratings threshold')}">
                   <button class="adjust-btn adjust-up" data-field="min-ratings" data-delta="1" title="${Drupal.t('Increase threshold')}">+</button>
                 </div>
               </div>
@@ -146,12 +147,9 @@
       </div>
       `;
 
-      const ratingSlider = document.getElementById('rating-slider');
-      const ratingValue = document.getElementById('rating-value');
-      const numRatingsSlider = document.getElementById('num-ratings-slider');
-      const numRatingsValue = document.getElementById('num-ratings-value');
-      const minRatingsSlider = document.getElementById('min-ratings-slider');
-      const minRatingsValue = document.getElementById('min-ratings-value');
+      const ratingInput = document.getElementById('rating-input');
+      const numRatingsInput = document.getElementById('num-ratings-input');
+      const minRatingsInput = document.getElementById('min-ratings-input');
       const bayesianHeader = document.getElementById('bayesian-header');
       const thresholdValue = document.getElementById('threshold-value');
       const assumedAverageValue = document.getElementById('assumed-average-value');
@@ -176,9 +174,9 @@
       const scenarioLowerWilson = document.getElementById('scenario-lower-wilson');
 
       function calculateScore() {
-        const rating = parseFloat(ratingSlider.value);
-        const numRatings = parseInt(numRatingsSlider.value);
-        const minRatings = parseInt(minRatingsSlider.value);
+        const rating = parseFloat(ratingInput.value);
+        const numRatings = parseInt(numRatingsInput.value);
+        const minRatings = parseInt(minRatingsInput.value);
 
         // Calculate all three methods for current input
         const weightedScore = calculateWeightedScore(rating, numRatings);
@@ -281,22 +279,22 @@
       }
 
       function updateBayesianHeader() {
-        const minRatings = parseInt(minRatingsSlider.value);
+        const minRatings = parseInt(minRatingsInput.value);
         thresholdValue.textContent = minRatings;
       }
 
-      ratingSlider.addEventListener('input', function() {
-        ratingValue.textContent = parseFloat(this.value).toFixed(2);
+      // Event listeners for number inputs
+      ratingInput.addEventListener('change', calculateScore);
+      ratingInput.addEventListener('input', calculateScore);
+
+      numRatingsInput.addEventListener('change', calculateScore);
+      numRatingsInput.addEventListener('input', calculateScore);
+
+      minRatingsInput.addEventListener('change', function() {
+        updateBayesianHeader();
         calculateScore();
       });
-
-      numRatingsSlider.addEventListener('input', function() {
-        numRatingsValue.textContent = this.value;
-        calculateScore();
-      });
-
-      minRatingsSlider.addEventListener('input', function() {
-        minRatingsValue.textContent = this.value;
+      minRatingsInput.addEventListener('input', function() {
         updateBayesianHeader();
         calculateScore();
       });
@@ -310,17 +308,14 @@
           const delta = parseFloat(this.dataset.delta);
           
           if (field === 'rating') {
-            const newValue = Math.max(0, Math.min(5, parseFloat(ratingSlider.value) + delta));
-            ratingSlider.value = newValue;
-            ratingValue.textContent = newValue.toFixed(2);
+            const newValue = Math.max(0, Math.min(5, parseFloat(ratingInput.value) + delta));
+            ratingInput.value = newValue.toFixed(2);
           } else if (field === 'num-ratings') {
-            const newValue = Math.max(0, Math.min(1000, parseInt(numRatingsSlider.value) + delta));
-            numRatingsSlider.value = newValue;
-            numRatingsValue.textContent = newValue;
+            const newValue = Math.max(0, Math.min(1000, parseInt(numRatingsInput.value) + delta));
+            numRatingsInput.value = newValue;
           } else if (field === 'min-ratings') {
-            const newValue = Math.max(1, Math.min(100, parseInt(minRatingsSlider.value) + delta));
-            minRatingsSlider.value = newValue;
-            minRatingsValue.textContent = newValue;
+            const newValue = Math.max(1, Math.min(100, parseInt(minRatingsInput.value) + delta));
+            minRatingsInput.value = newValue;
           }
           
           updateBayesianHeader();

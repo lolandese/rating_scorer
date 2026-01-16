@@ -84,14 +84,45 @@
   gap: 0.5rem;
 }
 
-.slider-with-buttons input[type="range"] {
-  flex: 1;
+.slider-with-buttons input[type="number"] {
+  flex: 0 0 auto;
+  width: 80px;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.slider-with-buttons input[type="number"]:focus {
+  outline: none;
+  border-color: #0073e6;
+  box-shadow: 0 0 0 2px rgba(0, 115, 230, 0.1);
+}
+
+/* Remove spinner arrows for Firefox */
+.slider-with-buttons input[type="number"]::-moz-number-spin-box {
+  display: none;
+}
+
+/* Remove spinner arrows for Chrome */
+.slider-with-buttons input[type="number"]::-webkit-outer-spin-button,
+.slider-with-buttons input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
   margin: 0;
 }
 
+.input-unit {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: normal;
+  min-width: 30px;
+}
+
 .adjust-btn {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   padding: 0;
   border: 1px solid #0073e6;
   background-color: #fff;
