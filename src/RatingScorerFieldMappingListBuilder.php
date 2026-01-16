@@ -37,10 +37,11 @@ class RatingScorerFieldMappingListBuilder extends ConfigEntityListBuilder {
   public function render() {
     $build = parent::render();
 
-    // Add "New Field Mapping" link using the wizard
+    // Add "Dashboard" and "New Field Mapping" links
+    $dashboard_url = Url::fromRoute('rating_scorer.dashboard');
     $wizard_url = Url::fromRoute('rating_scorer.field_mapping_wizard');
 
-    $build['#prefix'] = '<p><a href="' . $wizard_url->toString() . '" class="button button-action">' . $this->t('+ New Field Mapping') . '</a></p>';
+    $build['#prefix'] = '<p><a href="' . $dashboard_url->toString() . '" class="button">' . $this->t('← Dashboard') . '</a> <a href="' . $wizard_url->toString() . '" class="button button-action">' . $this->t('+ New Field Mapping') . '</a></p>';
 
     return $build;
   }
