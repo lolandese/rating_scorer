@@ -176,11 +176,6 @@
         const lowerBayesian = calculateBayesianScore(lowerRating, lowerReviews, minRatings);
         const lowerWilson = calculateWilsonScore(lowerRating, lowerReviews);
 
-        // Update the final score based on selected method
-        const lowerWeighted = calculateWeightedScore(lowerRating, lowerReviews);
-        const lowerBayesian = calculateBayesianScore(lowerRating, lowerReviews, minRatings);
-        const lowerWilson = calculateWilsonScore(lowerRating, lowerReviews);
-
         // Update scenario displays
         scenarioCurrentRating.textContent = rating.toFixed(2);
         scenarioCurrentReviews.textContent = numRatings;
