@@ -87,61 +87,44 @@
             <h3>${Drupal.t('Impact of Rating Changes on Scores')}</h3>
             <p class="scenario-intro">${Drupal.t('Compare how different rating patterns affect each scoring method:')}</p>
             
-            <div class="scenario-container">
-              <div class="scenario-box current">
-                <h4>${Drupal.t('Current Input')}</h4>
-                <div class="scenario-params">
-                  <div class="param">Rating: <strong id="scenario-current-rating">4.50</strong>/5</div>
-                  <div class="param">Reviews: <strong id="scenario-current-reviews">100</strong></div>
-                </div>
-                <table class="scenario-table">
-                  <thead>
-                    <tr><th>${Drupal.t('Method')}</th><th>${Drupal.t('Score')}</th></tr>
-                  </thead>
-                  <tbody>
-                    <tr><td>${Drupal.t('Weighted')}</td><td><strong id="scenario-current-weighted">0.00</strong></td></tr>
-                    <tr class="recommended"><td>${Drupal.t('Bayesian')}</td><td><strong id="scenario-current-bayesian">0.00</strong></td></tr>
-                    <tr><td>${Drupal.t('Wilson')}</td><td><strong id="scenario-current-wilson">0.00</strong></td></tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <div class="scenario-box higher-rating">
-                <h4>${Drupal.t('Higher Rating, Fewer Reviews')}</h4>
-                <div class="scenario-params">
-                  <div class="param">Rating: <strong id="scenario-higher-rating">4.73</strong>/5 <span class="change">+5%</span></div>
-                  <div class="param">Reviews: <strong id="scenario-higher-reviews">70</strong> <span class="change">-30%</span></div>
-                </div>
-                <table class="scenario-table">
-                  <thead>
-                    <tr><th>${Drupal.t('Method')}</th><th>${Drupal.t('Score')}</th></tr>
-                  </thead>
-                  <tbody>
-                    <tr><td>${Drupal.t('Weighted')}</td><td><strong id="scenario-higher-weighted">0.00</strong></td></tr>
-                    <tr class="recommended"><td>${Drupal.t('Bayesian')}</td><td><strong id="scenario-higher-bayesian">0.00</strong></td></tr>
-                    <tr><td>${Drupal.t('Wilson')}</td><td><strong id="scenario-higher-wilson">0.00</strong></td></tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <div class="scenario-box lower-rating">
-                <h4>${Drupal.t('Lower Rating, More Reviews')}</h4>
-                <div class="scenario-params">
-                  <div class="param">Rating: <strong id="scenario-lower-rating">4.27</strong>/5 <span class="change">-5%</span></div>
-                  <div class="param">Reviews: <strong id="scenario-lower-reviews">130</strong> <span class="change">+30%</span></div>
-                </div>
-                <table class="scenario-table">
-                  <thead>
-                    <tr><th>${Drupal.t('Method')}</th><th>${Drupal.t('Score')}</th></tr>
-                  </thead>
-                  <tbody>
-                    <tr><td>${Drupal.t('Weighted')}</td><td><strong id="scenario-lower-weighted">0.00</strong></td></tr>
-                    <tr class="recommended"><td>${Drupal.t('Bayesian')}</td><td><strong id="scenario-lower-bayesian">0.00</strong></td></tr>
-                    <tr><td>${Drupal.t('Wilson')}</td><td><strong id="scenario-lower-wilson">0.00</strong></td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
+            <table class="scenario-comparison-table">
+              <thead>
+                <tr>
+                  <th>${Drupal.t('Scenario')}</th>
+                  <th>${Drupal.t('Rating')}</th>
+                  <th>${Drupal.t('Reviews')}</th>
+                  <th>${Drupal.t('Weighted')}</th>
+                  <th>${Drupal.t('Bayesian')}</th>
+                  <th>${Drupal.t('Wilson')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="current-row">
+                  <td><strong>${Drupal.t('Current Input')}</strong></td>
+                  <td><strong id="scenario-current-rating">4.50</strong>/5</td>
+                  <td><strong id="scenario-current-reviews">100</strong></td>
+                  <td><strong id="scenario-current-weighted">0.00</strong></td>
+                  <td class="recommended"><strong id="scenario-current-bayesian">0.00</strong></td>
+                  <td><strong id="scenario-current-wilson">0.00</strong></td>
+                </tr>
+                <tr class="higher-row">
+                  <td><strong>${Drupal.t('Higher Rating')}</strong><br><span class="change">+5% rating, -30% reviews</span></td>
+                  <td><strong id="scenario-higher-rating">4.73</strong>/5</td>
+                  <td><strong id="scenario-higher-reviews">70</strong></td>
+                  <td><strong id="scenario-higher-weighted">0.00</strong></td>
+                  <td class="recommended"><strong id="scenario-higher-bayesian">0.00</strong></td>
+                  <td><strong id="scenario-higher-wilson">0.00</strong></td>
+                </tr>
+                <tr class="lower-row">
+                  <td><strong>${Drupal.t('More Reviews')}</strong><br><span class="change">-5% rating, +30% reviews</span></td>
+                  <td><strong id="scenario-lower-rating">4.27</strong>/5</td>
+                  <td><strong id="scenario-lower-reviews">130</strong></td>
+                  <td><strong id="scenario-lower-weighted">0.00</strong></td>
+                  <td class="recommended"><strong id="scenario-lower-bayesian">0.00</strong></td>
+                  <td><strong id="scenario-lower-wilson">0.00</strong></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       `;

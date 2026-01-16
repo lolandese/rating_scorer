@@ -132,6 +132,78 @@
   font-weight: bold;
 }
 
+.rating-scorer-scenario-comparison {
+  margin-top: 3rem;
+}
+
+.rating-scorer-scenario-comparison h3 {
+  color: #333;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #0073e6;
+  padding-bottom: 0.5rem;
+}
+
+.scenario-intro {
+  color: #666;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+
+.scenario-comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+}
+
+.scenario-comparison-table thead {
+  background-color: #f8f8f8;
+  border-bottom: 2px solid #ddd;
+}
+
+.scenario-comparison-table th {
+  padding: 12px;
+  text-align: center;
+  font-weight: 600;
+  color: #333;
+}
+
+.scenario-comparison-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+}
+
+.scenario-comparison-table td:first-child {
+  text-align: left;
+  font-weight: 500;
+}
+
+.scenario-comparison-table tr.current-row {
+  background-color: #fff;
+}
+
+.scenario-comparison-table tr.higher-row {
+  background-color: #e8f5e9;
+}
+
+.scenario-comparison-table tr.lower-row {
+  background-color: #fff3e0;
+}
+
+.scenario-comparison-table td.recommended {
+  background-color: rgba(0, 115, 230, 0.08);
+  font-weight: 600;
+  color: #0073e6;
+}
+
+.scenario-comparison-table .change {
+  display: block;
+  font-size: 0.8rem;
+  color: #999;
+  font-weight: normal;
+}
+
 .rating-scorer-loading {
   text-align: center;
   padding: 2rem;
