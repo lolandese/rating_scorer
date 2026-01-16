@@ -72,6 +72,15 @@ See [Configuration](#configuration) section below for detailed setup instruction
 
 Install as you would normally install a contributed Drupal module. Visit https://www.drupal.org/node/1897420 for further information.
 
+## Integration Guide
+
+See [INTEGRATION_GUIDE.md](INTEGRATION_GUIDE.md) for detailed setup instructions with real-world examples:
+
+- **Fivestar Integration** - Set up with Fivestar rating widgets
+- **Votingapi Integration** - Extract rating data from Votingapi voting system
+- **Custom Rating Fields** - Create your own rating fields and integrate with Rating Scorer
+- **Troubleshooting** - Common issues and solutions
+
 ## Configuration
 
 ### Status Dashboard

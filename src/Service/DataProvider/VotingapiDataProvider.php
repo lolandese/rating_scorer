@@ -45,7 +45,7 @@ class VotingapiDataProvider implements RatingDataProviderInterface {
    * {@inheritdoc}
    */
   public function applies($entity) {
-    return $this->moduleHandler->moduleExists('votingapi') && 
+    return $this->moduleHandler->moduleExists('votingapi') &&
            $this->votingapiService !== NULL &&
            $entity instanceof EntityInterface;
   }

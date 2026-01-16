@@ -99,7 +99,7 @@ class RatingScorerFieldMappingForm extends EntityForm {
 
     if ($content_type) {
       $field_options = $this->getFieldOptions($content_type);
-      
+
       // Get field suggestions based on detected rating modules
       $suggestions = $this->ratingModuleDetectionService->getFieldSuggestionsForDisplay($content_type);
       $suggestion_info = '';
