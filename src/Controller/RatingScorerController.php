@@ -89,10 +89,8 @@ class RatingScorerController extends ControllerBase {
       'defaultRating' => $config->get('default_rating'),
       'defaultNumRatings' => $config->get('default_num_ratings'),
       'defaultMethod' => $config->get('default_method'),
-      'higherRatingDeviation' => $config->get('higher_rating_deviation'),
-      'higherRatingReviewsDeviation' => $config->get('higher_rating_reviews_deviation'),
-      'moreReviewsRatingDeviation' => $config->get('more_reviews_rating_deviation'),
-      'moreReviewsReviewsDeviation' => $config->get('more_reviews_reviews_deviation'),
+      'scenarioRatingDeviation' => $config->get('scenario_rating_deviation'),
+      'scenarioReviewsDeviation' => $config->get('scenario_reviews_deviation'),
     ];
 
     return [

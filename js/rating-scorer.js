@@ -15,10 +15,8 @@
       const defaultRating = config.defaultRating || 4.5;
       const defaultNumRatings = config.defaultNumRatings || 100;
       const defaultMethod = config.defaultMethod || 'bayesian';
-      const higherRatingDeviation = config.higherRatingDeviation || 5;
-      const higherRatingReviewsDeviation = config.higherRatingReviewsDeviation || -30;
-      const moreReviewsRatingDeviation = config.moreReviewsRatingDeviation || -5;
-      const moreReviewsReviewsDeviation = config.moreReviewsReviewsDeviation || 30;
+      const defaultScenarioRatingDeviation = config.scenarioRatingDeviation || 5;
+      const defaultScenarioReviewsDeviation = config.scenarioReviewsDeviation || 30;
 
       // Create the calculator interface
       container.innerHTML = `
@@ -56,6 +54,26 @@
                   <button class="adjust-btn adjust-up" data-field="min-ratings" data-delta="1" title="${Drupal.t('Increase threshold')}">+</button>
                 </div>
               </div>
+
+              <div class="control-group">
+                <label for="scenario-rating-dev-input">${Drupal.t('Rating Deviation')}</label>
+                <div class="slider-with-buttons">
+                  <button class="adjust-btn adjust-down" data-field="scenario-rating-dev" data-delta="-1" title="${Drupal.t('Decrease deviation')}">−</button>
+                  <input type="number" id="scenario-rating-dev-input" min="0" max="100" step="1" value="${Math.round(defaultScenarioRatingDeviation)}" title="${Drupal.t('Scenario rating deviation')}">
+                  <span class="input-unit">%</span>
+                  <button class="adjust-btn adjust-up" data-field="scenario-rating-dev" data-delta="1" title="${Drupal.t('Increase deviation')}">+</button>
+                </div>
+              </div>
+
+              <div class="control-group">
+                <label for="scenario-reviews-dev-input">${Drupal.t('Reviews Deviation')}</label>
+                <div class="slider-with-buttons">
+                  <button class="adjust-btn adjust-down" data-field="scenario-reviews-dev" data-delta="-1" title="${Drupal.t('Decrease deviation')}">−</button>
+                  <input type="number" id="scenario-reviews-dev-input" min="0" max="100" step="1" value="${Math.round(defaultScenarioReviewsDeviation)}" title="${Drupal.t('Scenario reviews deviation')}">
+                  <span class="input-unit">%</span>
+                  <button class="adjust-btn adjust-up" data-field="scenario-reviews-dev" data-delta="1" title="${Drupal.t('Increase deviation')}">+</button>
+                </div>
+              </div>
             </div>
 
             <div class="rating-scorer-scenario-comparison">
@@ -84,7 +102,7 @@
                   <td><strong id="scenario-current-wilson">0.00</strong></td>
                 </tr>
                 <tr class="higher-row">
-                  <td><strong>${Drupal.t('Higher Rating')}</strong><br><span class="change">+5% rating, -30% reviews</span></td>
+                  <td><strong>${Drupal.t('Higher Rating')}</strong><br><span class="change" id="higher-scenario-subtitle">+5% rating, -30% reviews</span></td>
                   <td><strong id="scenario-higher-rating">4.73</strong>/5</td>
                   <td><strong id="scenario-higher-reviews">70</strong></td>
                   <td><strong id="scenario-higher-weighted">0.00</strong></td>
@@ -92,7 +110,7 @@
                   <td><strong id="scenario-higher-wilson">0.00</strong></td>
                 </tr>
                 <tr class="lower-row">
-                  <td><strong>${Drupal.t('More Reviews')}</strong><br><span class="change">-5% rating, +30% reviews</span></td>
+                  <td><strong>${Drupal.t('More Reviews')}</strong><br><span class="change" id="lower-scenario-subtitle">-5% rating, +30% reviews</span></td>
                   <td><strong id="scenario-lower-rating">4.27</strong>/5</td>
                   <td><strong id="scenario-lower-reviews">130</strong></td>
                   <td><strong id="scenario-lower-weighted">0.00</strong></td>
@@ -152,9 +170,13 @@
       const ratingInput = document.getElementById('rating-input');
       const numRatingsInput = document.getElementById('num-ratings-input');
       const minRatingsInput = document.getElementById('min-ratings-input');
+      const scenarioRatingDevInput = document.getElementById('scenario-rating-dev-input');
+      const scenarioReviewsDevInput = document.getElementById('scenario-reviews-dev-input');
       const bayesianHeader = document.getElementById('bayesian-header');
       const thresholdValue = document.getElementById('threshold-value');
       const assumedAverageValue = document.getElementById('assumed-average-value');
+      const higherScenarioSubtitle = document.getElementById('higher-scenario-subtitle');
+      const lowerScenarioSubtitle = document.getElementById('lower-scenario-subtitle');
 
       // Scenario elements
       const scenarioCurrentRating = document.getElementById('scenario-current-rating');
@@ -179,6 +201,8 @@
         const rating = parseFloat(ratingInput.value);
         const numRatings = parseInt(numRatingsInput.value);
         const minRatings = parseInt(minRatingsInput.value);
+        const scenarioRatingDev = parseFloat(scenarioRatingDevInput.value);
+        const scenarioReviewsDev = parseFloat(scenarioReviewsDevInput.value);
 
         // Calculate all three methods for current input
         const weightedScore = calculateWeightedScore(rating, numRatings);
@@ -186,10 +210,10 @@
         const wilsonScore = calculateWilsonScore(rating, numRatings);
 
         // Calculate scenarios with configurable deviations
-        const higherRating = Math.min(5, rating * (1 + higherRatingDeviation / 100));
-        const higherReviews = Math.round(numRatings * (1 + higherRatingReviewsDeviation / 100));
-        const lowerRating = rating * (1 + moreReviewsRatingDeviation / 100);
-        const lowerReviews = Math.round(numRatings * (1 + moreReviewsReviewsDeviation / 100));
+        const higherRating = Math.min(5, rating * (1 + scenarioRatingDev / 100));
+        const higherReviews = Math.max(0, Math.round(numRatings * (1 - scenarioReviewsDev / 100)));
+        const lowerRating = Math.max(0, rating * (1 - scenarioRatingDev / 100));
+        const lowerReviews = Math.max(0, Math.round(numRatings * (1 + scenarioReviewsDev / 100)));
 
         const higherWeighted = calculateWeightedScore(higherRating, higherReviews);
         const higherBayesian = calculateBayesianScore(higherRating, higherReviews, minRatings);
@@ -198,6 +222,10 @@
         const lowerWeighted = calculateWeightedScore(lowerRating, lowerReviews);
         const lowerBayesian = calculateBayesianScore(lowerRating, lowerReviews, minRatings);
         const lowerWilson = calculateWilsonScore(lowerRating, lowerReviews);
+
+        // Update scenario subtitles dynamically
+        higherScenarioSubtitle.textContent = `+${scenarioRatingDev}% rating, -${scenarioReviewsDev}% reviews`;
+        lowerScenarioSubtitle.textContent = `-${scenarioRatingDev}% rating, +${scenarioReviewsDev}% reviews`;
 
         // Update scenario displays
         scenarioCurrentRating.textContent = rating.toFixed(2);
@@ -231,29 +259,20 @@
           ? [scenarioCurrentBayesian, scenarioHigherBayesian, scenarioLowerBayesian]
           : [scenarioCurrentWilson, scenarioHigherWilson, scenarioLowerWilson];
 
-        // Clear previous content and classes
-        elements.forEach(el => {
-          el.classList.remove('highest-score', 'lowest-score');
-          // Store the original numeric value
-          const value = el.textContent;
-          el.dataset.value = value;
-        });
-
-        // Find max and min scores
-        const maxScore = Math.max(...scores);
-        const minScore = Math.min(...scores);
+        // Round scores to 2 decimals for display comparison
+        const roundedScores = scores.map(s => Math.round(s * 100) / 100);
+        const maxScore = Math.max(...roundedScores);
+        const minScore = Math.min(...roundedScores);
 
         // Apply classes to elements with highest and lowest scores
         elements.forEach((el, index) => {
-          const value = parseFloat(el.dataset.value);
-          if (scores[index] === maxScore && maxScore !== minScore) {
+          el.classList.remove('highest-score', 'lowest-score');
+          const displayValue = scores[index].toFixed(2);
+          if (roundedScores[index] === maxScore && maxScore !== minScore) {
             el.classList.add('highest-score');
-            el.textContent = '★ ' + el.dataset.value;
-          } else if (scores[index] === minScore && maxScore !== minScore) {
-            el.classList.add('lowest-score');
-            el.textContent = el.dataset.value;
+            el.textContent = '★ ' + displayValue;
           } else {
-            el.textContent = el.dataset.value;
+            el.textContent = displayValue;
           }
         });
       }
@@ -301,6 +320,12 @@
         calculateScore();
       });
 
+      scenarioRatingDevInput.addEventListener('change', calculateScore);
+      scenarioRatingDevInput.addEventListener('input', calculateScore);
+
+      scenarioReviewsDevInput.addEventListener('change', calculateScore);
+      scenarioReviewsDevInput.addEventListener('input', calculateScore);
+
       // Handle +/- buttons
       const adjustButtons = document.querySelectorAll('.adjust-btn');
       adjustButtons.forEach(btn => {
@@ -318,6 +343,12 @@
           } else if (field === 'min-ratings') {
             const newValue = Math.max(1, Math.min(100, parseInt(minRatingsInput.value) + delta));
             minRatingsInput.value = newValue;
+          } else if (field === 'scenario-rating-dev') {
+            const newValue = Math.max(0, Math.min(100, parseFloat(scenarioRatingDevInput.value) + delta));
+            scenarioRatingDevInput.value = newValue;
+          } else if (field === 'scenario-reviews-dev') {
+            const newValue = Math.max(0, Math.min(100, parseFloat(scenarioReviewsDevInput.value) + delta));
+            scenarioReviewsDevInput.value = newValue;
           }
 
           updateBayesianHeader();
@@ -325,9 +356,9 @@
         });
       });
 
+      // Initialize scores on page load
       updateBayesianHeader();
       calculateScore();
     }
   };
-
 })(Drupal, drupalSettings);

@@ -3,7 +3,5 @@ bayesian_assumed_average: 3.5
 default_rating: 4.5
 default_num_ratings: 100
 default_method: 'bayesian'
-higher_rating_deviation: 5
-higher_rating_reviews_deviation: -30
-more_reviews_rating_deviation: -5
-more_reviews_reviews_deviation: 30
+scenario_rating_deviation: 5
+scenario_reviews_deviation: 30
