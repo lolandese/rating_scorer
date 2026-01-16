@@ -50,8 +50,8 @@ class RatingScorerSettingsForm extends ConfigFormBase {
       '#title' => $this->t('Bayesian assumed average'),
       '#description' => $this->t('The default assumption for the average rating used in Bayesian calculations. This represents what initial score a new item starts with before any ratings are gathered. Default is 3.5 for a 5-star scale.'),
       '#default_value' => $config->get('bayesian_assumed_average'),
-      '#min' => 0,
-      '#max' => 5,
+      '#min' => 2.5,
+      '#max' => 4.5,
       '#step' => 0.1,
       '#required' => TRUE,
     ];
