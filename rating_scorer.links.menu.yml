@@ -1,4 +1,5 @@
 rating_scorer.settings:
   title: 'Rating Scorer'
   route_name: rating_scorer.dashboard
-  weight: 10
+  description: 'Configure rating scorer parameters'
+  parent: system.admin_config_content
