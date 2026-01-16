@@ -77,6 +77,61 @@
   color: #666;
 }
 
+.rating-scorer-comparison {
+  margin-top: 2rem;
+}
+
+.rating-scorer-comparison h3 {
+  color: #333;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #0073e6;
+  padding-bottom: 0.5rem;
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+.comparison-table thead {
+  background-color: #f8f8f8;
+  border-bottom: 2px solid #ddd;
+}
+
+.comparison-table th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+}
+
+.comparison-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.comparison-table tr.recommended {
+  background-color: #f0f8ff;
+}
+
+.score-cell {
+  text-align: right;
+  font-weight: 600;
+  color: #0073e6;
+  min-width: 80px;
+}
+
+.desc-cell {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.recommended-badge {
+  color: #0073e6;
+  font-weight: bold;
+}
+
 .rating-scorer-loading {
   text-align: center;
   padding: 2rem;

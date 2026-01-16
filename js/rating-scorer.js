@@ -52,6 +52,36 @@
           </div>
           
           <div class="rating-scorer-description" id="method-description"></div>
+          
+          <div class="rating-scorer-comparison">
+            <h3>${Drupal.t('Comparison of All Scoring Methods')}</h3>
+            <table class="comparison-table">
+              <thead>
+                <tr>
+                  <th>${Drupal.t('Method')}</th>
+                  <th>${Drupal.t('Score')}</th>
+                  <th>${Drupal.t('Description')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>${Drupal.t('Weighted Score')}</strong></td>
+                  <td class="score-cell"><strong id="compare-weighted">0.00</strong></td>
+                  <td class="desc-cell">${Drupal.t('Favors high-volume ratings; simple to understand')}</td>
+                </tr>
+                <tr class="recommended">
+                  <td><strong>${Drupal.t('Bayesian Average')}</strong> <span class="recommended-badge">★ ${Drupal.t('Recommended')}</span></td>
+                  <td class="score-cell"><strong id="compare-bayesian">0.00</strong></td>
+                  <td class="desc-cell">${Drupal.t('Prevents gaming; requires confidence through volume')}</td>
+                </tr>
+                <tr>
+                  <td><strong>${Drupal.t('Wilson Score')}</strong></td>
+                  <td class="score-cell"><strong id="compare-wilson">0.00</strong></td>
+                  <td class="desc-cell">${Drupal.t('Most conservative; penalizes items with few ratings')}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       `;
 
@@ -65,6 +95,9 @@
       const minRatingsControl = document.getElementById('min-ratings-control');
       const finalScore = document.getElementById('final-score');
       const methodDescription = document.getElementById('method-description');
+      const compareWeighted = document.getElementById('compare-weighted');
+      const compareBayesian = document.getElementById('compare-bayesian');
+      const compareWilson = document.getElementById('compare-wilson');
 
       methodSelect.value = defaultMethod;
 
@@ -74,34 +107,53 @@
         const method = methodSelect.value;
         const minRatings = parseInt(minRatingsSlider.value);
 
-        let score = 0;
+        // Calculate all three methods
+        const weightedScore = calculateWeightedScore(rating, numRatings);
+        const bayesianScore = calculateBayesianScore(rating, numRatings, minRatings);
+        const wilsonScore = calculateWilsonScore(rating, numRatings);
 
+        // Update the final score based on selected method
+        let score = 0;
         switch (method) {
           case 'weighted':
-            score = rating * Math.log10(numRatings + 1);
+            score = weightedScore;
             break;
           case 'bayesian':
-            const C = 3.5;
-            score = (numRatings / (numRatings + minRatings)) * rating + (minRatings / (numRatings + minRatings)) * C;
+            score = bayesianScore;
             break;
           case 'wilson':
-            if (numRatings === 0) {
-              score = 0;
-            } else {
-              const maxRating = 5;
-              const p = rating / maxRating;
-              const n = numRatings;
-              const z = 1.96;
-              const left = p + (z * z) / (2 * n);
-              const right = z * Math.sqrt((p * (1 - p) + (z * z) / (4 * n)) / n);
-              const under = 1 + (z * z) / n;
-              score = ((left - right) / under) * maxRating;
-            }
+            score = wilsonScore;
             break;
         }
 
         finalScore.textContent = score.toFixed(2);
+        compareWeighted.textContent = weightedScore.toFixed(2);
+        compareBayesian.textContent = bayesianScore.toFixed(2);
+        compareWilson.textContent = wilsonScore.toFixed(2);
         updateDescription(method);
+      }
+
+      function calculateWeightedScore(rating, numRatings) {
+        return rating * Math.log10(numRatings + 1);
+      }
+
+      function calculateBayesianScore(rating, numRatings, minRatings) {
+        const C = 3.5;
+        return (numRatings / (numRatings + minRatings)) * rating + (minRatings / (numRatings + minRatings)) * C;
+      }
+
+      function calculateWilsonScore(rating, numRatings) {
+        if (numRatings === 0) {
+          return 0;
+        }
+        const maxRating = 5;
+        const p = rating / maxRating;
+        const n = numRatings;
+        const z = 1.96;
+        const left = p + (z * z) / (2 * n);
+        const right = z * Math.sqrt((p * (1 - p) + (z * z) / (4 * n)) / n);
+        const under = 1 + (z * z) / n;
+        return ((left - right) / under) * maxRating;
       }
 
       function updateDescription(method) {
