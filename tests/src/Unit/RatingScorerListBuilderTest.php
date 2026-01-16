@@ -18,7 +18,7 @@ class RatingScorerListBuilderTest extends UnitTestCase {
   public function testListBuilderHasRenderMethod(): void {
     $reflection = new \ReflectionClass(RatingScorerFieldMappingListBuilder::class);
     $this->assertTrue($reflection->hasMethod('render'));
-    
+
     $method = $reflection->getMethod('render');
     $this->assertTrue($method->isPublic());
   }

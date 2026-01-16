@@ -487,7 +487,7 @@ Tests validate:
   - Tests for forms, controllers, ListBuilder, blocks, admin interface, recalculation logic
   - All syntax validated, 25 unit tests passing
   - Ready for full Drupal test database execution
-  
+
 - ✅ **Documentation**: Updated README.md and DEVELOPMENT_HISTORY.md to reflect current state
   - README now documents computed field as primary feature
   - Removed Views handler documentation
@@ -496,7 +496,7 @@ Tests validate:
 
 **Key Implementation Details** (Current State):
 - **Scoring**: 3 algorithms (Weighted, Bayesian, Wilson) with per-content-type configuration
-- **Auto-Calculation**: 
+- **Auto-Calculation**:
   - `hook_entity_presave()` for initial score calculation on content save
   - `hook_entity_update()` for recalculation when Field Mapping config changes
 - **Admin UI**: 3-tab structure (Field Mappings parent, Calculator, Defaults)

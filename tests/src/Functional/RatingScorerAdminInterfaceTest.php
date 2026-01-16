@@ -85,7 +85,7 @@ class RatingScorerAdminInterfaceTest extends BrowserTestBase {
 
     $this->drupalGet('/admin/config/rating-scorer');
     $this->assertSession()->statusCodeEquals(200);
-    
+
     // All three tabs should be visible
     $this->assertSession()->linkExists('Field Mappings');
     $this->assertSession()->linkExists('Calculator');
@@ -104,7 +104,7 @@ class RatingScorerAdminInterfaceTest extends BrowserTestBase {
 
     $this->drupalGet('/admin/config/rating-scorer');
     $this->assertSession()->statusCodeEquals(200);
-    
+
     // The "+ Add a field mapping" link should be present
     $this->assertSession()->pageTextContains('+ Add a field mapping');
   }
@@ -121,7 +121,7 @@ class RatingScorerAdminInterfaceTest extends BrowserTestBase {
 
     $this->drupalGet('/admin/config/rating-scorer/settings');
     $this->assertSession()->statusCodeEquals(200);
-    
+
     // The clarifying note should be visible
     $this->assertSession()->pageTextContains('default settings apply only to the Calculator widget');
   }
@@ -138,7 +138,7 @@ class RatingScorerAdminInterfaceTest extends BrowserTestBase {
 
     $this->drupalGet('/admin/config/rating-scorer/calculator');
     $this->assertSession()->statusCodeEquals(200);
-    
+
     // The purpose message should be visible
     $this->assertSession()->pageTextContains('understand how different scoring methods combine ratings');
   }

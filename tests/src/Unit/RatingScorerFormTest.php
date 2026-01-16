@@ -17,7 +17,7 @@ class RatingScorerFormTest extends UnitTestCase {
    */
   public function testSettingsFormHasClarifyingNote(): void {
     $this->assertTrue(class_exists(RatingScorerSettingsForm::class));
-    
+
     // Verify the form class can be instantiated
     $reflection = new \ReflectionClass(RatingScorerSettingsForm::class);
     $this->assertTrue($reflection->hasMethod('buildForm'));
@@ -28,7 +28,7 @@ class RatingScorerFormTest extends UnitTestCase {
    */
   public function testSettingsFormHasCalculatorDefaultFields(): void {
     $reflection = new \ReflectionClass(RatingScorerSettingsForm::class);
-    
+
     // Verify buildForm method exists and is public
     $method = $reflection->getMethod('buildForm');
     $this->assertTrue($method->isPublic());

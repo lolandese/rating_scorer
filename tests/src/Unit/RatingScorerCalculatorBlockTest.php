@@ -25,7 +25,7 @@ class RatingScorerCalculatorBlockTest extends UnitTestCase {
   public function testCalculatorBlockHasBuildMethod(): void {
     $reflection = new \ReflectionClass(RatingScorerCalculatorBlock::class);
     $this->assertTrue($reflection->hasMethod('build'));
-    
+
     $method = $reflection->getMethod('build');
     $this->assertTrue($method->isPublic());
   }
@@ -35,7 +35,7 @@ class RatingScorerCalculatorBlockTest extends UnitTestCase {
    */
   public function testCalculatorBlockExtendsBlockBase(): void {
     $reflection = new \ReflectionClass(RatingScorerCalculatorBlock::class);
-    
+
     // Check parent class
     $parent = $reflection->getParentClass();
     $this->assertNotNull($parent);

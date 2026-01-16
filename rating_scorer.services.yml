@@ -3,3 +3,13 @@ services:
     class: Drupal\rating_scorer\Service\RatingScoreCalculator
     arguments:
       - '@entity_type.manager'
+  rating_scorer.field_detection:
+    class: Drupal\rating_scorer\Service\FieldDetectionService
+    arguments:
+      - '@entity_type.manager'
+      - '@plugin.manager.field.field_type'
+
+  rating_scorer.field_creation:
+    class: Drupal\rating_scorer\Service\FieldCreationService
+    arguments:
+      - '@entity_type.manager'

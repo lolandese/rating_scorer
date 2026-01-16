@@ -130,7 +130,7 @@ class RatingScorerFieldMappingForm extends EntityForm {
     // Generate ID as node_{content_type}
     $content_type = $form_state->getValue('content_type');
     $id = 'node_' . $content_type;
-    
+
     $mapping->set('id', $id);
     $mapping->set('label', $form_state->getValue('label'));
     $mapping->set('content_type', $content_type);
@@ -152,7 +152,7 @@ class RatingScorerFieldMappingForm extends EntityForm {
         ->accessCheck(FALSE)
         ->condition('type', $content_type)
         ->execute();
-      
+
       $count = count($nids);
       $this->messenger()->addMessage($this->t('Field mapping %label has been updated. Rating scores have been recalculated for @count items with the new configuration.', [
         '%label' => $mapping->label(),

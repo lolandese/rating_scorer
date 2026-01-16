@@ -58,7 +58,7 @@ class RatingScorerController extends ControllerBase {
   public function fieldMappingsList() {
     $list_builder = $this->entityTypeManager
       ->getListBuilder('rating_scorer_field_mapping');
-    
+
     // Return the list builder render array directly - it handles all rendering
     return $list_builder->render();
   }

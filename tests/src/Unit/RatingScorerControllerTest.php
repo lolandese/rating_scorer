@@ -18,7 +18,7 @@ class RatingScorerControllerTest extends UnitTestCase {
   public function testFieldMappingsListMethodExists(): void {
     $reflection = new \ReflectionClass(RatingScorerController::class);
     $this->assertTrue($reflection->hasMethod('fieldMappingsList'));
-    
+
     $method = $reflection->getMethod('fieldMappingsList');
     $this->assertTrue($method->isPublic());
   }
@@ -29,7 +29,7 @@ class RatingScorerControllerTest extends UnitTestCase {
   public function testCalculatorMethodExists(): void {
     $reflection = new \ReflectionClass(RatingScorerController::class);
     $this->assertTrue($reflection->hasMethod('calculator'));
-    
+
     $method = $reflection->getMethod('calculator');
     $this->assertTrue($method->isPublic());
   }
@@ -39,7 +39,7 @@ class RatingScorerControllerTest extends UnitTestCase {
    */
   public function testControllerMethodsReturnRenderArrays(): void {
     $reflection = new \ReflectionClass(RatingScorerController::class);
-    
+
     // Both methods should exist and be public
     $this->assertTrue($reflection->hasMethod('fieldMappingsList'));
     $this->assertTrue($reflection->hasMethod('calculator'));

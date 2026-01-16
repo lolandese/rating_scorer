@@ -30,6 +30,14 @@ rating_scorer.field_mapping_add:
   requirements:
     _permission: 'administer rating scorer'
 
+rating_scorer.field_mapping_wizard:
+  path: '/admin/config/rating-scorer/field-mapping/wizard'
+  defaults:
+    _form: '\Drupal\rating_scorer\Form\FieldMappingWizardForm'
+    _title: 'New Field Mapping'
+  requirements:
+    _permission: 'administer rating scorer'
+
 rating_scorer.field_mapping_edit:
   path: '/admin/config/rating-scorer/field-mapping/{rating_scorer_field_mapping}/edit'
   defaults:
