@@ -57,12 +57,6 @@
                   <th><span id="bayesian-header" class="bayesian-header-text">${Drupal.t('Bayesian')}</span></th>
                   <th>${Drupal.t('Wilson')}</th>
                 </tr>
-                <tr class="threshold-row">
-                  <td colspan="3" class="threshold-label">${Drupal.t('Min. Ratings Threshold:')}</td>
-                  <td class="threshold-value">${Drupal.t('N/A')}</td>
-                  <td class="threshold-value recommended"><strong id="threshold-value">${minRatings}</strong></td>
-                  <td class="threshold-value">${Drupal.t('N/A')}</td>
-                </tr>
               </thead>
               <tbody>
                 <tr class="current-row">

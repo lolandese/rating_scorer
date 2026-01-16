@@ -92,11 +92,6 @@ class RatingScorerController extends ControllerBase {
     ];
 
     return [
-      'info' => [
-        '#type' => 'markup',
-        '#markup' => '<div class="messages messages--info"><strong>' . $this->t('Purpose') . ':</strong> ' . $this->t('Use this calculator to understand how different scoring methods combine ratings and review counts. This helps you verify your chosen calculation method and adjust settings before applying them to your content.') . '</div><div class="messages messages--info"><strong>' . $this->t('Block Available') . ':</strong> ' . $this->t('This calculator is also available as a block. You can place it on any page by visiting the <a href="@block-layout">block layout page</a>.', ['@block-layout' => '/admin/structure/block']) . '</div>',
-        '#weight' => -100,
-      ],
       'calculator' => [
         '#theme' => 'rating_scorer',
         '#attached' => [
@@ -107,6 +102,11 @@ class RatingScorerController extends ControllerBase {
             'ratingScorer' => $settings,
           ],
         ],
+      ],
+      'info' => [
+        '#type' => 'markup',
+        '#markup' => '<div class="messages messages--info"><strong>' . $this->t('Purpose') . ':</strong> ' . $this->t('Use this calculator to understand how different scoring methods combine ratings and review counts. This helps you verify your chosen calculation method and adjust settings before applying them to your content.') . '</div><div class="messages messages--info"><strong>' . $this->t('Public Block') . ':</strong> ' . $this->t('This calculator is available as a block and can be placed on any page in your site. You can configure it to showcase the rating algorithms to end users, helping them understand your scoring methodology. Visit the <a href="@block-layout">block layout page</a> to add it to any publicly accessible page.', ['@block-layout' => '/admin/structure/block']) . '</div>',
+        '#weight' => 100,
       ],
     ];
   }
