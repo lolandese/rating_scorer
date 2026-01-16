@@ -190,6 +190,38 @@
         scenarioLowerWeighted.textContent = lowerWeighted.toFixed(2);
         scenarioLowerBayesian.textContent = lowerBayesian.toFixed(2);
         scenarioLowerWilson.textContent = lowerWilson.toFixed(2);
+
+        // Highlight highest and lowest scores in each method column
+        highlightScoreExtremes('weighted', [weightedScore, higherWeighted, lowerWeighted]);
+        highlightScoreExtremes('bayesian', [bayesianScore, higherBayesian, lowerBayesian]);
+        highlightScoreExtremes('wilson', [wilsonScore, higherWilson, lowerWilson]);
+      }
+
+      function highlightScoreExtremes(method, scores) {
+        const elements = method === 'weighted' 
+          ? [scenarioCurrentWeighted, scenarioHigherWeighted, scenarioLowerWeighted]
+          : method === 'bayesian'
+          ? [scenarioCurrentBayesian, scenarioHigherBayesian, scenarioLowerBayesian]
+          : [scenarioCurrentWilson, scenarioHigherWilson, scenarioLowerWilson];
+
+        // Clear previous classes
+        elements.forEach(el => {
+          el.classList.remove('highest-score', 'lowest-score');
+        });
+
+        // Find max and min scores
+        const maxScore = Math.max(...scores);
+        const minScore = Math.min(...scores);
+
+        // Apply classes to elements with highest and lowest scores
+        elements.forEach((el, index) => {
+          if (scores[index] === maxScore && maxScore !== minScore) {
+            el.classList.add('highest-score');
+          }
+          if (scores[index] === minScore && maxScore !== minScore) {
+            el.classList.add('lowest-score');
+          }
+        });
       }
 
       function calculateWeightedScore(rating, numRatings) {

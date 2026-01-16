@@ -158,6 +158,16 @@
   font-weight: 600;
 }
 
+.scenario-comparison-table .highest-score {
+  font-size: 1.1em;
+  font-weight: 700;
+}
+
+.scenario-comparison-table .lowest-score {
+  font-size: 0.85em;
+  opacity: 0.75;
+}
+
 .rating-scorer-scenario-comparison {
   margin-top: 3rem;
 }
