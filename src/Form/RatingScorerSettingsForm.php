@@ -30,9 +30,20 @@ class RatingScorerSettingsForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('rating_scorer.settings');
 
-    $form['info'] = [
+    $form['bayesian_assumed_average'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Bayesian assumed average'),
+      '#description' => $this->t('The default assumption for the average rating used in Bayesian calculations. This represents what initial score a new item starts with before any ratings are gathered. This setting is used system-wide for all Bayesian scoring calculations. Default is 3.5 for a 5-star scale.'),
+      '#default_value' => $config->get('bayesian_assumed_average'),
+      '#min' => 2.5,
+      '#max' => 4.5,
+      '#step' => 0.1,
+      '#required' => TRUE,
+    ];
+
+    $form['calculator_defaults'] = [
       '#type' => 'markup',
-      '#markup' => '<div class="description"><p><strong>' . $this->t('Note:') . '</strong> ' . $this->t('These settings are used system-wide: the assumed average and minimum ratings threshold affect all Bayesian scoring calculations, including automatic field scoring and the calculator widget.') . '</p></div>',
+      '#markup' => '<h3>' . $this->t('Calculator Widget Defaults') . '</h3><p><strong>' . $this->t('Note:') . '</strong> ' . $this->t('The following default settings apply only to the Calculator widget displayed on admin pages.') . '</p>',
     ];
 
     $form['default_minimum_ratings'] = [
@@ -42,17 +53,6 @@ class RatingScorerSettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('default_minimum_ratings'),
       '#min' => 1,
       '#max' => 100,
-      '#required' => TRUE,
-    ];
-
-    $form['bayesian_assumed_average'] = [
-      '#type' => 'number',
-      '#title' => $this->t('Bayesian assumed average'),
-      '#description' => $this->t('The default assumption for the average rating used in Bayesian calculations. This represents what initial score a new item starts with before any ratings are gathered. Default is 3.5 for a 5-star scale.'),
-      '#default_value' => $config->get('bayesian_assumed_average'),
-      '#min' => 2.5,
-      '#max' => 4.5,
-      '#step' => 0.1,
       '#required' => TRUE,
     ];
 
