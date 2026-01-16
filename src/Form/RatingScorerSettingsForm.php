@@ -43,7 +43,7 @@ class RatingScorerSettingsForm extends ConfigFormBase {
 
     $form['calculator_defaults'] = [
       '#type' => 'markup',
-      '#markup' => '<h3>' . $this->t('Calculator Widget Defaults') . '</h3><p><strong>' . $this->t('Note:') . '</strong> ' . $this->t('The following default settings apply only to the Calculator widget displayed on admin pages.') . '</p>',
+      '#markup' => '<h3>' . $this->t('Calculator Widget Defaults') . '</h3><p><strong>' . $this->t('Note:') . '</strong> ' . $this->t('The following default settings apply to the Calculator widget, whether displayed on admin pages or as a block on the front end.') . '</p>',
     ];
 
     $form['default_minimum_ratings'] = [
