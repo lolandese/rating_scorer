@@ -11,6 +11,7 @@
 
       const config = drupalSettings.ratingScorer || {};
       const minRatings = config.defaultMinimumRatings || 1;
+      const bayesianAssumedAverage = config.bayesianAssumedAverage || 3.5;
       const defaultRating = config.defaultRating || 4.5;
       const defaultNumRatings = config.defaultNumRatings || 100;
       const defaultMethod = config.defaultMethod || 'bayesian';
@@ -113,7 +114,7 @@
                 </tr>
                 <tr class="recommended">
                   <td><strong>${Drupal.t('Bayesian Average')}</strong> <span class="recommended-badge">★ ${Drupal.t('Recommended')}</span></td>
-                  <td class="desc-cell">${Drupal.t('Blends the actual rating with an assumed average (3.5), weighted by the number of ratings. Requires more ratings to pull away from the average. Configurable via the Minimum Ratings Threshold.')}</td>
+                  <td class="desc-cell">${Drupal.t('Blends the actual rating with an assumed average (') + bayesianAssumedAverage.toFixed(1) + Drupal.t('), weighted by the number of ratings. Requires more ratings to pull away from the average. Configurable via the Minimum Ratings Threshold.')}</td>
                 </tr>
                 <tr>
                   <td><strong>${Drupal.t('Wilson Score')}</strong></td>
@@ -241,8 +242,7 @@
       }
 
       function calculateBayesianScore(rating, numRatings, minRatings) {
-        const C = 3.5;
-        return (numRatings / (numRatings + minRatings)) * rating + (minRatings / (numRatings + minRatings)) * C;
+        return (numRatings / (numRatings + minRatings)) * rating + (minRatings / (numRatings + minRatings)) * bayesianAssumedAverage;
       }
 
       function calculateWilsonScore(rating, numRatings) {

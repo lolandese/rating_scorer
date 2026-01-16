@@ -1,4 +1,5 @@
 default_minimum_ratings: 7
+bayesian_assumed_average: 3.5
 default_rating: 4.5
 default_num_ratings: 100
 default_method: 'bayesian'

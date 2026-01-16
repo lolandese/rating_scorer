@@ -45,6 +45,17 @@ class RatingScorerSettingsForm extends ConfigFormBase {
       '#required' => TRUE,
     ];
 
+    $form['bayesian_assumed_average'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Bayesian assumed average'),
+      '#description' => $this->t('The default assumption for the average rating used in Bayesian calculations. This represents what initial score a new item starts with before any ratings are gathered. Default is 3.5 for a 5-star scale.'),
+      '#default_value' => $config->get('bayesian_assumed_average'),
+      '#min' => 0,
+      '#max' => 5,
+      '#step' => 0.1,
+      '#required' => TRUE,
+    ];
+
     $form['default_rating'] = [
       '#type' => 'number',
       '#title' => $this->t('Default rating value'),
@@ -88,6 +99,7 @@ class RatingScorerSettingsForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->config('rating_scorer.settings')
       ->set('default_minimum_ratings', $form_state->getValue('default_minimum_ratings'))
+      ->set('bayesian_assumed_average', $form_state->getValue('bayesian_assumed_average'))
       ->set('default_rating', $form_state->getValue('default_rating'))
       ->set('default_num_ratings', $form_state->getValue('default_num_ratings'))
       ->set('default_method', $form_state->getValue('default_method'))

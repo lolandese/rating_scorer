@@ -6,6 +6,9 @@ rating_scorer.settings:
     default_minimum_ratings:
       type: integer
       label: 'Default minimum ratings threshold'
+    bayesian_assumed_average:
+      type: float
+      label: 'Bayesian assumed average'
     default_rating:
       type: float
       label: 'Default rating value'
