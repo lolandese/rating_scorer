@@ -89,6 +89,11 @@
                   <td><strong id="scenario-lower-wilson">0.00</strong></td>
                 </tr>
               </tbody>
+              <tfoot>
+                <tr class="table-footer">
+                  <td colspan="6" class="footer-text">★ = Highest score in that method column</td>
+                </tr>
+              </tfoot>
             </table>
           </div>
 
@@ -204,9 +209,12 @@
           ? [scenarioCurrentBayesian, scenarioHigherBayesian, scenarioLowerBayesian]
           : [scenarioCurrentWilson, scenarioHigherWilson, scenarioLowerWilson];
 
-        // Clear previous classes
+        // Clear previous content and classes
         elements.forEach(el => {
           el.classList.remove('highest-score', 'lowest-score');
+          // Store the original numeric value
+          const value = el.textContent;
+          el.dataset.value = value;
         });
 
         // Find max and min scores
@@ -215,11 +223,15 @@
 
         // Apply classes to elements with highest and lowest scores
         elements.forEach((el, index) => {
+          const value = parseFloat(el.dataset.value);
           if (scores[index] === maxScore && maxScore !== minScore) {
             el.classList.add('highest-score');
-          }
-          if (scores[index] === minScore && maxScore !== minScore) {
+            el.textContent = '★ ' + el.dataset.value;
+          } else if (scores[index] === minScore && maxScore !== minScore) {
             el.classList.add('lowest-score');
+            el.textContent = el.dataset.value;
+          } else {
+            el.textContent = el.dataset.value;
           }
         });
       }

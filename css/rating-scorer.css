@@ -161,11 +161,35 @@
 .scenario-comparison-table .highest-score {
   font-size: 1.1em;
   font-weight: 700;
+  color: #d4a300;
 }
 
 .scenario-comparison-table .lowest-score {
   font-size: 0.85em;
   opacity: 0.75;
+}
+
+.scenario-comparison-table tfoot {
+  background-color: #f5f5f5;
+  border-top: 2px solid #ddd;
+}
+
+.scenario-comparison-table .table-footer {
+  text-align: center;
+}
+
+.scenario-comparison-table .footer-text {
+  font-size: 0.85rem;
+  color: #666;
+  font-style: italic;
+  padding: 12px;
+}
+
+.scenario-comparison-table .footer-text {
+  font-size: 0.85rem;
+  color: #666;
+  font-style: italic;
+  padding: 12px;
 }
 
 .rating-scorer-scenario-comparison {
