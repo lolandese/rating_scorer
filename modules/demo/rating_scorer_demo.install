@@ -301,7 +301,7 @@ function rating_scorer_demo_install() {
         // Add sample votes with field name for Fivestar compatibility
         $num_votes = 4 + rand(0, 6);
         _rating_scorer_demo_add_sample_votes($node->id(), 'node', $num_votes, 'field_article_rating');
-
+        
         // Set the field value to the average rating so Fivestar formatter can display it
         // VotingAPI uses 0-100 scale, Fivestar field expects 0-100 scale or 0-5 scale
         $votes = \Drupal::entityQuery('vote')
@@ -309,7 +309,7 @@ function rating_scorer_demo_install() {
           ->condition('entity_id', $node->id())
           ->accessCheck(FALSE)
           ->execute();
-
+        
         if (!empty($votes)) {
           $vote_storage = \Drupal::entityTypeManager()->getStorage('vote');
           $votes_data = $vote_storage->loadMultiple($votes);
@@ -322,7 +322,7 @@ function rating_scorer_demo_install() {
             // Keep in 0-100 scale - Fivestar will normalize it
             $average_rating = $total / count($votes_data);
           }
-
+          
           // Set the field value
           if ($average_rating > 0) {
             $node->set('field_article_rating', $average_rating);
@@ -352,7 +352,7 @@ function _rating_scorer_demo_add_sample_votes($entity_id, $entity_type, $num_vot
   }
 
   $vote_storage = \Drupal::entityTypeManager()->getStorage('vote');
-
+  
   // Generate a vote source hash if field_name is provided (for Fivestar compatibility)
   $vote_source = NULL;
   if ($field_name) {
@@ -363,11 +363,11 @@ function _rating_scorer_demo_add_sample_votes($entity_id, $entity_type, $num_vot
       'field_name' => $field_name,
     ]));
   }
-
+  
   for ($i = 0; $i < $num_votes; $i++) {
     // Create votes with random ratings between 1-5
     $vote_value = rand(1, 5) * 20; // VotingAPI uses 0-100 scale
-
+    
     $vote_data = [
       'type' => 'vote',
       'entity_type' => $entity_type,
@@ -375,12 +375,12 @@ function _rating_scorer_demo_add_sample_votes($entity_id, $entity_type, $num_vot
       'value' => $vote_value,
       'uid' => 0, // Anonymous votes
     ];
-
+    
     // Add vote_source if provided
     if ($vote_source) {
       $vote_data['vote_source'] = $vote_source;
     }
-
+    
     $vote = $vote_storage->create($vote_data);
     $vote->save();
   }
