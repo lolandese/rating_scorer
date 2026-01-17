@@ -1,12 +1,16 @@
 {
   "name": "drupal/rating_scorer",
-  "description": "A Drupal module for rating and scoring functionality.",
+  "description": "Fair rating scorer with configurable algorithms and automatic rating module detection",
   "type": "drupal-module",
-    "license": [
-      "GPL-2.0-or-later",
-      "MIT"
-    ],
-    "authors": [
+  "license": [
+    "GPL-2.0-or-later"
+  ],
+  "homepage": "https://www.drupal.org/project/rating_scorer",
+  "support": {
+    "docs": "https://www.drupal.org/docs/contributed-modules/rating-scorer",
+    "issues": "https://www.drupal.org/project/issues/rating_scorer"
+  },
+  "authors": [
     {
       "name": "Martin Postma"
     }
@@ -19,11 +23,12 @@
     "phpunit/phpunit": "^10.0 || ^11.0",
     "drupal/core-dev": "^11.0"
   },
-  "suggest": {
-  },
   "keywords": [
     "drupal",
     "rating",
-    "scoring"
+    "scoring",
+    "fair-ranking",
+    "bayesian",
+    "wilson-score"
   ]
 }

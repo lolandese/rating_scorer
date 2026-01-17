@@ -1,5 +1,5 @@
 name: Rating Scorer
 type: module
-description: 'Provides a rating scoring calculator with configurable parameters'
+description: 'Fair rating scorer with configurable algorithms (Bayesian, Wilson Score). Auto-detects rating modules (Fivestar, Votingapi, Rate). Includes admin calculator, field mappings, and extensible data providers.'
 core_version_requirement: ^11
-package: Custom
+package: Rating
