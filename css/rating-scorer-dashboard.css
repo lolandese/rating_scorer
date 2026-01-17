@@ -106,11 +106,40 @@
 
 .mapping-table tbody tr {
   border-bottom: 1px solid #eee;
+  border-left: 4px solid transparent;
   transition: background-color 0.2s ease;
 }
 
 .mapping-table tbody tr:hover {
   background-color: #f9f9f9;
+}
+
+/* Status-based row styling */
+.mapping-table tbody tr.status-green {
+  background-color: #f1f8f6;
+  border-left-color: #2e7d32;
+}
+
+.mapping-table tbody tr.status-green:hover {
+  background-color: #e0f2f0;
+}
+
+.mapping-table tbody tr.status-yellow {
+  background-color: #fff8f3;
+  border-left-color: #e65100;
+}
+
+.mapping-table tbody tr.status-yellow:hover {
+  background-color: #fff0e6;
+}
+
+.mapping-table tbody tr.status-red {
+  background-color: #fef5f5;
+  border-left-color: #c62828;
+}
+
+.mapping-table tbody tr.status-red:hover {
+  background-color: #ffe5e5;
 }
 
 .mapping-table td {
@@ -148,6 +177,32 @@
 .badge-wilson {
   background-color: #ffc107;
   color: #333;
+}
+
+.status-badge {
+  font-size: 1.2em;
+  display: inline-block;
+  min-width: 2em;
+  text-align: center;
+  padding: 0 !important;
+}
+
+.status-badge.status-green {
+  background-color: #e8f5e9 !important;
+  color: #2e7d32 !important;
+  border-radius: 4px;
+}
+
+.status-badge.status-yellow {
+  background-color: #fff3e0 !important;
+  color: #e65100 !important;
+  border-radius: 4px;
+}
+
+.status-badge.status-red {
+  background-color: #ffebee !important;
+  color: #c62828 !important;
+  border-radius: 4px;
 }
 
 .mapping-table .entity-count,

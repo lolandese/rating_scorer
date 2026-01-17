@@ -81,6 +81,9 @@ class RatingScorerDashboardService {
       $content_type = $mapping->get('content_type');
       $scoring_method = $mapping->get('scoring_method');
 
+      // Add validation status
+      $validation = $this->validateMapping($mapping);
+
       $mappings_data[] = [
         'id' => $mapping->id(),
         'label' => $mapping->label(),
@@ -89,10 +92,94 @@ class RatingScorerDashboardService {
         'entity_count' => $this->getContentTypeEntityCount($content_type),
         'rating_score_count' => $this->getRatingScoreFieldCount($content_type),
         'last_recalculation' => $this->getLastRecalculationTime($content_type),
+        'validation_status' => $validation['status'],
+        'validation_message' => $validation['message'],
+        'missing_fields' => $validation['missing_fields'],
       ];
     }
 
     return $mappings_data;
+  }
+
+  /**
+   * Validates if all required fields exist for a mapping.
+   *
+   * @param \Drupal\rating_scorer\Entity\RatingScorerFieldMapping $mapping
+   *   The mapping entity.
+   *
+   * @return array
+   *   Validation result with keys:
+   *   - status: 'green', 'yellow', or 'red'
+   *   - message: Human-readable status message
+   *   - missing_fields: Array of missing field names
+   */
+  protected function validateMapping($mapping) {
+    $missing_fields = [];
+    $content_type = $mapping->get('content_type');
+    $source_type = $mapping->get('source_type');
+
+    // Check critical field: number_of_ratings_field
+    $number_field = $mapping->get('number_of_ratings_field');
+    if ($number_field && !$this->fieldExists($number_field, $content_type)) {
+      $missing_fields['number_of_ratings'] = $number_field;
+    }
+
+    // Check critical field: average_rating_field
+    $average_field = $mapping->get('average_rating_field');
+    if ($average_field && !$this->fieldExists($average_field, $content_type)) {
+      $missing_fields['average_rating'] = $average_field;
+    }
+
+    // Check source-specific fields
+    if ($source_type === 'VOTINGAPI') {
+      $vote_field = $mapping->get('vote_field');
+      if ($vote_field && !$this->fieldExists($vote_field, $content_type)) {
+        $missing_fields['vote_field'] = $vote_field;
+      }
+    }
+
+    // Determine status level
+    if (empty($missing_fields)) {
+      return [
+        'status' => 'green',
+        'message' => 'All fields exist',
+        'missing_fields' => [],
+      ];
+    } elseif (isset($missing_fields['number_of_ratings']) || isset($missing_fields['average_rating'])) {
+      return [
+        'status' => 'red',
+        'message' => 'Error - Critical field missing',
+        'missing_fields' => $missing_fields,
+      ];
+    } else {
+      return [
+        'status' => 'yellow',
+        'message' => 'Warning - Source field missing',
+        'missing_fields' => $missing_fields,
+      ];
+    }
+  }
+
+  /**
+   * Checks if a field exists on a content type.
+   *
+   * @param string $field_name
+   *   The field name.
+   * @param string $content_type
+   *   The content type machine name.
+   *
+   * @return bool
+   *   TRUE if field exists, FALSE otherwise.
+   */
+  protected function fieldExists($field_name, $content_type) {
+    try {
+      $field_config = \Drupal::entityTypeManager()
+        ->getStorage('field_config')
+        ->load('node.' . $content_type . '.' . $field_name);
+      return (bool) $field_config;
+    } catch (\Exception $e) {
+      return FALSE;
+    }
   }
 
   /**

@@ -411,3 +411,28 @@
   padding: 2rem;
   color: #666;
 }
+.rating-scorer-status {
+  padding: 0.25rem 0.5rem;
+  border-radius: 3px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.rating-scorer-status-green {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.rating-scorer-status-yellow {
+  background-color: #fff3e0;
+  color: #e65100;
+}
+
+.rating-scorer-status-red {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+
+/* Dashboard mapping table row styling is in rating-scorer-dashboard.css */
+

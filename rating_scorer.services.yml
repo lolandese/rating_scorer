@@ -34,3 +34,19 @@ services:
       - '@config.factory'
       - '@database'
       - '@plugin.manager.field.field_type'
+
+  rating_scorer.field_storage_config_subscriber:
+    class: Drupal\rating_scorer\EventSubscriber\FieldStorageConfigSubscriber
+    arguments:
+      - '@config.factory'
+      - '@entity_type.manager'
+    tags:
+      - { name: 'event_subscriber' }
+
+  rating_scorer.commands:
+    class: Drupal\rating_scorer\Commands\RatingScorerCommands
+    arguments:
+      - '@config.factory'
+      - '@entity_type.manager'
+    tags:
+      - { name: 'drush.command_provider' }

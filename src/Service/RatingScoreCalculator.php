@@ -58,20 +58,37 @@ class RatingScoreCalculator {
     $entity_type = $entity->getEntityTypeId();
     $config_id = "{$entity_type}_{$bundle}";
 
-    $config = \Drupal::config('rating_scorer.settings');
-    $field_mappings = $config->get('field_mappings') ?? [];
+    // Try to load mapping entity first.
+    $mapping_entity = \Drupal::entityTypeManager()
+      ->getStorage('rating_scorer_field_mapping')
+      ->load($config_id);
 
-    if (empty($field_mappings[$config_id])) {
-      return NULL;
-    }
+    if ($mapping_entity) {
+      $mapping_data = [
+        'source_type' => $mapping_entity->get('source_type') ?? 'FIELD',
+        'vote_field' => $mapping_entity->get('vote_field'),
+        'number_of_ratings_field' => $mapping_entity->get('number_of_ratings_field'),
+        'average_rating_field' => $mapping_entity->get('average_rating_field'),
+        'scoring_method' => $mapping_entity->get('scoring_method'),
+        'bayesian_threshold' => $mapping_entity->get('bayesian_threshold') ?? 10,
+      ];
+    } else {
+      // Fall back to raw config for backward compatibility.
+      $config = \Drupal::config('rating_scorer.settings');
+      $field_mappings = $config->get('field_mappings') ?? [];
 
-    $mapping_data = $field_mappings[$config_id];
-    if (is_string($mapping_data)) {
-      $mapping_data = json_decode($mapping_data, TRUE);
-    }
+      if (empty($field_mappings[$config_id])) {
+        return NULL;
+      }
 
-    if (!$mapping_data) {
-      return NULL;
+      $mapping_data = $field_mappings[$config_id];
+      if (is_string($mapping_data)) {
+        $mapping_data = json_decode($mapping_data, TRUE);
+      }
+
+      if (!$mapping_data) {
+        return NULL;
+      }
     }
 
     // Determine data source type.

@@ -38,6 +38,7 @@
       <table class="mapping-table">
         <thead>
           <tr>
+            <th>{{ 'Status'|t }}</th>
             <th>{{ 'Content Type'|t }}</th>
             <th>{{ 'Scoring Method'|t }}</th>
             <th>{{ 'Total Entities'|t }}</th>
@@ -50,7 +51,14 @@
         <tbody>
           {% for mapping in field_mappings %}
             {% set coverage = mapping.entity_count > 0 ? ((mapping.rating_score_count / mapping.entity_count) * 100)|round(1) : 0 %}
-            <tr>
+            {% set status_class = 'status-' ~ (mapping.validation_status ?? 'green') %}
+            {% set status_icons = {'green': '✅', 'yellow': '⚠️', 'red': '🔴'} %}
+            <tr class="{{ status_class }}" data-validation-status="{{ mapping.validation_status ?? 'missing' }}">
+              <td class="status">
+                <span class="badge status-badge status-{{ mapping.validation_status ?? 'default' }}" title="{{ mapping.validation_message ?? 'No status' }}">
+                  {{- status_icons[mapping.validation_status ?? 'green'] -}}
+                </span>
+              </td>
               <td class="content-type">{{ mapping.label }}</td>
               <td class="method">
                 <span class="badge badge-{{ mapping.scoring_method }}">
