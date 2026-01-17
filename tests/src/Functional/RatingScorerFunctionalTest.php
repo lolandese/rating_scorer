@@ -23,10 +23,6 @@ class RatingScorerFunctionalTest extends BrowserTestBase {
    */
   protected static $modules = [
     'rating_scorer',
-    'field',
-    'node',
-    'views',
-    'views_ui',
   ];
 
   /**
