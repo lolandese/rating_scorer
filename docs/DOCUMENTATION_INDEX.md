@@ -202,7 +202,7 @@ Start here: **[SESSION_SUMMARY.md](SESSION_SUMMARY.md)**
 ## Reading Path by Role
 
 ### 👨‍💻 Developer
-1. [README.md](README.md) - Understand what it does
+1. [README.md](../README.md) - Understand what it does
 2. [INTEGRATION_GUIDE.md](INTEGRATION_GUIDE.md) - Installation
 3. [DEVELOPMENT_HISTORY.md](DEVELOPMENT_HISTORY.md) - Technical decisions
 4. [CODE_REVIEW.md](CODE_REVIEW.md) - Code standards
@@ -211,11 +211,11 @@ Start here: **[SESSION_SUMMARY.md](SESSION_SUMMARY.md)**
 ### 🔐 Security Auditor
 1. [SECURITY_AUDIT.md](SECURITY_AUDIT.md) - Complete audit (9/9 PASS)
 2. [CODE_REVIEW.md](CODE_REVIEW.md) - Code quality aspects
-3. [README.md](README.md) - Feature overview
+3. [README.md](../README.md) - Feature overview
 4. [INTEGRATION_GUIDE.md](INTEGRATION_GUIDE.md) - Configuration security
 
 ### 👥 Site Administrator
-1. [README.md](README.md) - Feature overview
+1. [README.md](../README.md) - Feature overview
 2. [INTEGRATION_GUIDE.md](INTEGRATION_GUIDE.md) - Setup and config
 3. [WIZARD_FEATURE.md](WIZARD_FEATURE.md) - How to use wizard
 4. [DASHBOARD_FEATURE.md](DASHBOARD_FEATURE.md) - Admin interface

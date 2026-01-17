@@ -74,7 +74,7 @@ Install as you would normally install a contributed Drupal module. Visit https:/
 
 ## Integration Guide
 
-See [INTEGRATION_GUIDE.md](INTEGRATION_GUIDE.md) for detailed setup instructions with real-world examples:
+See [INTEGRATION_GUIDE.md](docs/INTEGRATION_GUIDE.md) for detailed setup instructions with real-world examples:
 
 - **Fivestar Integration** - Set up with Fivestar rating widgets
 - **Votingapi Integration** - Extract rating data from Votingapi voting system
@@ -225,7 +225,7 @@ Conservative approach that penalizes low-rated items with few ratings.
 
 ## About This Module
 
-This module was developed using AI assistance (GitHub Copilot - Claude Haiku 4.5). For detailed development history, problem-solving approaches, and technical decisions made during implementation, see [DEVELOPMENT_HISTORY.md](DEVELOPMENT_HISTORY.md). For a complete list of development prompts that guided the project from initial concept through final implementation, see [PROMPT_HISTORY_RAW.md](PROMPT_HISTORY_RAW.md).
+This module was developed using AI assistance (GitHub Copilot - Claude Haiku 4.5). For detailed development history, problem-solving approaches, and technical decisions made during implementation, see [DEVELOPMENT_HISTORY.md](docs/DEVELOPMENT_HISTORY.md). For a complete list of development prompts that guided the project from initial concept through final implementation, see [PROMPT_HISTORY_RAW.md](PROMPT_HISTORY_RAW.md).
 
 ## Maintainers
 
