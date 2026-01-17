@@ -13,19 +13,53 @@ This guide shows how to integrate Rating Scorer with different rating modules an
 
 ## Fivestar Integration
 
-Fivestar is a popular Drupal module that provides 5-star rating widgets. Rating Scorer can extract average ratings and calculate fair scores from Fivestar fields.
+Fivestar is a popular Drupal module that provides 5-star rating widgets and stores votes in VotingAPI. Rating Scorer can extract average ratings from Fivestar voting data and calculate fair scores.
+
+### Version-Specific Notes
+
+Fivestar uses different release naming conventions depending on the branch:
+
+**Drupal 10**
+- Fivestar 8.x-1.0-alpha5 (uses Drupal 8.x legacy naming convention)
+- Stable alpha release, works on D9/D10/D11
+- Well-tested and suitable for production use
+
+**Drupal 11**
+- Fivestar 3.0.x-dev (uses semantic versioning)
+- Early development version, actively changing
+- Suitable for development/testing
+
+Note: Both versions use VotingAPI for vote storage and work identically with Rating Scorer. The version number differences reflect naming convention changes between legacy (`8.x-*`) and semantic versioning, not compatibility differences.
+
+### How It Works
+
+Rating Scorer integrates with the **VotingAPI** storage layer that Fivestar uses. When users vote via Fivestar stars:
+1. Votes are stored in VotingAPI
+2. Rating Scorer reads vote aggregates from VotingAPI
+3. Fair scores are calculated based on voting volume and average
+
+This decoupling means Rating Scorer can work with votes from any voting widget (Fivestar, Rate, custom code) as long as they store to VotingAPI.
 
 ### Prerequisites
 
-- Fivestar module installed and enabled
+- Fivestar 3.0.x-dev module installed and enabled
+- VotingAPI module (installed automatically as Fivestar dependency)
 - Fivestar fields added to your content type
 - A "Rating Score" field added to the content type (will be auto-created if using Field Mapping Wizard)
 
 ### Setup Steps
 
 1. **Install Fivestar**
+
+   **For Drupal 10:**
    ```bash
-   composer require drupal/fivestar
+   composer require "drupal/fivestar:^1.0@alpha"
+   drush en fivestar
+   ```
+
+   **For Drupal 11:**
+   ```bash
+   composer require "drupal/fivestar:^3.0@dev"
    drush en fivestar
    ```
 
@@ -99,7 +133,7 @@ Votingapi is a powerful voting/rating engine that stores and aggregates votes. R
 
 1. **Install Votingapi**
    ```bash
-   composer require drupal/votingapi
+   composer require "drupal/votingapi:^4.0"
    drush en votingapi
    ```
 
@@ -295,8 +329,9 @@ echo "Fair Score: " . $node->field_rating_score->value;
 ### "Rating modules detected" message not showing
 
 1. **Install the required module**
-   - Fivestar: `composer require drupal/fivestar && drush en fivestar`
-   - Votingapi: `composer require drupal/votingapi && drush en votingapi`
+   - Fivestar (D10): `composer require "drupal/fivestar:^1.0@alpha" && drush en fivestar`
+   - Fivestar (D11): `composer require "drupal/fivestar:^3.0@dev" && drush en fivestar`
+   - Votingapi: `composer require "drupal/votingapi:^4.0" && drush en votingapi`
 
 2. **Clear cache after install**
    ```bash

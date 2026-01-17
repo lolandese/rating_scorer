@@ -98,12 +98,20 @@ class FieldMappingWizardForm extends FormBase {
       '#options' => $contentTypes,
       '#required' => TRUE,
       '#description' => $this->t('Only content types with numeric fields are shown.'),
+      '#default_value' => $form_state->get('content_type'),
     ];
 
     $form['actions']['next'] = [
       '#type' => 'submit',
       '#value' => $this->t('Next'),
       '#submit' => [[$this, 'submitSelectContentType']],
+    ];
+
+    $form['actions']['cancel'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Cancel'),
+      '#submit' => [[$this, 'submitCancel']],
+      '#limit_validation_errors' => [],
     ];
 
     return $form;
@@ -140,6 +148,7 @@ class FieldMappingWizardForm extends FormBase {
       '#options' => $numericFields,
       '#required' => TRUE,
       '#description' => $this->t('The field containing the count of reviews/ratings.'),
+      '#default_value' => $form_state->get('number_of_ratings_field'),
     ];
 
     $form['average_rating_field'] = [
@@ -148,18 +157,27 @@ class FieldMappingWizardForm extends FormBase {
       '#options' => $numericFields,
       '#required' => TRUE,
       '#description' => $this->t('The field containing the average rating (e.g., 3.5 out of 5).'),
+      '#default_value' => $form_state->get('average_rating_field'),
     ];
 
     $form['actions']['back'] = [
       '#type' => 'submit',
       '#value' => $this->t('Back'),
       '#submit' => [[$this, 'submitBack']],
+      '#limit_validation_errors' => [],
     ];
 
     $form['actions']['next'] = [
       '#type' => 'submit',
       '#value' => $this->t('Next'),
       '#submit' => [[$this, 'submitSelectFields']],
+    ];
+
+    $form['actions']['cancel'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Cancel'),
+      '#submit' => [[$this, 'submitCancel']],
+      '#limit_validation_errors' => [],
     ];
 
     return $form;
@@ -190,7 +208,7 @@ class FieldMappingWizardForm extends FormBase {
         '#description' => $this->t('We can automatically create the Rating Score field on %type for you. It will be added to the default form and view displays.', [
           '%type' => $contentType,
         ]),
-        '#default_value' => TRUE,
+        '#default_value' => $form_state->get('create_field') ?? TRUE,
       ];
     }
 
@@ -202,14 +220,14 @@ class FieldMappingWizardForm extends FormBase {
         'weighted' => $this->t('Weighted Score - Logarithmic weighting: simple approach balancing quality and quantity'),
         'wilson' => $this->t('Wilson Score - Conservative: most protective against low-volume items'),
       ],
-      '#default_value' => 'bayesian',
+      '#default_value' => $form_state->get('scoring_method') ?? 'bayesian',
       '#required' => TRUE,
     ];
 
     $form['bayesian_threshold'] = [
       '#type' => 'number',
       '#title' => $this->t('Minimum Ratings Threshold (for Bayesian)'),
-      '#default_value' => 10,
+      '#default_value' => $form_state->get('bayesian_threshold') ?? 10,
       '#min' => 1,
       '#max' => 1000,
       '#description' => $this->t('Items need this many ratings to reach high scores. Lower = more forgiving. Higher = more conservative.'),
@@ -224,12 +242,20 @@ class FieldMappingWizardForm extends FormBase {
       '#type' => 'submit',
       '#value' => $this->t('Back'),
       '#submit' => [[$this, 'submitBack']],
+      '#limit_validation_errors' => [],
     ];
 
     $form['actions']['next'] = [
       '#type' => 'submit',
       '#value' => $this->t('Review & Create'),
       '#submit' => [[$this, 'submitRatingScoreField']],
+    ];
+
+    $form['actions']['cancel'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Cancel'),
+      '#submit' => [[$this, 'submitCancel']],
+      '#limit_validation_errors' => [],
     ];
 
     return $form;
@@ -268,6 +294,7 @@ class FieldMappingWizardForm extends FormBase {
       '#type' => 'submit',
       '#value' => $this->t('Back'),
       '#submit' => [[$this, 'submitBack']],
+      '#limit_validation_errors' => [],
     ];
 
     $form['actions']['create'] = [
@@ -275,6 +302,13 @@ class FieldMappingWizardForm extends FormBase {
       '#value' => $this->t('Create Field Mapping'),
       '#button_type' => 'primary',
       '#submit' => [[$this, 'submitCreateMapping']],
+    ];
+
+    $form['actions']['cancel'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Cancel'),
+      '#submit' => [[$this, 'submitCancel']],
+      '#limit_validation_errors' => [],
     ];
 
     return $form;
@@ -326,6 +360,14 @@ class FieldMappingWizardForm extends FormBase {
       $form_state->set('step', $previousSteps[$step]);
       $form_state->setRebuild(TRUE);
     }
+  }
+
+  /**
+   * Submit handler to cancel the wizard.
+   */
+  public function submitCancel(array &$form, FormStateInterface $form_state) {
+    $this->messenger()->addStatus($this->t('Field mapping wizard cancelled.'));
+    $form_state->setRedirect('rating_scorer.field_mappings');
   }
 
   /**

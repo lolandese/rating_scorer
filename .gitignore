@@ -1,0 +1,20 @@
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Composer and dependencies
+/vendor/
+composer.lock
+
+# PHPUnit
+/build/
+.phpunit.result.cache
+.phpunit.cache/
+
+# Drupal-specific files
+*.ddev.yaml
+.ddev/

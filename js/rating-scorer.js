@@ -197,6 +197,23 @@
       const scenarioLowerBayesian = document.getElementById('scenario-lower-bayesian');
       const scenarioLowerWilson = document.getElementById('scenario-lower-wilson');
 
+      function updateScenarioSubtitleWithAnimation(element, ratingDev, reviewsDev, isHigher) {
+        // Build HTML with percentage values wrapped in spans for styling
+        const ratingPercent = isHigher ? `+${ratingDev}` : `-${ratingDev}`;
+        const reviewsPercent = isHigher ? `-${reviewsDev}` : `+${reviewsDev}`;
+
+        element.innerHTML = `<span class="dev-value">${ratingPercent}%</span> rating, <span class="dev-value">${reviewsPercent}%</span> reviews`;
+
+        // Add highlight animation to all values
+        const valuesToHighlight = element.querySelectorAll('.dev-value');
+        valuesToHighlight.forEach(span => {
+          span.classList.remove('highlight-pulse');
+          // Trigger reflow to restart animation
+          void span.offsetWidth;
+          span.classList.add('highlight-pulse');
+        });
+      }
+
       function calculateScore() {
         const rating = parseFloat(ratingInput.value);
         const numRatings = parseInt(numRatingsInput.value);
@@ -223,9 +240,9 @@
         const lowerBayesian = calculateBayesianScore(lowerRating, lowerReviews, minRatings);
         const lowerWilson = calculateWilsonScore(lowerRating, lowerReviews);
 
-        // Update scenario subtitles dynamically
-        higherScenarioSubtitle.textContent = `+${scenarioRatingDev}% rating, -${scenarioReviewsDev}% reviews`;
-        lowerScenarioSubtitle.textContent = `-${scenarioRatingDev}% rating, +${scenarioReviewsDev}% reviews`;
+        // Update scenario subtitles dynamically with highlight animation
+        updateScenarioSubtitleWithAnimation(higherScenarioSubtitle, scenarioRatingDev, scenarioReviewsDev, true);
+        updateScenarioSubtitleWithAnimation(lowerScenarioSubtitle, scenarioRatingDev, scenarioReviewsDev, false);
 
         // Update scenario displays
         scenarioCurrentRating.textContent = rating.toFixed(2);

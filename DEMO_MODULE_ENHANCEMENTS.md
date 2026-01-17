@@ -29,7 +29,7 @@ If Fivestar is detected, the demo module additionally creates:
   - 5 stars
   - Allow clearing selections
   - Allow re-voting
-  
+
 This field works with the **VOTINGAPI source type** mapping, demonstrating integration with Fivestar's vote storage system.
 
 ### 3. Automatic Field Mappings

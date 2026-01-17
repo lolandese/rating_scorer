@@ -18,6 +18,28 @@ The module includes comprehensive tests covering:
 
 **Total: 55+ tests across 12 test files**
 
+### Note on Optional Integration Testing
+
+**Fivestar Integration is NOT included in the test suite.**
+
+While Rating Scorer supports Fivestar, it is not part of the automated test suite for these reasons:
+
+1. **Version Variation** - Fivestar uses different release naming conventions:
+   - D10 uses 8.x-1.0-alpha5 (legacy naming, stable alpha)
+   - D11 uses 3.0.x-dev (semantic versioning, early development)
+2. **VotingAPI Decoupling** - Rating Scorer's core integration is with VotingAPI (the storage layer), not Fivestar itself. Votes from any source (Fivestar, Rate, custom code) work identically if stored in VotingAPI
+3. **Test Brittleness** - Including Fivestar would create fragile tests that could break due to upstream changes, especially on the D11 dev version
+4. **Core Functionality** - Rating Scorer's core scoring algorithms and VotingAPI integration are fully tested and stable
+
+Fivestar integration is verified through:
+- Manual testing in development environments
+- Demonstration in the `rating_scorer_demo` module with prepopulated Fivestar articles and votes
+- Integration tests focus on VotingAPI data sources (which Fivestar uses), ensuring compatibility with any voting widget
+
+**Recommendation**:
+- **D10**: Fivestar 8.x-1.0-alpha5 is suitable for production use (stable alpha)
+- **D11**: Fivestar 3.0.x-dev is suitable for testing/development only (unstable)
+
 ## Running Tests
 
 ### Prerequisites

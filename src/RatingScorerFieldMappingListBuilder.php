@@ -32,11 +32,11 @@ class RatingScorerFieldMappingListBuilder extends ConfigEntityListBuilder {
     $row['content_type'] = $entity->get('content_type');
     $scoring_method = $entity->get('scoring_method');
     $row['scoring_method'] = $scoring_method ? ucfirst($scoring_method) : '-';
-    
+
     // Add validation status
     $validation = $this->validateMapping($entity);
     $row['status'] = $this->getStatusDisplay($validation);
-    
+
     return $row + parent::buildRow($entity);
   }
 
@@ -56,19 +56,19 @@ class RatingScorerFieldMappingListBuilder extends ConfigEntityListBuilder {
     $missing_fields = [];
     $content_type = $entity->get('content_type');
     $source_type = $entity->get('source_type');
-    
+
     // Check critical field: number_of_ratings_field (always required)
     $number_field = $entity->get('number_of_ratings_field');
     if ($number_field && !$this->fieldExists($number_field, $content_type)) {
       $missing_fields['number_of_ratings'] = $number_field;
     }
-    
+
     // Check critical field: average_rating_field (always required)
     $average_field = $entity->get('average_rating_field');
     if ($average_field && !$this->fieldExists($average_field, $content_type)) {
       $missing_fields['average_rating'] = $average_field;
     }
-    
+
     // Check source-specific fields
     if ($source_type === 'VOTINGAPI') {
       $vote_field = $entity->get('vote_field');
@@ -76,7 +76,7 @@ class RatingScorerFieldMappingListBuilder extends ConfigEntityListBuilder {
         $missing_fields['vote_field'] = $vote_field;
       }
     }
-    
+
     // Determine status level
     if (empty($missing_fields)) {
       return [
@@ -117,12 +117,12 @@ class RatingScorerFieldMappingListBuilder extends ConfigEntityListBuilder {
     if (!$field_storage) {
       return FALSE;
     }
-    
+
     // Check if this bundle has an instance of this field
     $field_config = \Drupal::entityTypeManager()
       ->getStorage('field_config')
       ->load('node.' . $content_type . '.' . $field_name);
-    
+
     return (bool) $field_config;
   }
 
@@ -141,20 +141,20 @@ class RatingScorerFieldMappingListBuilder extends ConfigEntityListBuilder {
       'yellow' => '⚠️',
       'red' => '🔴',
     ];
-    
+
     $status = $validation['status'];
     $icon = $status_icons[$status] ?? '?';
     $message = $validation['message'];
-    
+
     // Build tooltip with missing fields if any
     $tooltip = $message;
     if (!empty($validation['missing_fields'])) {
       $missing = implode(', ', array_values($validation['missing_fields']));
       $tooltip .= ' (' . $missing . ')';
     }
-    
+
     $html = '<span title="' . htmlspecialchars($tooltip) . '" class="rating-scorer-status rating-scorer-status-' . htmlspecialchars($status) . '">' . $icon . ' ' . $message . '</span>';
-    
+
     return Markup::create($html);
   }
 

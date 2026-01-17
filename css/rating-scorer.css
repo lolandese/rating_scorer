@@ -374,6 +374,7 @@
   padding: 12px;
   border-bottom: 1px solid #eee;
   text-align: center;
+  min-width: 80px;
 }
 
 .scenario-comparison-table td:first-child {
@@ -404,6 +405,34 @@
   font-size: 0.8rem;
   color: #999;
   font-weight: normal;
+}
+
+.scenario-comparison-table .change .dev-value {
+  color: #0073e6;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.scenario-comparison-table .change .dev-value.highlight-pulse {
+  animation: highlightPulse 0.8s ease-out;
+}
+
+@keyframes highlightPulse {
+  0% {
+    color: #0073e6;
+    font-weight: 700;
+    text-shadow: 0 0 8px rgba(0, 115, 230, 0.8);
+    transform: scale(1.05);
+  }
+  50% {
+    color: #0052a3;
+    text-shadow: 0 0 12px rgba(0, 115, 230, 0.6);
+  }
+  100% {
+    color: #0073e6;
+    text-shadow: none;
+    transform: scale(1);
+  }
 }
 
 .rating-scorer-loading {
