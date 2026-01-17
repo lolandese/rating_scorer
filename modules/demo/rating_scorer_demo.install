@@ -94,7 +94,7 @@ function rating_scorer_demo_install() {
       'id' => 'article_demo',
       'label' => 'Article Demo Ratings',
       'content_type' => 'article',
-      'algorithm' => 'bayesian',
+      'scoring_method' => 'bayesian',
       'number_of_ratings_field' => 'field_vote_count',
       'average_rating_field' => 'field_rating',
       'bayesian_threshold' => 10,

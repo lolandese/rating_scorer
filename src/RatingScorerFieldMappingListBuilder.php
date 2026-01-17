@@ -27,7 +27,8 @@ class RatingScorerFieldMappingListBuilder extends ConfigEntityListBuilder {
   public function buildRow(EntityInterface $entity) {
     $row['label'] = $entity->label();
     $row['content_type'] = $entity->get('content_type');
-    $row['scoring_method'] = ucfirst($entity->get('scoring_method'));
+    $scoring_method = $entity->get('scoring_method');
+    $row['scoring_method'] = $scoring_method ? ucfirst($scoring_method) : '-';
     return $row + parent::buildRow($entity);
   }
 
