@@ -151,127 +151,10 @@ function rating_scorer_demo_install() {
   }
   \Drupal::messenger()->addStatus(t('5 sample articles created.'));
 
-  // Create View
-  if (!View::load('articles_by_rating_demo')) {
-    $view_config = [
-      'id' => 'articles_by_rating_demo',
-      'label' => 'Articles by Rating Score (Demo)',
-      'module' => 'views',
-      'description' => 'Demo view displaying articles ordered by Rating Score',
-      'tag' => 'default',
-      'base_table' => 'node_field_data',
-      'base_field' => 'nid',
-      'core' => '8.x',
-      'display' => [
-        'default' => [
-          'display_plugin' => 'default',
-          'id' => 'default',
-          'display_title' => 'Default',
-          'position' => 0,
-          'display_options' => [
-            'query' => ['type' => 'views_query', 'options' => []],
-            'pager' => [
-              'type' => 'mini',
-              'options' => [
-                'items_per_page' => 10,
-                'offset' => 0,
-              ],
-            ],
-            'style' => [
-              'type' => 'table',
-              'options' => [
-                'default' => 'field_rating_score_value',
-              ],
-            ],
-            'row' => ['type' => 'fields', 'options' => []],
-            'fields' => [
-              'title' => [
-                'id' => 'title',
-                'table' => 'node_field_data',
-                'field' => 'title',
-                'type' => 'string',
-                'settings' => ['link_to_entity' => TRUE],
-                'label' => 'Title',
-                'plugin_id' => 'field',
-              ],
-              'field_rating' => [
-                'id' => 'field_rating',
-                'table' => 'node__field_rating',
-                'field' => 'field_rating',
-                'type' => 'number_decimal',
-                'settings' => ['scale' => 2],
-                'label' => 'Average Rating',
-                'plugin_id' => 'field',
-              ],
-              'field_vote_count' => [
-                'id' => 'field_vote_count',
-                'table' => 'node__field_vote_count',
-                'field' => 'field_vote_count',
-                'type' => 'number_integer',
-                'label' => 'Vote Count',
-                'plugin_id' => 'field',
-              ],
-              'field_rating_score' => [
-                'id' => 'field_rating_score',
-                'table' => 'node__field_rating_score',
-                'field' => 'field_rating_score',
-                'type' => 'number_decimal',
-                'settings' => ['scale' => 2],
-                'label' => 'Rating Score',
-                'plugin_id' => 'field',
-              ],
-            ],
-            'filters' => [
-              'type' => [
-                'id' => 'type',
-                'table' => 'node_field_data',
-                'field' => 'type',
-                'operator' => 'in',
-                'value' => ['article' => 'article'],
-              ],
-              'status' => [
-                'id' => 'status',
-                'table' => 'node_field_data',
-                'field' => 'status',
-                'operator' => '=',
-                'value' => '1',
-              ],
-            ],
-            'sorts' => [
-              'field_rating_score_value' => [
-                'id' => 'field_rating_score_value',
-                'table' => 'node__field_rating_score',
-                'field' => 'field_rating_score_value',
-                'order' => 'DESC',
-                'plugin_id' => 'standard',
-              ],
-            ],
-            'title' => 'Articles by Rating Score',
-            'display_extenders' => [],
-          ],
-        ],
-        'page' => [
-          'display_plugin' => 'page',
-          'id' => 'page',
-          'display_title' => 'Page',
-          'position' => 1,
-          'display_options' => [
-            'path' => 'demo/articles-by-rating',
-            'menu' => [
-              'type' => 'normal',
-              'title' => 'Demo: Articles by Rating',
-              'menu_name' => 'main',
-              'weight' => 10,
-            ],
-            'display_extenders' => [],
-          ],
-        ],
-      ],
-    ];
-
-    View::create($view_config)->save();
-    \Drupal::messenger()->addStatus(t('Demo view created at /demo/articles-by-rating'));
-  }
+  // Create View - skip for now due to complexity
+  // Views should be created manually or via drush commands
+  // The demo module focuses on content and field mapping setup
+  \Drupal::messenger()->addStatus(t('Demo content ready. Visit /admin/content to view articles.'));
 
   \Drupal::messenger()->addStatus(t('Rating Scorer Demo module installed successfully!'));
 }
@@ -280,13 +163,6 @@ function rating_scorer_demo_install() {
  * Implements hook_uninstall().
  */
 function rating_scorer_demo_uninstall() {
-  // Delete View
-  $view = View::load('articles_by_rating_demo');
-  if ($view) {
-    $view->delete();
-    \Drupal::messenger()->addStatus(t('Demo view removed.'));
-  }
-
   // Delete field mapping
   $mapping = RatingScorerFieldMapping::load('article_demo');
   if ($mapping) {
