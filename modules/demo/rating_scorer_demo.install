@@ -399,7 +399,7 @@ function _rating_scorer_demo_configure_article_displays() {
   ])->setComponent('field_vote_count', [
     'type' => 'number',
     'weight' => 11,
-  ])->hideComponent('field_rating_score')->save();
+  ])->removeComponent('field_rating_score')->save();
 
   // Configure view display for article
   $view_display = EntityViewDisplay::load('node.article.default');
@@ -445,7 +445,7 @@ function _rating_scorer_demo_configure_article_fivestar_displays() {
   $form_display->setComponent('field_article_rating', [
     'type' => 'fivestar_stars',
     'weight' => 10,
-  ])->hideComponent('field_rating_score')->save();
+  ])->removeComponent('field_rating_score')->save();
 
   // Configure view display for article_fivestar
   $view_display = EntityViewDisplay::load('node.article_fivestar.default');
@@ -459,7 +459,7 @@ function _rating_scorer_demo_configure_article_fivestar_displays() {
   }
 
   $view_display->setComponent('field_article_rating', [
-    'type' => 'fivestar_formatter_default',
+    'type' => 'fivestar_rating',
     'label' => 'above',
     'weight' => 10,
   ])->setComponent('field_rating_score', [
