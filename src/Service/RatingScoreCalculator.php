@@ -18,13 +18,23 @@ class RatingScoreCalculator {
   protected EntityTypeManagerInterface $entityTypeManager;
 
   /**
+   * The Fivestar vote result manager (optional).
+   *
+   * @var \Drupal\fivestar\VoteResultManager|null
+   */
+  protected $voteResultManager;
+
+  /**
    * Constructs a RatingScoreCalculator object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
+   * @param \Drupal\fivestar\VoteResultManager|null $vote_result_manager
+   *   The Fivestar vote result manager (optional, for VotingAPI integration).
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, $vote_result_manager = NULL) {
     $this->entityTypeManager = $entity_type_manager;
+    $this->voteResultManager = $vote_result_manager;
   }
 
   /**
@@ -60,6 +70,29 @@ class RatingScoreCalculator {
       return NULL;
     }
 
+    // Determine data source type.
+    $source_type = $mapping->get('source_type') ?? 'FIELD';
+
+    if ($source_type === 'VOTINGAPI') {
+      return $this->calculateScoreFromVotingAPI($entity, $mapping);
+    }
+
+    // FIELD source type (default/legacy behavior).
+    return $this->calculateScoreFromFields($entity, $mapping);
+  }
+
+  /**
+   * Calculate score from field-based rating data.
+   *
+   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+   *   The entity to calculate score for.
+   * @param \Drupal\rating_scorer\Entity\RatingScorerFieldMapping $mapping
+   *   The field mapping configuration.
+   *
+   * @return float|null
+   *   The calculated score, or NULL if data is invalid.
+   */
+  private function calculateScoreFromFields(ContentEntityInterface $entity, $mapping): ?float {
     // Get source field values.
     $num_ratings_field = $mapping->get('number_of_ratings_field');
     $avg_rating_field = $mapping->get('average_rating_field');
@@ -85,6 +118,55 @@ class RatingScoreCalculator {
     // Call the main module helper function to calculate score.
     return _rating_scorer_calculate_score(
       $number_of_ratings,
+      $average_rating,
+      $scoring_method,
+      $bayesian_threshold
+    );
+  }
+
+  /**
+   * Calculate score from VotingAPI/Fivestar vote data.
+   *
+   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+   *   The entity to calculate score for.
+   * @param \Drupal\rating_scorer\Entity\RatingScorerFieldMapping $mapping
+   *   The field mapping configuration.
+   *
+   * @return float|null
+   *   The calculated score, or NULL if votes are unavailable.
+   */
+  private function calculateScoreFromVotingAPI(ContentEntityInterface $entity, $mapping): ?float {
+    if (!$this->voteResultManager) {
+      return NULL;
+    }
+
+    try {
+      $vote_results = $this->voteResultManager->getResults($entity);
+    } catch (\Exception $e) {
+      return NULL;
+    }
+
+    // VotingAPI stores results under 'vote' key with vote_count and vote_sum.
+    if (empty($vote_results['vote'])) {
+      return NULL;
+    }
+
+    $vote_count = (int) $vote_results['vote']['vote_count'] ?? 0;
+    $vote_sum = (float) $vote_results['vote']['vote_sum'] ?? 0;
+
+    if ($vote_count <= 0) {
+      return NULL;
+    }
+
+    // Normalize vote values to 0-5 scale (VotingAPI uses percent: 0-100).
+    $average_rating = ($vote_sum / $vote_count) / 20;  // 100/5 = 20
+
+    $scoring_method = $mapping->get('scoring_method');
+    $bayesian_threshold = $mapping->get('bayesian_threshold') ?? 10;
+
+    // Call the main module helper function to calculate score.
+    return _rating_scorer_calculate_score(
+      $vote_count,
       $average_rating,
       $scoring_method,
       $bayesian_threshold

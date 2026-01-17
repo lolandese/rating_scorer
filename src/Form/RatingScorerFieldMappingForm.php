@@ -97,7 +97,31 @@ class RatingScorerFieldMappingForm extends EntityForm {
       ];
     }
 
-    if ($content_type) {
+    $form['source_type'] = [
+      '#type' => 'radios',
+      '#title' => $this->t('Data Source Type'),
+      '#description' => $this->t('Select where vote/rating data comes from:<br><strong>Field-based:</strong> Use existing rating/vote count fields on the entity.<br><strong>VotingAPI:</strong> Automatically read votes from Fivestar or other VotingAPI modules.'),
+      '#options' => [
+        'FIELD' => $this->t('Field-based (Manual numeric fields)'),
+        'VOTINGAPI' => $this->t('VotingAPI (Fivestar, Rate, etc.)'),
+      ],
+      '#default_value' => $mapping->get('source_type') ?? 'FIELD',
+      '#required' => TRUE,
+      '#ajax' => [
+        'callback' => [$this, 'updateSourceTypeFields'],
+        'event' => 'change',
+        'wrapper' => 'source-type-fields-wrapper',
+      ],
+    ];
+
+    $source_type = $form_state->getValue('source_type') ?? $mapping->get('source_type') ?? 'FIELD';
+
+    $form['source_type_fields'] = [
+      '#type' => 'container',
+      '#attributes' => ['id' => 'source-type-fields-wrapper'],
+    ];
+
+    if ($source_type === 'FIELD') {
       $field_options = $this->getFieldOptions($content_type);
 
       // Get field suggestions based on detected rating modules
@@ -111,7 +135,7 @@ class RatingScorerFieldMappingForm extends EntityForm {
         $suggestion_info .= '</small>';
       }
 
-      $form['field_options']['number_of_ratings_field'] = [
+      $form['source_type_fields']['number_of_ratings_field'] = [
         '#type' => 'select',
         '#title' => $this->t('Number of Ratings Field'),
         '#description' => $this->t('Select the field containing the count of ratings/votes') . $suggestion_info,
@@ -120,13 +144,22 @@ class RatingScorerFieldMappingForm extends EntityForm {
         '#required' => TRUE,
       ];
 
-      $form['field_options']['average_rating_field'] = [
+      $form['source_type_fields']['average_rating_field'] = [
         '#type' => 'select',
         '#title' => $this->t('Average Rating Field'),
         '#description' => $this->t('Select the field containing the average rating value'),
         '#options' => $field_options,
         '#default_value' => $mapping->get('average_rating_field'),
         '#required' => TRUE,
+      ];
+    } elseif ($source_type === 'VOTINGAPI') {
+      $form['source_type_fields']['vote_field'] = [
+        '#type' => 'textfield',
+        '#title' => $this->t('Fivestar Field Name'),
+        '#description' => $this->t('The machine name of the Fivestar rating field (e.g., field_page_rating). Rating Scorer will read votes from VotingAPI for this field.'),
+        '#default_value' => $mapping->get('vote_field'),
+        '#required' => TRUE,
+        '#placeholder' => 'field_page_rating',
       ];
     }
 
@@ -241,6 +274,13 @@ class RatingScorerFieldMappingForm extends EntityForm {
    */
   public function updateFieldOptions(array &$form, FormStateInterface $form_state) {
     return $form['field_options'];
+  }
+
+  /**
+   * AJAX callback to update source type fields.
+   */
+  public function updateSourceTypeFields(array &$form, FormStateInterface $form_state) {
+    return $form['source_type_fields'];
   }
 
 }

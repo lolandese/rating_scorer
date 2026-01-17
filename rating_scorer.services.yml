@@ -3,6 +3,7 @@ services:
     class: Drupal\rating_scorer\Service\RatingScoreCalculator
     arguments:
       - '@entity_type.manager'
+      - '@?fivestar.vote_result_manager'
   rating_scorer.field_detection:
     class: Drupal\rating_scorer\Service\FieldDetectionService
     arguments:

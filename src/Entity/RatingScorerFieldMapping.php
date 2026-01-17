@@ -32,8 +32,10 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "id",
  *     "label",
  *     "content_type",
+ *     "source_type",
  *     "number_of_ratings_field",
  *     "average_rating_field",
+ *     "vote_field",
  *     "scoring_method",
  *     "bayesian_threshold"
  *   },
@@ -95,5 +97,19 @@ class RatingScorerFieldMapping extends ConfigEntityBase {
    * @var int
    */
   protected $bayesian_threshold;
+
+  /**
+   * The data source type (FIELD or VOTINGAPI).
+   *
+   * @var string
+   */
+  protected $source_type = 'FIELD';
+
+  /**
+   * The Fivestar field name for VotingAPI sources.
+   *
+   * @var string
+   */
+  protected $vote_field;
 
 }
