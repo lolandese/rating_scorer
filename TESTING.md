@@ -37,8 +37,8 @@ Fivestar integration is verified through:
 - Integration tests focus on VotingAPI data sources (which Fivestar uses), ensuring compatibility with any voting widget
 
 **Recommendation**: 
-- **D10**: Fivestar 1.0.0-alpha5 is suitable for production use (stable alpha)
-- **D11**: Fivestar 3.0.x-dev is suitable for testing/development but not production (unstable)
+- **D10**: Fivestar 8.x-1.0-alpha5 is suitable for production use (stable alpha)
+- **D11**: Fivestar 3.0.x-dev is suitable for testing/development only (unstable)
 
 ## Running Tests
 

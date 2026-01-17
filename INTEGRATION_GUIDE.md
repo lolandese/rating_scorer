@@ -17,16 +17,15 @@ Fivestar is a popular Drupal module that provides 5-star rating widgets and stor
 
 ### Version-Specific Notes
 
-**Drupal 10 (Recommended for Fivestar)**
-- Fivestar 1.0.0-alpha5 is a stable alpha release
-- Well-tested on D10
-- Better choice for production use
+**Drupal 10**
+- Fivestar 8.x-1.0-alpha5 (uses legacy Drupal 8.x versioning scheme)
+- Stable alpha release, well-tested
+- Suitable for production use
 
-**Drupal 11 (Limited Support)**
-- Fivestar 3.0.x-dev is an early development version
-- Actively developed but unstable
-- May experience breaking changes
-- Better for testing/development than production
+**Drupal 11**
+- Fivestar 3.0.x-dev (development version)
+- Early development state, actively changing
+- Suitable for testing/development only
 
 ### How It Works
 
