@@ -5,7 +5,7 @@
 - **AI Model**: Claude Haiku 4.5
 - **Created**: January 2026
 - **Module Type**: Drupal 11 Custom Module
-- **Purpose**: Fair ranking system using Views field handler
+- **Purpose**: Comprehensive fair rating system with auto-detection of rating modules (Fivestar, Votingapi, Rate) and extensible data provider architecture for extracting and ranking content fairly
 
 ---
 
