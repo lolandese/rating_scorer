@@ -102,32 +102,34 @@ function rating_scorer_demo_install() {
     \Drupal::messenger()->addStatus(t('Field mapping configured for Article content type.'));
   }
 
-  // Create sample articles
+  // Create sample articles with varying ratings and vote counts
+  // Demonstrates Bayesian algorithm: articles with similar ratings but different votes
+  // will have different Rating Scores due to vote count weighting
   $articles = [
     [
-      'title' => 'Excellent Article on Drupal Best Practices',
-      'rating' => 4.9,
-      'votes' => 203,
+      'title' => 'Comprehensive Guide to Drupal Module Development',
+      'rating' => 4.45,
+      'votes' => 350,
     ],
     [
-      'title' => 'Great Tutorial for Beginners',
-      'rating' => 4.8,
-      'votes' => 156,
+      'title' => 'Best Practices for Performance Optimization',
+      'rating' => 4.40,
+      'votes' => 180,
     ],
     [
-      'title' => 'Good Overview of Rating Systems',
-      'rating' => 4.2,
-      'votes' => 89,
+      'title' => 'Advanced Security Patterns in Drupal',
+      'rating' => 4.35,
+      'votes' => 65,
     ],
     [
-      'title' => 'Average Article with Useful Information',
-      'rating' => 3.5,
-      'votes' => 42,
+      'title' => 'Testing Strategies for Reliable Code',
+      'rating' => 4.30,
+      'votes' => 18,
     ],
     [
-      'title' => 'Article Needs More Detail',
-      'rating' => 2.1,
-      'votes' => 23,
+      'title' => 'Emerging Trends in Web Development',
+      'rating' => 4.25,
+      'votes' => 5,
     ],
   ];
 

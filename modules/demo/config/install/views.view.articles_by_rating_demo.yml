@@ -46,17 +46,13 @@ display:
           default: '-1'
           info:
             title:
-              sortable: true
-              default_sort_order: asc
+              sortable: false
             field_rating:
-              sortable: true
-              default_sort_order: asc
+              sortable: false
             field_rating_score:
-              sortable: true
-              default_sort_order: desc
+              sortable: false
             field_vote_count:
-              sortable: true
-              default_sort_order: asc
+              sortable: false
           override: true
           sticky: true
       row:
