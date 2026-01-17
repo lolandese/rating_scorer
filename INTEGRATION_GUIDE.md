@@ -17,15 +17,19 @@ Fivestar is a popular Drupal module that provides 5-star rating widgets and stor
 
 ### Version-Specific Notes
 
+Fivestar uses different release naming conventions depending on the branch:
+
 **Drupal 10**
-- Fivestar 8.x-1.0-alpha5 (uses legacy Drupal 8.x versioning scheme)
-- Stable alpha release, well-tested
-- Suitable for production use
+- Fivestar 8.x-1.0-alpha5 (uses Drupal 8.x legacy naming convention)
+- Stable alpha release, works on D9/D10/D11
+- Well-tested and suitable for production use
 
 **Drupal 11**
-- Fivestar 3.0.x-dev (development version)
-- Early development state, actively changing
-- Suitable for testing/development only
+- Fivestar 3.0.x-dev (uses semantic versioning)
+- Early development version, actively changing
+- Suitable for development/testing
+
+Note: Both versions use VotingAPI for vote storage and work identically with Rating Scorer. The version number differences reflect naming convention changes between legacy (`8.x-*`) and semantic versioning, not compatibility differences.
 
 ### How It Works
 
