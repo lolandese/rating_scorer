@@ -25,19 +25,19 @@ function _rating_scorer_demo_fivestar_enabled() {
 function rating_scorer_demo_install() {
   $fivestar_enabled = _rating_scorer_demo_fivestar_enabled();
 
-  // Create Article content type
+  // Create Article content type (standard numeric rating)
   if (!NodeType::load('article')) {
     $type = NodeType::create([
       'type' => 'article',
       'name' => 'Article',
-      'description' => 'Demo content type for Rating Scorer module testing',
+      'description' => 'Demo article with standard numeric ratings',
       'display_submitted' => TRUE,
     ]);
     $type->save();
     \Drupal::messenger()->addStatus(t('Article content type created.'));
   }
 
-  // Create rating field
+  // Create rating field for standard articles
   if (!FieldStorageConfig::loadByName('node', 'field_rating')) {
     FieldStorageConfig::create([
       'field_name' => 'field_rating',
@@ -59,7 +59,7 @@ function rating_scorer_demo_install() {
     \Drupal::messenger()->addStatus(t('Average Rating field created.'));
   }
 
-  // Create vote count field
+  // Create vote count field for standard articles
   if (!FieldStorageConfig::loadByName('node', 'field_vote_count')) {
     FieldStorageConfig::create([
       'field_name' => 'field_vote_count',
@@ -77,7 +77,7 @@ function rating_scorer_demo_install() {
     \Drupal::messenger()->addStatus(t('Number of Votes field created.'));
   }
 
-  // Create Rating Score computed field
+  // Create Rating Score computed field for standard articles
   if (!FieldStorageConfig::loadByName('node', 'field_rating_score')) {
     FieldStorageConfig::create([
       'field_name' => 'field_rating_score',
@@ -97,49 +97,11 @@ function rating_scorer_demo_install() {
     \Drupal::messenger()->addStatus(t('Rating Score field created.'));
   }
 
-  // Create Fivestar field if Fivestar is enabled
-  if ($fivestar_enabled) {
-    if (!FieldStorageConfig::loadByName('node', 'field_article_rating')) {
-      FieldStorageConfig::create([
-        'field_name' => 'field_article_rating',
-        'entity_type' => 'node',
-        'type' => 'fivestar',
-      ])->save();
-
-      FieldConfig::create([
-        'field_name' => 'field_article_rating',
-        'entity_type' => 'node',
-        'bundle' => 'article',
-        'label' => 'Article Rating (Fivestar)',
-        'settings' => [
-          'stars' => 5,
-          'allow_clear' => TRUE,
-          'allow_revote' => TRUE,
-        ],
-      ])->save();
-      \Drupal::messenger()->addStatus(t('Fivestar field created for articles.'));
-    }
-
-    // Create field mapping for Fivestar
-    if (!RatingScorerFieldMapping::load('node_article_fivestar')) {
-      RatingScorerFieldMapping::create([
-        'id' => 'node_article_fivestar',
-        'label' => 'Article Ratings (Fivestar)',
-        'content_type' => 'article',
-        'source_type' => 'VOTINGAPI',
-        'vote_field' => 'field_article_rating',
-        'scoring_method' => 'bayesian',
-        'bayesian_threshold' => 10,
-      ])->save();
-      \Drupal::messenger()->addStatus(t('Field mapping configured for Fivestar ratings.'));
-    }
-  }
-
-  // Create field mapping for standard fields
+  // Create field mapping for standard articles
   if (!RatingScorerFieldMapping::load('node_article')) {
     RatingScorerFieldMapping::create([
       'id' => 'node_article',
-      'label' => 'Article Ratings',
+      'label' => 'Article Ratings (Standard)',
       'content_type' => 'article',
       'source_type' => 'FIELD',
       'scoring_method' => 'bayesian',
@@ -150,7 +112,87 @@ function rating_scorer_demo_install() {
     \Drupal::messenger()->addStatus(t('Field mapping configured for Article content type.'));
   }
 
-  // Create sample articles with inverted ratings and votes
+  // Create Article (Fivestar) content type if Fivestar is enabled
+  if ($fivestar_enabled) {
+    if (!NodeType::load('article_fivestar')) {
+      $type = NodeType::create([
+        'type' => 'article_fivestar',
+        'name' => 'Article (Fivestar)',
+        'description' => 'Demo article with Fivestar user voting',
+        'display_submitted' => TRUE,
+      ]);
+      $type->save();
+      \Drupal::messenger()->addStatus(t('Article (Fivestar) content type created.'));
+    }
+
+    // Create Fivestar rating field
+    if (!FieldStorageConfig::loadByName('node', 'field_article_rating')) {
+      FieldStorageConfig::create([
+        'field_name' => 'field_article_rating',
+        'entity_type' => 'node',
+        'type' => 'fivestar',
+      ])->save();
+
+      FieldConfig::create([
+        'field_name' => 'field_article_rating',
+        'entity_type' => 'node',
+        'bundle' => 'article_fivestar',
+        'label' => 'Article Rating',
+        'settings' => [
+          'stars' => 5,
+          'allow_clear' => TRUE,
+          'allow_revote' => TRUE,
+        ],
+      ])->save();
+      \Drupal::messenger()->addStatus(t('Fivestar field created for Article (Fivestar) content type.'));
+    } else {
+      // Field storage exists but may need to add to article_fivestar bundle
+      $field = FieldConfig::loadByName('node', 'article_fivestar', 'field_article_rating');
+      if (!$field) {
+        FieldConfig::create([
+          'field_name' => 'field_article_rating',
+          'entity_type' => 'node',
+          'bundle' => 'article_fivestar',
+          'label' => 'Article Rating',
+          'settings' => [
+            'stars' => 5,
+            'allow_clear' => TRUE,
+            'allow_revote' => TRUE,
+          ],
+        ])->save();
+      }
+    }
+
+    // Create Rating Score computed field for Fivestar articles
+    $fivestar_score_field = FieldConfig::loadByName('node', 'article_fivestar', 'field_rating_score');
+    if (!$fivestar_score_field) {
+      FieldConfig::create([
+        'field_name' => 'field_rating_score',
+        'entity_type' => 'node',
+        'bundle' => 'article_fivestar',
+        'label' => 'Rating Score',
+        'required' => FALSE,
+        'settings' => [],
+      ])->save();
+      \Drupal::messenger()->addStatus(t('Rating Score field created for Article (Fivestar).'));
+    }
+
+    // Create field mapping for Fivestar articles
+    if (!RatingScorerFieldMapping::load('node_article_fivestar')) {
+      RatingScorerFieldMapping::create([
+        'id' => 'node_article_fivestar',
+        'label' => 'Article Ratings (Fivestar)',
+        'content_type' => 'article_fivestar',
+        'source_type' => 'VOTINGAPI',
+        'vote_field' => 'field_article_rating',
+        'scoring_method' => 'bayesian',
+        'bayesian_threshold' => 10,
+      ])->save();
+      \Drupal::messenger()->addStatus(t('Field mapping configured for Article (Fivestar) content type.'));
+    }
+  }
+
+  // Create sample standard articles
   // High average ratings with few votes vs Low average ratings with many votes
   // Demonstrates how Bayesian algorithm prioritizes vote count reliability
   $articles = [
@@ -213,7 +255,34 @@ function rating_scorer_demo_install() {
       }
     }
   }
-  \Drupal::messenger()->addStatus(t('5 sample articles created.'));
+  \Drupal::messenger()->addStatus(t('5 sample standard articles created.'));
+
+  // Create sample Fivestar articles if Fivestar is enabled
+  if ($fivestar_enabled) {
+    $fivestar_articles = [
+      ['title' => 'Fivestar Article One'],
+      ['title' => 'Fivestar Article Two'],
+      ['title' => 'Fivestar Article Three'],
+    ];
+
+    foreach ($fivestar_articles as $data) {
+      $nids = \Drupal::entityQuery('node')
+        ->condition('type', 'article_fivestar')
+        ->condition('title', $data['title'])
+        ->accessCheck(FALSE)
+        ->execute();
+
+      if (empty($nids)) {
+        $node = Node::create([
+          'type' => 'article_fivestar',
+          'title' => $data['title'],
+          'status' => 1,
+        ]);
+        $node->save();
+      }
+    }
+    \Drupal::messenger()->addStatus(t('3 sample Fivestar articles created (ratings via Fivestar voting).'));
+  }
 
   // View is configured in config/install/views.view.articles_by_rating_demo.yml
   \Drupal::messenger()->addStatus(t('Rating Scorer Demo module installed successfully!'));
@@ -239,9 +308,9 @@ function rating_scorer_demo_uninstall() {
     $fivestar_mapping->delete();
   }
 
-  // Delete sample articles
+  // Delete sample articles (both types)
   $nids = \Drupal::entityQuery('node')
-    ->condition('type', 'article')
+    ->condition('type', ['article', 'article_fivestar'], 'IN')
     ->accessCheck(FALSE)
     ->execute();
 
@@ -252,28 +321,51 @@ function rating_scorer_demo_uninstall() {
     }
   }
 
-  // Delete fields
-  $field_names = ['field_rating_score', 'field_vote_count', 'field_rating', 'field_article_rating'];
+  // Delete fields from standard article
+  $field_names = ['field_rating_score', 'field_vote_count', 'field_rating'];
   foreach ($field_names as $field_name) {
     $field = FieldConfig::loadByName('node', 'article', $field_name);
     if ($field) {
       $field->delete();
     }
+  }
+
+  // Delete fields from Fivestar article
+  foreach (['field_article_rating', 'field_rating_score'] as $field_name) {
+    $field = FieldConfig::loadByName('node', 'article_fivestar', $field_name);
+    if ($field) {
+      $field->delete();
+    }
+  }
+
+  // Delete field storage
+  $field_names = ['field_rating_score', 'field_vote_count', 'field_rating', 'field_article_rating'];
+  foreach ($field_names as $field_name) {
     $field_storage = FieldStorageConfig::loadByName('node', $field_name);
     if ($field_storage) {
       $field_storage->delete();
     }
   }
 
-  // Delete content type
+  // Delete content types
   $type = NodeType::load('article');
   if ($type) {
     $type->delete();
   }
 
-  // Delete demo view
+  $fivestar_type = NodeType::load('article_fivestar');
+  if ($fivestar_type) {
+    $fivestar_type->delete();
+  }
+
+  // Delete demo views
   $view = View::load('articles_by_rating_demo');
   if ($view) {
     $view->delete();
+  }
+
+  $fivestar_view = View::load('articles_fivestar_by_rating_demo');
+  if ($fivestar_view) {
+    $fivestar_view->delete();
   }
 }

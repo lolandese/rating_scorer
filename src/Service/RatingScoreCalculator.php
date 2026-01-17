@@ -53,6 +53,11 @@ class RatingScoreCalculator {
       return NULL;
     }
 
+    // Skip calculation if entity hasn't been saved yet (no ID).
+    if ($entity->id() === NULL) {
+      return NULL;
+    }
+
     // Get the field mapping configuration for this entity type.
     $bundle = $entity->bundle();
     $entity_type = $entity->getEntityTypeId();
