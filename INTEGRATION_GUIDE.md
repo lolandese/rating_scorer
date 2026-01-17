@@ -13,13 +13,33 @@ This guide shows how to integrate Rating Scorer with different rating modules an
 
 ## Fivestar Integration
 
-Fivestar is a popular Drupal module that provides 5-star rating widgets. Rating Scorer can extract average ratings and calculate fair scores from Fivestar fields.
+Fivestar is a popular Drupal module that provides 5-star rating widgets and stores votes in VotingAPI. Rating Scorer can extract average ratings from Fivestar voting data and calculate fair scores.
 
-> **Note**: Fivestar 3.0.x-dev is a development version with limited adoption (12 reported installs) and minimal active maintenance. While Rating Scorer successfully integrates with it, consider Votingapi for more stable, well-maintained rating storage.
+### Version-Specific Notes
+
+**Drupal 11 (Recommended for Fivestar)**
+- Fivestar 3.0.x-dev is actively developed for D11
+- Rating Scorer is primarily developed on D11
+- Best combination for new projects
+
+**Drupal 10 (Limited Support)**
+- Fivestar 3.0.x-dev has limited adoption on D10 (12 reported installs)
+- No dedicated D10 maintainers
+- Consider alternative voting modules (Rate, custom fields with VotingAPI) if stability is critical
+
+### How It Works
+
+Rating Scorer integrates with the **VotingAPI** storage layer that Fivestar uses. When users vote via Fivestar stars:
+1. Votes are stored in VotingAPI
+2. Rating Scorer reads vote aggregates from VotingAPI
+3. Fair scores are calculated based on voting volume and average
+
+This decoupling means Rating Scorer can work with votes from any voting widget (Fivestar, Rate, custom code) as long as they store to VotingAPI.
 
 ### Prerequisites
 
 - Fivestar 3.0.x-dev module installed and enabled
+- VotingAPI module (installed automatically as Fivestar dependency)
 - Fivestar fields added to your content type
 - A "Rating Score" field added to the content type (will be auto-created if using Field Mapping Wizard)
 
