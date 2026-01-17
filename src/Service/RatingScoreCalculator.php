@@ -58,27 +58,31 @@ class RatingScoreCalculator {
     $entity_type = $entity->getEntityTypeId();
     $config_id = "{$entity_type}_{$bundle}";
 
-    try {
-      $mapping = $this->entityTypeManager
-        ->getStorage('rating_scorer_field_mapping')
-        ->load($config_id);
-    } catch (\Exception $e) {
+    $config = \Drupal::config('rating_scorer.settings');
+    $field_mappings = $config->get('field_mappings') ?? [];
+
+    if (empty($field_mappings[$config_id])) {
       return NULL;
     }
 
-    if (!$mapping) {
+    $mapping_data = $field_mappings[$config_id];
+    if (is_string($mapping_data)) {
+      $mapping_data = json_decode($mapping_data, TRUE);
+    }
+
+    if (!$mapping_data) {
       return NULL;
     }
 
     // Determine data source type.
-    $source_type = $mapping->get('source_type') ?? 'FIELD';
+    $source_type = $mapping_data['source_type'] ?? 'FIELD';
 
     if ($source_type === 'VOTINGAPI') {
-      return $this->calculateScoreFromVotingAPI($entity, $mapping);
+      return $this->calculateScoreFromVotingAPI($entity, $mapping_data);
     }
 
     // FIELD source type (default/legacy behavior).
-    return $this->calculateScoreFromFields($entity, $mapping);
+    return $this->calculateScoreFromFields($entity, $mapping_data);
   }
 
   /**
@@ -86,16 +90,16 @@ class RatingScoreCalculator {
    *
    * @param \Drupal\Core\Entity\ContentEntityInterface $entity
    *   The entity to calculate score for.
-   * @param \Drupal\rating_scorer\Entity\RatingScorerFieldMapping $mapping
-   *   The field mapping configuration.
+   * @param array $mapping_data
+   *   The field mapping configuration data.
    *
    * @return float|null
    *   The calculated score, or NULL if data is invalid.
    */
-  private function calculateScoreFromFields(ContentEntityInterface $entity, $mapping): ?float {
+  private function calculateScoreFromFields(ContentEntityInterface $entity, array $mapping_data): ?float {
     // Get source field values.
-    $num_ratings_field = $mapping->get('number_of_ratings_field');
-    $avg_rating_field = $mapping->get('average_rating_field');
+    $num_ratings_field = $mapping_data['number_of_ratings_field'] ?? NULL;
+    $avg_rating_field = $mapping_data['average_rating_field'] ?? NULL;
 
     if (!$num_ratings_field || !$avg_rating_field) {
       return NULL;
@@ -112,8 +116,8 @@ class RatingScoreCalculator {
       return NULL;
     }
 
-    $scoring_method = $mapping->get('scoring_method');
-    $bayesian_threshold = $mapping->get('bayesian_threshold') ?? 10;
+    $scoring_method = $mapping_data['scoring_method'] ?? NULL;
+    $bayesian_threshold = $mapping_data['bayesian_threshold'] ?? 10;
 
     // Call the main module helper function to calculate score.
     return _rating_scorer_calculate_score(
@@ -129,13 +133,13 @@ class RatingScoreCalculator {
    *
    * @param \Drupal\Core\Entity\ContentEntityInterface $entity
    *   The entity to calculate score for.
-   * @param \Drupal\rating_scorer\Entity\RatingScorerFieldMapping $mapping
-   *   The field mapping configuration.
+   * @param array $mapping_data
+   *   The field mapping configuration data.
    *
    * @return float|null
    *   The calculated score, or NULL if votes are unavailable.
    */
-  private function calculateScoreFromVotingAPI(ContentEntityInterface $entity, $mapping): ?float {
+  private function calculateScoreFromVotingAPI(ContentEntityInterface $entity, array $mapping_data): ?float {
     if (!$this->voteResultManager) {
       return NULL;
     }
@@ -151,8 +155,8 @@ class RatingScoreCalculator {
       return NULL;
     }
 
-    $vote_count = (int) $vote_results['vote']['vote_count'] ?? 0;
-    $vote_sum = (float) $vote_results['vote']['vote_sum'] ?? 0;
+    $vote_count = (int) ($vote_results['vote']['vote_count'] ?? 0);
+    $vote_sum = (float) ($vote_results['vote']['vote_sum'] ?? 0);
 
     if ($vote_count <= 0) {
       return NULL;
@@ -161,8 +165,8 @@ class RatingScoreCalculator {
     // Normalize vote values to 0-5 scale (VotingAPI uses percent: 0-100).
     $average_rating = ($vote_sum / $vote_count) / 20;  // 100/5 = 20
 
-    $scoring_method = $mapping->get('scoring_method');
-    $bayesian_threshold = $mapping->get('bayesian_threshold') ?? 10;
+    $scoring_method = $mapping_data['scoring_method'] ?? NULL;
+    $bayesian_threshold = $mapping_data['bayesian_threshold'] ?? 10;
 
     // Call the main module helper function to calculate score.
     return _rating_scorer_calculate_score(
