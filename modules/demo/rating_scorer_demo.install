@@ -13,9 +13,18 @@ use Drupal\rating_scorer\Entity\RatingScorerFieldMapping;
 use Drupal\views\Entity\View;
 
 /**
+ * Check if Fivestar module is enabled.
+ */
+function _rating_scorer_demo_fivestar_enabled() {
+  return \Drupal::moduleHandler()->moduleExists('fivestar');
+}
+
+/**
  * Implements hook_install().
  */
 function rating_scorer_demo_install() {
+  $fivestar_enabled = _rating_scorer_demo_fivestar_enabled();
+
   // Create Article content type
   if (!NodeType::load('article')) {
     $type = NodeType::create([
@@ -88,12 +97,51 @@ function rating_scorer_demo_install() {
     \Drupal::messenger()->addStatus(t('Rating Score field created.'));
   }
 
-  // Create field mapping
+  // Create Fivestar field if Fivestar is enabled
+  if ($fivestar_enabled) {
+    if (!FieldStorageConfig::loadByName('node', 'field_article_rating')) {
+      FieldStorageConfig::create([
+        'field_name' => 'field_article_rating',
+        'entity_type' => 'node',
+        'type' => 'fivestar',
+      ])->save();
+
+      FieldConfig::create([
+        'field_name' => 'field_article_rating',
+        'entity_type' => 'node',
+        'bundle' => 'article',
+        'label' => 'Article Rating (Fivestar)',
+        'settings' => [
+          'stars' => 5,
+          'allow_clear' => TRUE,
+          'allow_revote' => TRUE,
+        ],
+      ])->save();
+      \Drupal::messenger()->addStatus(t('Fivestar field created for articles.'));
+    }
+
+    // Create field mapping for Fivestar
+    if (!RatingScorerFieldMapping::load('node_article_fivestar')) {
+      RatingScorerFieldMapping::create([
+        'id' => 'node_article_fivestar',
+        'label' => 'Article Ratings (Fivestar)',
+        'content_type' => 'article',
+        'source_type' => 'VOTINGAPI',
+        'vote_field' => 'field_article_rating',
+        'scoring_method' => 'bayesian',
+        'bayesian_threshold' => 10,
+      ])->save();
+      \Drupal::messenger()->addStatus(t('Field mapping configured for Fivestar ratings.'));
+    }
+  }
+
+  // Create field mapping for standard fields
   if (!RatingScorerFieldMapping::load('node_article')) {
     RatingScorerFieldMapping::create([
       'id' => 'node_article',
       'label' => 'Article Ratings',
       'content_type' => 'article',
+      'source_type' => 'FIELD',
       'scoring_method' => 'bayesian',
       'number_of_ratings_field' => 'field_vote_count',
       'average_rating_field' => 'field_rating',
@@ -167,22 +215,28 @@ function rating_scorer_demo_install() {
   }
   \Drupal::messenger()->addStatus(t('5 sample articles created.'));
 
-  // Note: Demo view must be created manually via /admin/structure/views
-  // Creating views programmatically is complex and error-prone across Drupal versions.
-  // The demo module focuses on reliable content and field mapping setup instead.
-
+  // View is configured in config/install/views.view.articles_by_rating_demo.yml
   \Drupal::messenger()->addStatus(t('Rating Scorer Demo module installed successfully!'));
+  if ($fivestar_enabled) {
+    \Drupal::messenger()->addStatus(t('Fivestar integration enabled! Check the Fivestar field on articles.'));
+  } else {
+    \Drupal::messenger()->addStatus(t('Fivestar module not enabled. Enable Fivestar to test VotingAPI integration.'));
+  }
 }
 
 /**
  * Implements hook_uninstall().
  */
 function rating_scorer_demo_uninstall() {
-  // Delete field mapping
+  // Delete field mappings
   $mapping = RatingScorerFieldMapping::load('node_article');
   if ($mapping) {
     $mapping->delete();
-    \Drupal::messenger()->addStatus(t('Field mapping removed.'));
+  }
+
+  $fivestar_mapping = RatingScorerFieldMapping::load('node_article_fivestar');
+  if ($fivestar_mapping) {
+    $fivestar_mapping->delete();
   }
 
   // Delete sample articles
@@ -196,11 +250,11 @@ function rating_scorer_demo_uninstall() {
     foreach ($nodes as $node) {
       $node->delete();
     }
-    \Drupal::messenger()->addStatus(t('Sample articles removed.'));
   }
 
   // Delete fields
-  foreach (['field_rating_score', 'field_vote_count', 'field_rating'] as $field_name) {
+  $field_names = ['field_rating_score', 'field_vote_count', 'field_rating', 'field_article_rating'];
+  foreach ($field_names as $field_name) {
     $field = FieldConfig::loadByName('node', 'article', $field_name);
     if ($field) {
       $field->delete();
@@ -210,14 +264,10 @@ function rating_scorer_demo_uninstall() {
       $field_storage->delete();
     }
   }
-  \Drupal::messenger()->addStatus(t('Demo fields removed.'));
 
   // Delete content type
   $type = NodeType::load('article');
   if ($type) {
     $type->delete();
-    \Drupal::messenger()->addStatus(t('Article content type removed.'));
   }
-
-  \Drupal::messenger()->addStatus(t('Rating Scorer Demo module uninstalled. All demo data has been removed.'));
 }
