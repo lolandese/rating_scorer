@@ -24,30 +24,30 @@ class RatingScorerRecalculationTest extends BrowserTestBase {
    */
   protected static $modules = [
     'rating_scorer',
-    'field',
-    'node',
+    'rating_scorer_demo',
   ];
 
   /**
    * Test that Field Mapping save triggers score recalculation.
    */
   public function testFieldMappingSaveTriggersRecalculation(): void {
-    // This test verifies that the hook_entity_update implementation
-    // is called when a Field Mapping is saved.
+    // Load the field mapping created by demo module
+    $mapping = RatingScorerFieldMapping::load('node_article');
 
-    $admin_user = $this->createUser([
-      'administer rating scorer',
-      'administer site configuration',
-    ]);
-    $this->drupalLogin($admin_user);
+    $this->assertNotNull($mapping, 'Field mapping for node_article should exist after demo install.');
+    $this->assertEqual('node_article', $mapping->id());
 
-    // Load existing field mapping
-    $mapping = RatingScorerFieldMapping::load('node_rating_test');
+    // Load articles that should have calculated scores
+    $nodes = \Drupal::entityTypeManager()
+      ->getStorage('node')
+      ->loadByProperties(['type' => 'article']);
 
-    if ($mapping) {
-      // Verify mapping exists
-      $this->assertNotNull($mapping);
-      $this->assertEqual('Rating Test', $mapping->label());
+    $this->assertNotEmpty($nodes, 'Demo articles should exist.');
+
+    // All articles should have rating scores calculated
+    foreach ($nodes as $node) {
+      $score = $node->get('field_rating_score')->value;
+      $this->assertNotNull($score, 'Rating score should be calculated for article: ' . $node->getTitle());
     }
   }
 
@@ -61,13 +61,12 @@ class RatingScorerRecalculationTest extends BrowserTestBase {
     ]);
     $this->drupalLogin($admin_user);
 
-    // This verifies the message is displayed in RatingScorerFieldMappingForm
-    // when a mapping is updated
+    // Navigate to field mapping form for node_article
+    $this->drupalGet('/admin/config/rating-scorer/manage/node_article');
+    $this->assertSession()->statusCodeEquals(200);
 
-    $mapping = RatingScorerFieldMapping::load('node_rating_test');
-    if ($mapping) {
-      $this->assertNotNull($mapping);
-    }
+    // The page should show the field mapping exists
+    $this->assertSession()->pageTextContains('node_article');
   }
 
 }
