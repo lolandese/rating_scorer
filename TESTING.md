@@ -18,6 +18,21 @@ The module includes comprehensive tests covering:
 
 **Total: 55+ tests across 12 test files**
 
+### Note on Optional Integration Testing
+
+**Fivestar Integration is NOT included in the test suite.**
+
+While Rating Scorer supports Fivestar 3.0.x-dev, it is not part of the automated test suite for these reasons:
+
+1. **Module Stability** - Fivestar 3.0.x-dev is a development version with limited adoption (12 reported installations) and minimal active maintenance
+2. **Test Brittleness** - Including Fivestar would create fragile tests that could break due to upstream changes beyond Rating Scorer's control
+3. **Core Functionality** - Rating Scorer's core scoring algorithms and VotingAPI integration are fully tested and stable
+4. **Optional Feature** - Fivestar support is an optional integration, not a core requirement
+
+Fivestar integration is verified through manual testing and demonstration in the demo module (`rating_scorer_demo`), which provides sample Fivestar articles with prepopulated votes when installed.
+
+**For production use**: Consider using VotingAPI (fully tested) instead of Fivestar for more stable rating storage.
+
 ## Running Tests
 
 ### Prerequisites

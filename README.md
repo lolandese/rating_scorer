@@ -50,8 +50,8 @@ See [Configuration](#configuration) section below for detailed setup instruction
 - **Granular Permissions** - Single "Administer rating scorer" permission controls access to all functionality
 
 - **Rating Module Integration** - Auto-detection and integration with popular Drupal rating modules:
-  - **Votingapi** - Extract average ratings and vote counts directly from Votingapi aggregates
-  - **Fivestar** - Support for Fivestar rating fields
+  - **Votingapi** - Extract average ratings and vote counts directly from Votingapi aggregates (fully tested)
+  - **Fivestar** - Support for Fivestar rating fields (3.0.x-dev, community-maintained, optional)
   - **Rate** - Compatible with Rate module rating widgets
   - Custom numeric fields for flexible integration
 

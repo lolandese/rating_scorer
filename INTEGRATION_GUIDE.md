@@ -15,9 +15,11 @@ This guide shows how to integrate Rating Scorer with different rating modules an
 
 Fivestar is a popular Drupal module that provides 5-star rating widgets. Rating Scorer can extract average ratings and calculate fair scores from Fivestar fields.
 
+> **Note**: Fivestar 3.0.x-dev is a development version with limited adoption (12 reported installs) and minimal active maintenance. While Rating Scorer successfully integrates with it, consider Votingapi for more stable, well-maintained rating storage.
+
 ### Prerequisites
 
-- Fivestar module installed and enabled
+- Fivestar 3.0.x-dev module installed and enabled
 - Fivestar fields added to your content type
 - A "Rating Score" field added to the content type (will be auto-created if using Field Mapping Wizard)
 
