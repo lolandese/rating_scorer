@@ -25,6 +25,8 @@ class RatingScorerAdminInterfaceTest extends BrowserTestBase {
     'rating_scorer',
     'field',
     'node',
+    'views',
+    'views_ui',
   ];
 
   /**
