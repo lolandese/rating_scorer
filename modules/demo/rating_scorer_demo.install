@@ -299,7 +299,36 @@ function rating_scorer_demo_install() {
         $node->save();
 
         // Add sample votes with field name for Fivestar compatibility
-        _rating_scorer_demo_add_sample_votes($node->id(), 'node', 4 + rand(0, 6), 'field_article_rating');
+        $num_votes = 4 + rand(0, 6);
+        _rating_scorer_demo_add_sample_votes($node->id(), 'node', $num_votes, 'field_article_rating');
+        
+        // Set the field value to the average rating so Fivestar formatter can display it
+        // VotingAPI uses 0-100 scale, Fivestar field expects 0-100 scale or 0-5 scale
+        $votes = \Drupal::entityQuery('vote')
+          ->condition('entity_type', 'node')
+          ->condition('entity_id', $node->id())
+          ->accessCheck(FALSE)
+          ->execute();
+        
+        if (!empty($votes)) {
+          $vote_storage = \Drupal::entityTypeManager()->getStorage('vote');
+          $votes_data = $vote_storage->loadMultiple($votes);
+          $average_rating = 0;
+          if (!empty($votes_data)) {
+            $total = 0;
+            foreach ($votes_data as $vote) {
+              $total += $vote->getValue();
+            }
+            // Keep in 0-100 scale - Fivestar will normalize it
+            $average_rating = $total / count($votes_data);
+          }
+          
+          // Set the field value
+          if ($average_rating > 0) {
+            $node->set('field_article_rating', $average_rating);
+            $node->save();
+          }
+        }
       }
     }
     \Drupal::messenger()->addStatus(t('3 sample Fivestar articles created with votes.'));
