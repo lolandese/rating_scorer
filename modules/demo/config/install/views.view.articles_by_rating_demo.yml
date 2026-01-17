@@ -41,6 +41,7 @@ display:
           columns:
             title: title
             field_rating: field_rating
+            field_rating_score: field_rating_score
             field_vote_count: field_vote_count
           default: '-1'
           info:
@@ -50,6 +51,9 @@ display:
             field_rating:
               sortable: true
               default_sort_order: asc
+            field_rating_score:
+              sortable: true
+              default_sort_order: desc
             field_vote_count:
               sortable: true
               default_sort_order: asc
@@ -70,6 +74,13 @@ display:
           field: field_rating
           plugin_id: field
           label: 'Average Rating'
+          type: number_decimal
+        field_rating_score:
+          id: field_rating_score
+          table: node__field_rating_score
+          field: field_rating_score
+          plugin_id: field
+          label: 'Rating Score'
           type: number_decimal
         field_vote_count:
           id: field_vote_count
@@ -100,10 +111,10 @@ display:
             operator_id: ''
             label: ''
       sorts:
-        field_rating_value:
-          id: field_rating_value
-          table: node__field_rating
-          field: field_rating_value
+        field_rating_score_value:
+          id: field_rating_score_value
+          table: node__field_rating_score
+          field: field_rating_score_value
           plugin_id: standard
           order: DESC
       title: 'Articles by Rating Score'

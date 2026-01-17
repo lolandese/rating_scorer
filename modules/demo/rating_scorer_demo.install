@@ -89,10 +89,10 @@ function rating_scorer_demo_install() {
   }
 
   // Create field mapping
-  if (!RatingScorerFieldMapping::load('article_demo')) {
+  if (!RatingScorerFieldMapping::load('node_article')) {
     RatingScorerFieldMapping::create([
-      'id' => 'article_demo',
-      'label' => 'Article Demo Ratings',
+      'id' => 'node_article',
+      'label' => 'Article Ratings',
       'content_type' => 'article',
       'scoring_method' => 'bayesian',
       'number_of_ratings_field' => 'field_vote_count',
@@ -163,7 +163,7 @@ function rating_scorer_demo_install() {
  */
 function rating_scorer_demo_uninstall() {
   // Delete field mapping
-  $mapping = RatingScorerFieldMapping::load('article_demo');
+  $mapping = RatingScorerFieldMapping::load('node_article');
   if ($mapping) {
     $mapping->delete();
     \Drupal::messenger()->addStatus(t('Field mapping removed.'));
