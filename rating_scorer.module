@@ -11,7 +11,7 @@ use Drupal\Core\Url;
 /**
  * Implements hook_help().
  */
-function rating_scorer_help($route_name, RouteMatchInterface $route_match) {
+function rating_scorer_help($route_name, $route_match) {
   switch ($route_name) {
     case 'help.page.rating_scorer':
       $output = '';
