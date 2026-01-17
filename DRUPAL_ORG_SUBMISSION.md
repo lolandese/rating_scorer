@@ -1,9 +1,9 @@
 # Drupal.org Submission Preparation Checklist
 
-**Module**: Rating Scorer  
-**Version**: 1.0  
-**Drupal Compatibility**: Drupal 11.x  
-**Date Prepared**: January 17, 2026  
+**Module**: Rating Scorer
+**Version**: 1.0
+**Drupal Compatibility**: Drupal 11.x
+**Date Prepared**: January 17, 2026
 
 ---
 
@@ -12,7 +12,7 @@
 ### ✅ Module Structure & Files
 
 - [x] `rating_scorer.info.yml` - Module metadata present
-- [x] `rating_scorer.module` - Module hooks implemented  
+- [x] `rating_scorer.module` - Module hooks implemented
 - [x] `rating_scorer.routing.yml` - Routes defined
 - [x] `rating_scorer.links.menu.yml` - Menu links configured
 - [x] `rating_scorer.links.task.yml` - Task tabs configured
@@ -69,7 +69,7 @@
   - Configuration guide
   - Algorithm explanations
   - Troubleshooting section
-  
+
 - [x] INTEGRATION_GUIDE.md with setup examples
   - Fivestar integration
   - Votingapi integration

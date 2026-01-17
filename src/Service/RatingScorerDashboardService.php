@@ -80,7 +80,7 @@ class RatingScorerDashboardService {
     foreach ($field_mappings as $mapping) {
       $content_type = $mapping->get('content_type');
       $scoring_method = $mapping->get('scoring_method');
-      
+
       $mappings_data[] = [
         'id' => $mapping->id(),
         'label' => $mapping->label(),

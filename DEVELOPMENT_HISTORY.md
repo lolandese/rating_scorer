@@ -592,7 +592,7 @@ RatingDataProviderManager (Coordinator)
    - Module detection for Votingapi, Fivestar, Rate
    - Empty detection when no modules installed
    - Individual module detection tests
-   
+
 2. **RatingDataProviderManagerTest** (10 tests)
    - Manager instantiation and service methods
    - Provider detection logic

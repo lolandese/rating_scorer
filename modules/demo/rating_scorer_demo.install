@@ -151,10 +151,9 @@ function rating_scorer_demo_install() {
   }
   \Drupal::messenger()->addStatus(t('5 sample articles created.'));
 
-  // Create View - skip for now due to complexity
-  // Views should be created manually or via drush commands
-  // The demo module focuses on content and field mapping setup
-  \Drupal::messenger()->addStatus(t('Demo content ready. Visit /admin/content to view articles.'));
+  // Note: Demo view must be created manually via /admin/structure/views
+  // Creating views programmatically is complex and error-prone across Drupal versions.
+  // The demo module focuses on reliable content and field mapping setup instead.
 
   \Drupal::messenger()->addStatus(t('Rating Scorer Demo module installed successfully!'));
 }
