@@ -22,20 +22,23 @@ The module includes comprehensive tests covering:
 
 **Fivestar Integration is NOT included in the test suite.**
 
-While Rating Scorer supports Fivestar 3.0.x-dev, it is not part of the automated test suite for these reasons:
+While Rating Scorer supports Fivestar, it is not part of the automated test suite for these reasons:
 
-1. **Module Maturity** - Fivestar 3.0.x-dev is a development version with limited adoption (12 reported installations) and variable maintenance across Drupal versions
-2. **Version Variance** - Support differs between D10 (limited) and D11 (primary target), making version-agnostic testing problematic
-3. **VotingAPI Decoupling** - Rating Scorer's core integration is with VotingAPI (the storage layer), not Fivestar itself. Votes from any source (Fivestar, Rate, custom code) work identically if stored in VotingAPI
-4. **Test Brittleness** - Including Fivestar would create fragile tests that could break due to upstream changes beyond Rating Scorer's control
-5. **Core Functionality** - Rating Scorer's core scoring algorithms and VotingAPI integration are fully tested and stable
+1. **Version Instability** - Fivestar versions differ significantly:
+   - D10 uses Fivestar 1.0.0-alpha5 (stable)
+   - D11 uses Fivestar 3.0.x-dev (early development, unstable)
+2. **VotingAPI Decoupling** - Rating Scorer's core integration is with VotingAPI (the storage layer), not Fivestar itself. Votes from any source (Fivestar, Rate, custom code) work identically if stored in VotingAPI
+3. **Test Brittleness** - Including Fivestar would create fragile tests that could break due to upstream changes, especially on the D11 dev version
+4. **Core Functionality** - Rating Scorer's core scoring algorithms and VotingAPI integration are fully tested and stable
 
 Fivestar integration is verified through:
 - Manual testing in development environments
 - Demonstration in the `rating_scorer_demo` module with prepopulated Fivestar articles and votes
 - Integration tests focus on VotingAPI data sources (which Fivestar uses), ensuring compatibility with any voting widget
 
-**Recommendation**: For production use on D11, Fivestar is supported. For D10 or critical applications, consider using the Rate module or custom VotingAPI integration with other established widget solutions.
+**Recommendation**: 
+- **D10**: Fivestar 1.0.0-alpha5 is suitable for production use (stable alpha)
+- **D11**: Fivestar 3.0.x-dev is suitable for testing/development but not production (unstable)
 
 ## Running Tests
 
