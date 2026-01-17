@@ -78,14 +78,17 @@ class RatingScorerDashboardService {
     $mappings_data = [];
 
     foreach ($field_mappings as $mapping) {
+      $content_type = $mapping->get('content_type');
+      $scoring_method = $mapping->get('scoring_method');
+      
       $mappings_data[] = [
         'id' => $mapping->id(),
         'label' => $mapping->label(),
-        'content_type' => $mapping->content_type,
-        'scoring_method' => $mapping->scoring_method,
-        'entity_count' => $this->getContentTypeEntityCount($mapping->content_type),
-        'rating_score_count' => $this->getRatingScoreFieldCount($mapping->content_type),
-        'last_recalculation' => $this->getLastRecalculationTime($mapping->content_type),
+        'content_type' => $content_type,
+        'scoring_method' => $scoring_method,
+        'entity_count' => $this->getContentTypeEntityCount($content_type),
+        'rating_score_count' => $this->getRatingScoreFieldCount($content_type),
+        'last_recalculation' => $this->getLastRecalculationTime($content_type),
       ];
     }
 
