@@ -270,4 +270,10 @@ function rating_scorer_demo_uninstall() {
   if ($type) {
     $type->delete();
   }
+
+  // Delete demo view
+  $view = View::load('articles_by_rating_demo');
+  if ($view) {
+    $view->delete();
+  }
 }
