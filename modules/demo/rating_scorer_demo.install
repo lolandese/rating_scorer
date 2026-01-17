@@ -249,6 +249,16 @@ function rating_scorer_demo_install() {
       ]);
       $node->save();
 
+      // Add sample votes if VotingAPI is available
+      if (\Drupal::moduleHandler()->moduleExists('votingapi')) {
+        _rating_scorer_demo_add_sample_votes($node->id(), 'node', 3 + rand(0, 5));
+      } else {
+        // Set sample ratings directly on the field
+        $node->set('field_rating', 3.5 + (rand(0, 20) / 10));
+        $node->set('field_vote_count', 5 + rand(0, 10));
+        $node->save();
+      }
+
       // Calculate and set the rating score using the Rating Scorer service
       try {
         $calculator = \Drupal::service('rating_scorer.calculator');
@@ -263,7 +273,7 @@ function rating_scorer_demo_install() {
       }
     }
   }
-  \Drupal::messenger()->addStatus(t('5 sample standard articles created.'));
+  \Drupal::messenger()->addStatus(t('5 sample standard articles created with ratings.'));
 
   // Create sample Fivestar articles if Fivestar is enabled
   if ($fivestar_enabled) {
@@ -287,9 +297,12 @@ function rating_scorer_demo_install() {
           'status' => 1,
         ]);
         $node->save();
+
+        // Add sample votes with field name for Fivestar compatibility
+        _rating_scorer_demo_add_sample_votes($node->id(), 'node', 4 + rand(0, 6), 'field_article_rating');
       }
     }
-    \Drupal::messenger()->addStatus(t('3 sample Fivestar articles created (ratings via Fivestar voting).'));
+    \Drupal::messenger()->addStatus(t('3 sample Fivestar articles created with votes.'));
   }
 
   // View is configured in config/install/views.view.articles_by_rating_demo.yml
@@ -298,6 +311,49 @@ function rating_scorer_demo_install() {
     \Drupal::messenger()->addStatus(t('Fivestar integration enabled! Check the Fivestar field on articles.'));
   } else {
     \Drupal::messenger()->addStatus(t('Fivestar module not enabled. Enable Fivestar to test VotingAPI integration.'));
+  }
+}
+
+/**
+ * Add sample votes to an entity using VotingAPI.
+ */
+function _rating_scorer_demo_add_sample_votes($entity_id, $entity_type, $num_votes, $field_name = NULL) {
+  if (!\Drupal::moduleHandler()->moduleExists('votingapi')) {
+    return;
+  }
+
+  $vote_storage = \Drupal::entityTypeManager()->getStorage('vote');
+  
+  // Generate a vote source hash if field_name is provided (for Fivestar compatibility)
+  $vote_source = NULL;
+  if ($field_name) {
+    // Fivestar uses a hash based on field information
+    $vote_source = hash('sha256', json_encode([
+      'entity_type' => $entity_type,
+      'entity_id' => $entity_id,
+      'field_name' => $field_name,
+    ]));
+  }
+  
+  for ($i = 0; $i < $num_votes; $i++) {
+    // Create votes with random ratings between 1-5
+    $vote_value = rand(1, 5) * 20; // VotingAPI uses 0-100 scale
+    
+    $vote_data = [
+      'type' => 'vote',
+      'entity_type' => $entity_type,
+      'entity_id' => $entity_id,
+      'value' => $vote_value,
+      'uid' => 0, // Anonymous votes
+    ];
+    
+    // Add vote_source if provided
+    if ($vote_source) {
+      $vote_data['vote_source'] = $vote_source;
+    }
+    
+    $vote = $vote_storage->create($vote_data);
+    $vote->save();
   }
 }
 
