@@ -11,6 +11,8 @@ use Drupal\field\Entity\FieldConfig;
 use Drupal\node\Entity\Node;
 use Drupal\rating_scorer\Entity\RatingScorerFieldMapping;
 use Drupal\views\Entity\View;
+use Drupal\Core\Entity\Entity\EntityFormDisplay;
+use Drupal\Core\Entity\Entity\EntityViewDisplay;
 
 /**
  * Check if Fivestar module is enabled.
@@ -97,6 +99,9 @@ function rating_scorer_demo_install() {
     \Drupal::messenger()->addStatus(t('Rating Score field created.'));
   }
 
+  // Configure form and view displays for standard article fields
+  _rating_scorer_demo_configure_article_displays();
+
   // Create field mapping for standard articles
   if (!RatingScorerFieldMapping::load('node_article')) {
     RatingScorerFieldMapping::create([
@@ -176,6 +181,9 @@ function rating_scorer_demo_install() {
       ])->save();
       \Drupal::messenger()->addStatus(t('Rating Score field created for Article (Fivestar).'));
     }
+
+    // Configure form and view displays for Fivestar article fields
+    _rating_scorer_demo_configure_article_fivestar_displays();
 
     // Create field mapping for Fivestar articles
     if (!RatingScorerFieldMapping::load('node_article_fivestar')) {
@@ -368,4 +376,95 @@ function rating_scorer_demo_uninstall() {
   if ($fivestar_view) {
     $fivestar_view->delete();
   }
+}
+
+/**
+ * Configure form and view displays for article fields.
+ */
+function _rating_scorer_demo_configure_article_displays() {
+  // Configure form display for article
+  $form_display = EntityFormDisplay::load('node.article.default');
+  if (!$form_display) {
+    $form_display = EntityFormDisplay::create([
+      'targetEntityType' => 'node',
+      'bundle' => 'article',
+      'mode' => 'default',
+      'status' => TRUE,
+    ]);
+  }
+
+  $form_display->setComponent('field_rating', [
+    'type' => 'number',
+    'weight' => 10,
+  ])->setComponent('field_vote_count', [
+    'type' => 'number',
+    'weight' => 11,
+  ])->hideComponent('field_rating_score')->save();
+
+  // Configure view display for article
+  $view_display = EntityViewDisplay::load('node.article.default');
+  if (!$view_display) {
+    $view_display = EntityViewDisplay::create([
+      'targetEntityType' => 'node',
+      'bundle' => 'article',
+      'mode' => 'default',
+      'status' => TRUE,
+    ]);
+  }
+
+  $view_display->setComponent('field_rating', [
+    'type' => 'number_decimal',
+    'label' => 'above',
+    'weight' => 10,
+  ])->setComponent('field_vote_count', [
+    'type' => 'number_integer',
+    'label' => 'above',
+    'weight' => 11,
+  ])->setComponent('field_rating_score', [
+    'type' => 'number_decimal',
+    'label' => 'above',
+    'weight' => 12,
+  ])->save();
+}
+
+/**
+ * Configure form and view displays for Fivestar article fields.
+ */
+function _rating_scorer_demo_configure_article_fivestar_displays() {
+  // Configure form display for article_fivestar
+  $form_display = EntityFormDisplay::load('node.article_fivestar.default');
+  if (!$form_display) {
+    $form_display = EntityFormDisplay::create([
+      'targetEntityType' => 'node',
+      'bundle' => 'article_fivestar',
+      'mode' => 'default',
+      'status' => TRUE,
+    ]);
+  }
+
+  $form_display->setComponent('field_article_rating', [
+    'type' => 'fivestar_stars',
+    'weight' => 10,
+  ])->hideComponent('field_rating_score')->save();
+
+  // Configure view display for article_fivestar
+  $view_display = EntityViewDisplay::load('node.article_fivestar.default');
+  if (!$view_display) {
+    $view_display = EntityViewDisplay::create([
+      'targetEntityType' => 'node',
+      'bundle' => 'article_fivestar',
+      'mode' => 'default',
+      'status' => TRUE,
+    ]);
+  }
+
+  $view_display->setComponent('field_article_rating', [
+    'type' => 'fivestar_formatter_default',
+    'label' => 'above',
+    'weight' => 10,
+  ])->setComponent('field_rating_score', [
+    'type' => 'number_decimal',
+    'label' => 'above',
+    'weight' => 11,
+  ])->save();
 }
