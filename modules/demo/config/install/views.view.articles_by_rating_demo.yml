@@ -11,8 +11,6 @@ module: views
 description: 'Demo view displaying articles ordered by Rating Score'
 tag: default
 base_table: node_field_data
-base_field: nid
-core: 8.x
 display:
   default:
     display_plugin: default
@@ -26,41 +24,14 @@ display:
           perm: 'access content'
       cache:
         type: tag
-        options: {  }
       query:
         type: views_query
-        options:
-          disable_sql_rewrite: false
-          distinct: false
-          replica: false
-          query_tags: {  }
       exposed_form:
         type: basic
-        options:
-          submit_button: Apply
-          reset_button: false
-          reset_button_label: Reset
-          exposed_sorts_label: 'Sort by'
-          expose_sort_order: true
-          collapse: false
       pager:
         type: mini
         options:
           items_per_page: 10
-          offset: 0
-          id: 0
-          total_pages: null
-          expose:
-            items_per_page: false
-            items_per_page_label: 'Items per page'
-            items_per_page_options: '5, 10, 25, 50'
-            items_per_page_options_all: false
-            items_per_page_options_all_label: '- All -'
-            offset: false
-            offset_label: Offset
-          tags:
-            previous: ‹‹
-            next: ››
       style:
         type: table
         options:
@@ -76,265 +47,65 @@ display:
             title:
               sortable: true
               default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
             field_rating:
               sortable: true
               default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
             field_vote_count:
               sortable: true
               default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
           override: true
           sticky: true
-          summary: ''
-          empty_table: false
       row:
         type: fields
-        options:
-          inline: {  }
-          separator: ''
-          hide_empty: false
       fields:
         title:
           id: title
           table: node_field_data
           field: title
-          relationship: none
-          group_type: group
-          admin_label: ''
+          plugin_id: field
           label: Title
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          format_name: ''
-          format_name_custom: ''
-          suppress_filters: false
         field_rating:
           id: field_rating
           table: node__field_rating
           field: field_rating
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: 'Average Rating'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          format_name: number_decimal
-          format_name_custom: ''
-          suppress_filters: false
-          type: number_decimal
-          settings:
-            thousand_separator: ''
-            decimal_separator: .
-            scale: 2
-            prefix_suffix: true
           plugin_id: field
+          label: 'Average Rating'
+          type: number_decimal
         field_vote_count:
           id: field_vote_count
           table: node__field_vote_count
           field: field_vote_count
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: 'Number of Votes'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          format_name: number_integer
-          format_name_custom: ''
-          suppress_filters: false
-          type: number_integer
-          settings:
-            thousand_separator: ''
-            prefix_suffix: true
           plugin_id: field
+          label: 'Number of Votes'
+          type: number_integer
       filters:
         status:
-          value: true
+          value: '1'
           table: node_field_data
           field: status
-          relationship: none
-          group_type: group
-          admin_label: ''
+          plugin_id: boolean
+          id: status
           operator: '='
-          group: 1
-          exposed: false
           expose:
             operator_id: ''
             label: ''
-            description: ''
-            use_operator: false
-            operator: status_op
-            identifier: status
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          plugin_id: boolean
         type:
-          id: type
-          table: node_field_data
-          field: type
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: in
           value:
             article: article
-          group: 1
-          exposed: false
+          table: node_field_data
+          field: type
+          plugin_id: bundle
+          id: type
           expose:
             operator_id: ''
             label: ''
-            description: ''
-            use_operator: false
-            operator: type_op
-            identifier: type
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          reduce: false
-          plugin_id: bundle
       sorts:
         field_rating_value:
           id: field_rating_value
           table: node__field_rating
           field: field_rating_value
-          relationship: none
-          group_type: group
-          admin_label: ''
-          order: DESC
-          exposed: false
-          expose:
-            label: ''
-            description: ''
-            use_sort_order: false
-            sort_asc_label: Asc
-            sort_desc_label: Desc
-            identifier: field_rating_value
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-          granularity: second
           plugin_id: standard
+          order: DESC
       title: 'Articles by Rating Score'
       header: {  }
       footer: {  }
@@ -342,20 +113,10 @@ display:
       relationships: {  }
       arguments: {  }
       display_extenders: {  }
-      use_ajax: true
   page:
     display_plugin: page
     id: page
     display_title: Page
     position: 1
     display_options:
-      display_extenders: {  }
       path: articles-by-rating
-      menu:
-        type: none
-        title: ''
-        description: ''
-        expanded: false
-        parent: ''
-        weight: 0
-        context: '0'
