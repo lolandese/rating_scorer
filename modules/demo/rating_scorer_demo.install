@@ -544,9 +544,14 @@ function _rating_scorer_demo_configure_article_fivestar_displays() {
   }
 
   $view_display->setComponent('field_article_rating', [
-    'type' => 'fivestar_rating',
+    'type' => 'fivestar_stars',
     'label' => 'above',
     'weight' => 10,
+    'settings' => [
+      'text_format' => 'none',
+      'display_format' => 'average',
+      'fivestar_widget' => 'basic',
+    ],
   ])->setComponent('field_rating_score', [
     'type' => 'number_decimal',
     'label' => 'above',
