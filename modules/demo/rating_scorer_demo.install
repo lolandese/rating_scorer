@@ -142,13 +142,27 @@ function rating_scorer_demo_install() {
       ->execute();
 
     if (empty($nids)) {
-      Node::create([
+      $node = Node::create([
         'type' => 'article',
         'title' => $data['title'],
         'field_rating' => $data['rating'],
         'field_vote_count' => $data['votes'],
         'status' => 1,
-      ])->save();
+      ]);
+      $node->save();
+
+      // Calculate and set the rating score using the Rating Scorer service
+      try {
+        $calculator = \Drupal::service('rating_scorer.calculator');
+        $score = $calculator->calculateScoreForEntity($node, 'field_rating_score');
+        if ($score !== NULL) {
+          $node->set('field_rating_score', $score);
+          $node->save();
+        }
+      } catch (\Exception $e) {
+        // Log error but continue installation
+        \Drupal::logger('rating_scorer_demo')->error('Failed to calculate rating score: @error', ['@error' => $e->getMessage()]);
+      }
     }
   }
   \Drupal::messenger()->addStatus(t('5 sample articles created.'));

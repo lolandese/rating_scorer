@@ -1,4 +1,4 @@
-uuid: 12345678-1234-1234-1234-123456789012
+uuid: c1a236ab-5693-4671-8972-37f659c13dfd
 langcode: en
 status: true
 dependencies:
@@ -29,8 +29,10 @@ display:
       exposed_form:
         type: basic
       pager:
-        type: none
-        options: {  }
+        type: full
+        options:
+          items_per_page: 5
+          offset: 0
       style:
         type: table
         options:
