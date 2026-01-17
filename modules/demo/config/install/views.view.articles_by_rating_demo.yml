@@ -29,9 +29,8 @@ display:
       exposed_form:
         type: basic
       pager:
-        type: mini
-        options:
-          items_per_page: 5
+        type: none
+        options: {  }
       style:
         type: table
         options:
