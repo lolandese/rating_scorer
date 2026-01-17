@@ -18,11 +18,13 @@ class RatingScorerRecalculationTest extends BrowserTestBase {
   protected $defaultTheme = 'stark';
 
   /**
-   * Modules to enable.
+   * Modules to enable - ordered by dependencies.
    *
    * @var array
    */
   protected static $modules = [
+    'node',
+    'views',
     'rating_scorer',
     'rating_scorer_demo',
   ];
