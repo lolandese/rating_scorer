@@ -1,0 +1,7 @@
+name: Rating Scorer Demo
+type: module
+description: 'Demo module for Rating Scorer that sets up sample content, fields, and views for testing and evaluation.'
+package: Rating
+core_version_requirement: '>=10.0 <12'
+dependencies:
+  - rating_scorer:rating_scorer

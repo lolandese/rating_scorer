@@ -1,0 +1,332 @@
+<?php
+
+/**
+ * @file
+ * Install hooks for Rating Scorer Demo module.
+ */
+
+use Drupal\node\Entity\NodeType;
+use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\field\Entity\FieldConfig;
+use Drupal\node\Entity\Node;
+use Drupal\rating_scorer\Entity\RatingScorerFieldMapping;
+use Drupal\views\Entity\View;
+
+/**
+ * Implements hook_install().
+ */
+function rating_scorer_demo_install() {
+  // Create Article content type
+  if (!NodeType::load('article')) {
+    $type = NodeType::create([
+      'type' => 'article',
+      'name' => 'Article',
+      'description' => 'Demo content type for Rating Scorer module testing',
+      'display_submitted' => TRUE,
+    ]);
+    $type->save();
+    \Drupal::messenger()->addStatus(t('Article content type created.'));
+  }
+
+  // Create rating field
+  if (!FieldStorageConfig::loadByName('node', 'field_rating')) {
+    FieldStorageConfig::create([
+      'field_name' => 'field_rating',
+      'entity_type' => 'node',
+      'type' => 'decimal',
+      'settings' => [
+        'precision' => 10,
+        'scale' => 2,
+      ],
+    ])->save();
+
+    FieldConfig::create([
+      'field_name' => 'field_rating',
+      'entity_type' => 'node',
+      'bundle' => 'article',
+      'label' => 'Average Rating',
+      'settings' => [],
+    ])->save();
+    \Drupal::messenger()->addStatus(t('Average Rating field created.'));
+  }
+
+  // Create vote count field
+  if (!FieldStorageConfig::loadByName('node', 'field_vote_count')) {
+    FieldStorageConfig::create([
+      'field_name' => 'field_vote_count',
+      'entity_type' => 'node',
+      'type' => 'integer',
+    ])->save();
+
+    FieldConfig::create([
+      'field_name' => 'field_vote_count',
+      'entity_type' => 'node',
+      'bundle' => 'article',
+      'label' => 'Number of Votes',
+      'settings' => [],
+    ])->save();
+    \Drupal::messenger()->addStatus(t('Number of Votes field created.'));
+  }
+
+  // Create Rating Score computed field
+  if (!FieldStorageConfig::loadByName('node', 'field_rating_score')) {
+    FieldStorageConfig::create([
+      'field_name' => 'field_rating_score',
+      'entity_type' => 'node',
+      'type' => 'rating_score',
+      'settings' => [],
+    ])->save();
+
+    FieldConfig::create([
+      'field_name' => 'field_rating_score',
+      'entity_type' => 'node',
+      'bundle' => 'article',
+      'label' => 'Rating Score',
+      'required' => FALSE,
+      'settings' => [],
+    ])->save();
+    \Drupal::messenger()->addStatus(t('Rating Score field created.'));
+  }
+
+  // Create field mapping
+  if (!RatingScorerFieldMapping::load('article_demo')) {
+    RatingScorerFieldMapping::create([
+      'id' => 'article_demo',
+      'label' => 'Article Demo Ratings',
+      'content_type' => 'article',
+      'algorithm' => 'bayesian',
+      'number_of_ratings_field' => 'field_vote_count',
+      'average_rating_field' => 'field_rating',
+      'bayesian_threshold' => 10,
+    ])->save();
+    \Drupal::messenger()->addStatus(t('Field mapping configured for Article content type.'));
+  }
+
+  // Create sample articles
+  $articles = [
+    [
+      'title' => 'Excellent Article on Drupal Best Practices',
+      'rating' => 4.9,
+      'votes' => 203,
+    ],
+    [
+      'title' => 'Great Tutorial for Beginners',
+      'rating' => 4.8,
+      'votes' => 156,
+    ],
+    [
+      'title' => 'Good Overview of Rating Systems',
+      'rating' => 4.2,
+      'votes' => 89,
+    ],
+    [
+      'title' => 'Average Article with Useful Information',
+      'rating' => 3.5,
+      'votes' => 42,
+    ],
+    [
+      'title' => 'Article Needs More Detail',
+      'rating' => 2.1,
+      'votes' => 23,
+    ],
+  ];
+
+  foreach ($articles as $data) {
+    // Check if article already exists
+    $nids = \Drupal::entityQuery('node')
+      ->condition('type', 'article')
+      ->condition('title', $data['title'])
+      ->accessCheck(FALSE)
+      ->execute();
+
+    if (empty($nids)) {
+      Node::create([
+        'type' => 'article',
+        'title' => $data['title'],
+        'field_rating' => $data['rating'],
+        'field_vote_count' => $data['votes'],
+        'status' => 1,
+      ])->save();
+    }
+  }
+  \Drupal::messenger()->addStatus(t('5 sample articles created.'));
+
+  // Create View
+  if (!View::load('articles_by_rating_demo')) {
+    $view_config = [
+      'id' => 'articles_by_rating_demo',
+      'label' => 'Articles by Rating Score (Demo)',
+      'module' => 'views',
+      'description' => 'Demo view displaying articles ordered by Rating Score',
+      'tag' => 'default',
+      'base_table' => 'node_field_data',
+      'base_field' => 'nid',
+      'core' => '8.x',
+      'display' => [
+        'default' => [
+          'display_plugin' => 'default',
+          'id' => 'default',
+          'display_title' => 'Default',
+          'position' => 0,
+          'display_options' => [
+            'query' => ['type' => 'views_query', 'options' => []],
+            'pager' => [
+              'type' => 'mini',
+              'options' => [
+                'items_per_page' => 10,
+                'offset' => 0,
+              ],
+            ],
+            'style' => [
+              'type' => 'table',
+              'options' => [
+                'default' => 'field_rating_score_value',
+              ],
+            ],
+            'row' => ['type' => 'fields', 'options' => []],
+            'fields' => [
+              'title' => [
+                'id' => 'title',
+                'table' => 'node_field_data',
+                'field' => 'title',
+                'type' => 'string',
+                'settings' => ['link_to_entity' => TRUE],
+                'label' => 'Title',
+                'plugin_id' => 'field',
+              ],
+              'field_rating' => [
+                'id' => 'field_rating',
+                'table' => 'node__field_rating',
+                'field' => 'field_rating',
+                'type' => 'number_decimal',
+                'settings' => ['scale' => 2],
+                'label' => 'Average Rating',
+                'plugin_id' => 'field',
+              ],
+              'field_vote_count' => [
+                'id' => 'field_vote_count',
+                'table' => 'node__field_vote_count',
+                'field' => 'field_vote_count',
+                'type' => 'number_integer',
+                'label' => 'Vote Count',
+                'plugin_id' => 'field',
+              ],
+              'field_rating_score' => [
+                'id' => 'field_rating_score',
+                'table' => 'node__field_rating_score',
+                'field' => 'field_rating_score',
+                'type' => 'number_decimal',
+                'settings' => ['scale' => 2],
+                'label' => 'Rating Score',
+                'plugin_id' => 'field',
+              ],
+            ],
+            'filters' => [
+              'type' => [
+                'id' => 'type',
+                'table' => 'node_field_data',
+                'field' => 'type',
+                'operator' => 'in',
+                'value' => ['article' => 'article'],
+              ],
+              'status' => [
+                'id' => 'status',
+                'table' => 'node_field_data',
+                'field' => 'status',
+                'operator' => '=',
+                'value' => '1',
+              ],
+            ],
+            'sorts' => [
+              'field_rating_score_value' => [
+                'id' => 'field_rating_score_value',
+                'table' => 'node__field_rating_score',
+                'field' => 'field_rating_score_value',
+                'order' => 'DESC',
+                'plugin_id' => 'standard',
+              ],
+            ],
+            'title' => 'Articles by Rating Score',
+            'display_extenders' => [],
+          ],
+        ],
+        'page' => [
+          'display_plugin' => 'page',
+          'id' => 'page',
+          'display_title' => 'Page',
+          'position' => 1,
+          'display_options' => [
+            'path' => 'demo/articles-by-rating',
+            'menu' => [
+              'type' => 'normal',
+              'title' => 'Demo: Articles by Rating',
+              'menu_name' => 'main',
+              'weight' => 10,
+            ],
+            'display_extenders' => [],
+          ],
+        ],
+      ],
+    ];
+
+    View::create($view_config)->save();
+    \Drupal::messenger()->addStatus(t('Demo view created at /demo/articles-by-rating'));
+  }
+
+  \Drupal::messenger()->addStatus(t('Rating Scorer Demo module installed successfully!'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function rating_scorer_demo_uninstall() {
+  // Delete View
+  $view = View::load('articles_by_rating_demo');
+  if ($view) {
+    $view->delete();
+    \Drupal::messenger()->addStatus(t('Demo view removed.'));
+  }
+
+  // Delete field mapping
+  $mapping = RatingScorerFieldMapping::load('article_demo');
+  if ($mapping) {
+    $mapping->delete();
+    \Drupal::messenger()->addStatus(t('Field mapping removed.'));
+  }
+
+  // Delete sample articles
+  $nids = \Drupal::entityQuery('node')
+    ->condition('type', 'article')
+    ->accessCheck(FALSE)
+    ->execute();
+
+  if (!empty($nids)) {
+    $nodes = Node::loadMultiple($nids);
+    foreach ($nodes as $node) {
+      $node->delete();
+    }
+    \Drupal::messenger()->addStatus(t('Sample articles removed.'));
+  }
+
+  // Delete fields
+  foreach (['field_rating_score', 'field_vote_count', 'field_rating'] as $field_name) {
+    $field = FieldConfig::loadByName('node', 'article', $field_name);
+    if ($field) {
+      $field->delete();
+    }
+    $field_storage = FieldStorageConfig::loadByName('node', $field_name);
+    if ($field_storage) {
+      $field_storage->delete();
+    }
+  }
+  \Drupal::messenger()->addStatus(t('Demo fields removed.'));
+
+  // Delete content type
+  $type = NodeType::load('article');
+  if ($type) {
+    $type->delete();
+    \Drupal::messenger()->addStatus(t('Article content type removed.'));
+  }
+
+  \Drupal::messenger()->addStatus(t('Rating Scorer Demo module uninstalled. All demo data has been removed.'));
+}
