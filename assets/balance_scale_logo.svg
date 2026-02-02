@@ -18,59 +18,59 @@
   <!-- Central pole -->
   <rect x="97" y="60" width="6" height="80" fill="url(#scaleGradient)" rx="1"/>
   
-  <!-- Balance beam -->
-  <rect x="30" y="57" width="140" height="6" fill="url(#scaleGradient)" rx="3"/>
+  <!-- Balance beam (tilted left) -->
+  <rect x="30" y="57" width="140" height="6" fill="url(#scaleGradient)" rx="3" transform="rotate(-8 100 60)"/>
   
   <!-- Pivot point (triangle) -->
   <polygon points="100,50 95,60 105,60" fill="#1f2937"/>
   
   <!-- Left chain -->
-  <line x1="50" y1="63" x2="50" y2="90" stroke="url(#scaleGradient)" stroke-width="2"/>
+  <line x1="50" y1="68" x2="50" y2="95" stroke="url(#scaleGradient)" stroke-width="2"/>
   
   <!-- Right chain -->
-  <line x1="150" y1="63" x2="150" y2="90" stroke="url(#scaleGradient)" stroke-width="2"/>
+  <line x1="150" y1="58" x2="150" y2="85" stroke="url(#scaleGradient)" stroke-width="2"/>
   
-  <!-- Left pan -->
-  <ellipse cx="50" cy="90" rx="25" ry="4" fill="url(#scaleGradient)"/>
-  <path d="M 25 90 Q 25 100 50 102 Q 75 100 75 90" fill="none" stroke="url(#scaleGradient)" stroke-width="2"/>
+  <!-- Left pan (lower) -->
+  <ellipse cx="50" cy="95" rx="25" ry="4" fill="url(#scaleGradient)"/>
+  <path d="M 25 95 Q 25 105 50 107 Q 75 105 75 95" fill="none" stroke="url(#scaleGradient)" stroke-width="2"/>
   
-  <!-- Right pan -->
-  <ellipse cx="150" cy="90" rx="25" ry="4" fill="url(#scaleGradient)"/>
-  <path d="M 125 90 Q 125 100 150 102 Q 175 100 175 90" fill="none" stroke="url(#scaleGradient)" stroke-width="2"/>
+  <!-- Right pan (higher) -->
+  <ellipse cx="150" cy="85" rx="25" ry="4" fill="url(#scaleGradient)"/>
+  <path d="M 125 85 Q 125 95 150 97 Q 175 95 175 85" fill="none" stroke="url(#scaleGradient)" stroke-width="2"/>
   
-  <!-- Left stars (2 stars) -->
-  <g transform="translate(40, 110)">
+  <!-- Left stars (2 stars) - lower position -->
+  <g transform="translate(40, 115)">
     <path d="M 0,-10 L 2.9,-2.9 L 10,-2.1 L 5,3.3 L 6.2,10 L 0,6.2 L -6.2,10 L -5,3.3 L -10,-2.1 L -2.9,-2.9 Z" 
           fill="url(#starGradient)" stroke="#d97706" stroke-width="0.5"/>
   </g>
-  <g transform="translate(60, 110)">
-    <path d="M 0,-10 L 2.9,-2.9 L 10,-2.1 L 5,3.3 L 6.2,10 L 0,6.2 L -6.2,10 L -5,3.3 L -10,-2.1 L -2.9,-2.9 Z" 
-          fill="url(#starGradient)" stroke="#d97706" stroke-width="0.5"/>
-  </g>
-  
-  <!-- Right stars (3 stars) -->
-  <g transform="translate(135, 110)">
-    <path d="M 0,-10 L 2.9,-2.9 L 10,-2.1 L 5,3.3 L 6.2,10 L 0,6.2 L -6.2,10 L -5,3.3 L -10,-2.1 L -2.9,-2.9 Z" 
-          fill="url(#starGradient)" stroke="#d97706" stroke-width="0.5"/>
-  </g>
-  <g transform="translate(150, 110)">
-    <path d="M 0,-10 L 2.9,-2.9 L 10,-2.1 L 5,3.3 L 6.2,10 L 0,6.2 L -6.2,10 L -5,3.3 L -10,-2.1 L -2.9,-2.9 Z" 
-          fill="url(#starGradient)" stroke="#d97706" stroke-width="0.5"/>
-  </g>
-  <g transform="translate(165, 110)">
+  <g transform="translate(60, 115)">
     <path d="M 0,-10 L 2.9,-2.9 L 10,-2.1 L 5,3.3 L 6.2,10 L 0,6.2 L -6.2,10 L -5,3.3 L -10,-2.1 L -2.9,-2.9 Z" 
           fill="url(#starGradient)" stroke="#d97706" stroke-width="0.5"/>
   </g>
   
-  <!-- Number 300 under left stars -->
-  <text x="50" y="138" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="bold" 
-        fill="#2d3748" text-anchor="middle" dominant-baseline="hanging">300</text>
-  <text x="50" y="159" font-family="Arial, Helvetica, sans-serif" font-size="16" 
-        fill="#4a5568" text-anchor="middle" dominant-baseline="hanging">votes</text>
+  <!-- Right stars (3 stars) - higher position -->
+  <g transform="translate(135, 105)">
+    <path d="M 0,-10 L 2.9,-2.9 L 10,-2.1 L 5,3.3 L 6.2,10 L 0,6.2 L -6.2,10 L -5,3.3 L -10,-2.1 L -2.9,-2.9 Z" 
+          fill="url(#starGradient)" stroke="#d97706" stroke-width="0.5"/>
+  </g>
+  <g transform="translate(150, 105)">
+    <path d="M 0,-10 L 2.9,-2.9 L 10,-2.1 L 5,3.3 L 6.2,10 L 0,6.2 L -6.2,10 L -5,3.3 L -10,-2.1 L -2.9,-2.9 Z" 
+          fill="url(#starGradient)" stroke="#d97706" stroke-width="0.5"/>
+  </g>
+  <g transform="translate(165, 105)">
+    <path d="M 0,-10 L 2.9,-2.9 L 10,-2.1 L 5,3.3 L 6.2,10 L 0,6.2 L -6.2,10 L -5,3.3 L -10,-2.1 L -2.9,-2.9 Z" 
+          fill="url(#starGradient)" stroke="#d97706" stroke-width="0.5"/>
+  </g>
   
-  <!-- Number 3 under right stars -->
-  <text x="150" y="138" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="bold" 
-        fill="#2d3748" text-anchor="middle" dominant-baseline="hanging">3</text>
-  <text x="150" y="159" font-family="Arial, Helvetica, sans-serif" font-size="16" 
-        fill="#4a5568" text-anchor="middle" dominant-baseline="hanging">votes</text>
+  <!-- Text "many" under left stars - lower position -->
+  <text x="50" y="143" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="bold" 
+        fill="#2d3748" text-anchor="middle" dominant-baseline="middle">many</text>
+  <text x="50" y="161" font-family="Arial, Helvetica, sans-serif" font-size="16" 
+        fill="#4a5568" text-anchor="middle" dominant-baseline="middle">votes</text>
+  
+  <!-- Text "few" under right stars - higher position -->
+  <text x="150" y="133" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="bold" 
+        fill="#2d3748" text-anchor="middle" dominant-baseline="middle">few</text>
+  <text x="150" y="151" font-family="Arial, Helvetica, sans-serif" font-size="16" 
+        fill="#4a5568" text-anchor="middle" dominant-baseline="middle">votes</text>
 </svg>

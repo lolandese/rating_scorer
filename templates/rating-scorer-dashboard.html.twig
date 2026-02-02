@@ -32,7 +32,7 @@
     <h2>{{ 'Field Mappings Status'|t }}</h2>
     {% if field_mappings is empty %}
       <div class="messages messages--status">
-        {{ 'No field mappings configured yet. <a href="@url">Create a new field mapping</a>.'|t({'@url': '/admin/config/rating-scorer'}) }}
+        {{ 'No field mappings configured yet. <a href="@url">Create a new field mapping</a>.'|t({'@url': '/admin/config/rating-scorer/field-mapping/wizard'}) }}
       </div>
     {% else %}
       <table class="mapping-table">

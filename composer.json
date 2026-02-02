@@ -21,7 +21,12 @@
   },
   "require-dev": {
     "phpunit/phpunit": "^10.0 || ^11.0",
-    "drupal/core-dev": ">=10.0 <12"
+    "drupal/core-dev": ">=10.0 <12",
+    "drupal/coder": "^8.3",
+    "phpstan/phpstan": "^1.10",
+    "phpstan/phpstan-deprecation-rules": "^1.1",
+    "mglaman/phpstan-drupal": "^1.2",
+    "mglaman/drupal-check": "^1.4"
   },
   "keywords": [
     "drupal",
@@ -30,5 +35,30 @@
     "fair-ranking",
     "bayesian",
     "wilson-score"
-  ]
+  ],
+  "scripts": {
+    "phpcs": "phpcs --standard=Drupal,DrupalPractice --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md,yml src/",
+    "phpcbf": "phpcbf --standard=Drupal,DrupalPractice --extensions=php,module,inc,install,test,profile,theme,css,info,txt,md,yml src/",
+    "phpstan": "phpstan analyse src/",
+    "drupal-check": "drupal-check src/",
+    "test": "phpunit --configuration phpunit.xml",
+    "test:unit": "phpunit --configuration phpunit.xml --testsuite unit",
+    "test:kernel": "phpunit --configuration phpunit.xml --testsuite kernel",
+    "test:functional": "phpunit --configuration phpunit.xml --testsuite functional",
+    "quality": [
+      "@phpcs",
+      "@phpstan"
+    ]
+  },
+  "scripts-descriptions": {
+    "phpcs": "Check code style against Drupal coding standards",
+    "phpcbf": "Auto-fix code style issues",
+    "phpstan": "Run static analysis",
+    "drupal-check": "Check for deprecated code",
+    "test": "Run all tests",
+    "test:unit": "Run unit tests only",
+    "test:kernel": "Run kernel tests only",
+    "test:functional": "Run functional tests only",
+    "quality": "Run all code quality checks"
+  }
 }

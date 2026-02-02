@@ -13,10 +13,11 @@ The module includes comprehensive tests covering:
 - **Controller Tests** (3 tests) - Admin page rendering
 - **ListBuilder Tests** (3 tests) - Field mapping list display
 - **Block Tests** (3 tests) - Calculator block functionality
+- **Service Integration Tests** (6 kernel tests) - Service registration and Drupal integration
 - **Admin Interface Tests** (7 functional tests) - Routing, tabs, and UI elements
 - **Recalculation Tests** (2 functional tests) - Auto-calculation on content and mapping changes
 
-**Total: 55+ tests across 12 test files**
+**Total: 60+ tests across 14 test files**
 
 ### Note on Optional Integration Testing
 
@@ -47,34 +48,54 @@ Fivestar integration is verified through:
 Tests require Drupal to be set up with DDEV:
 
 ```bash
-cd /home/martinus/ddev-projects/green
+cd <drupal-project-root>
 ddev start
 ```
 
 ### Run All Tests
 
 ```bash
-cd /home/martinus/ddev-projects/green
+cd <drupal-project-root>
 ddev exec bash -c 'export SIMPLETEST_BASE_URL="http://web" && php vendor/bin/phpunit --configuration web/modules/custom/rating_scorer/phpunit.xml'
+```
+
+### Run Specific Test Suites
+
+Run only unit tests (fastest):
+```bash
+cd <drupal-project-root>
+ddev exec bash -c 'export SIMPLETEST_BASE_URL="http://web" && php vendor/bin/phpunit --configuration web/modules/custom/rating_scorer/phpunit.xml --testsuite unit'
+```
+
+Run only kernel tests:
+```bash
+cd <drupal-project-root>
+ddev exec bash -c 'export SIMPLETEST_BASE_URL="http://web" && export SIMPLETEST_DB="mysql://db:db@db/db" && php vendor/bin/phpunit --configuration web/modules/custom/rating_scorer/phpunit.xml --testsuite kernel'
+```
+
+Run only functional tests:
+```bash
+cd <drupal-project-root>
+ddev exec bash -c 'export SIMPLETEST_BASE_URL="http://web" && php vendor/bin/phpunit --configuration web/modules/custom/rating_scorer/phpunit.xml --testsuite functional'
 ```
 
 ### Run Specific Test File
 
 Run only algorithm tests:
 ```bash
-cd /home/martinus/ddev-projects/green
+cd <drupal-project-root>
 ddev exec bash -c 'export SIMPLETEST_BASE_URL="http://web" && php vendor/bin/phpunit --configuration web/modules/custom/rating_scorer/phpunit.xml --filter RatingScorerAlgorithmsTest'
 ```
 
 Run only field mapping tests:
 ```bash
-cd /home/martinus/ddev-projects/green
+cd <drupal-project-root>
 ddev exec bash -c 'export SIMPLETEST_BASE_URL="http://web" && php vendor/bin/phpunit --configuration web/modules/custom/rating_scorer/phpunit.xml --filter RatingScorerFieldMappingTest'
 ```
 
 Run only admin interface functional tests:
 ```bash
-cd /home/martinus/ddev-projects/green
+cd <drupal-project-root>
 ddev exec bash -c 'export SIMPLETEST_BASE_URL="http://web" && php vendor/bin/phpunit --configuration web/modules/custom/rating_scorer/phpunit.xml --filter RatingScorerAdminInterfaceTest'
 ```
 
@@ -82,13 +103,13 @@ ddev exec bash -c 'export SIMPLETEST_BASE_URL="http://web" && php vendor/bin/php
 
 Run a single algorithm test:
 ```bash
-cd /home/martinus/ddev-projects/green
+cd <drupal-project-root>
 ddev exec bash -c 'export SIMPLETEST_BASE_URL="http://web" && php vendor/bin/phpunit --configuration web/modules/custom/rating_scorer/phpunit.xml --filter testBayesianAverageBasic'
 ```
 
 Run a single recalculation test:
 ```bash
-cd /home/martinus/ddev-projects/green
+cd <drupal-project-root>
 ddev exec bash -c 'export SIMPLETEST_BASE_URL="http://web" && php vendor/bin/phpunit --configuration web/modules/custom/rating_scorer/phpunit.xml --filter testFieldMappingSaveTriggersRecalculation'
 ```
 
@@ -107,6 +128,9 @@ tests/
 │   │   ├── RatingScorerListBuilderTest.php     (3 listbuilder tests)
 │   │   ├── RatingScorerCalculatorBlockTest.php (3 block tests)
 │   │   └── RatingScorerTest.php                (1 basic test)
+│   ├── Kernel/
+│   │   ├── RatingScorerKernelTestBase.php      (abstract base class)
+│   │   └── RatingScorerServiceTest.php         (6 service integration tests)
 │   └── Functional/
 │       ├── RatingScorerAdminInterfaceTest.php  (7 functional tests)
 │       ├── RatingScorerRecalculationTest.php   (2 recalculation tests)

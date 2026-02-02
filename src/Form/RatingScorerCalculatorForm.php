@@ -23,6 +23,12 @@ class RatingScorerCalculatorForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['#attributes'] = ['class' => ['rating-scorer-calculator-form']];
 
+    $form['settings_link'] = [
+      '#type' => 'markup',
+      '#markup' => '<p><strong>' . $this->t('Note:') . '</strong> ' . $this->t('The Bayesian Average algorithm threshold can be customized in the <a href="/admin/config/rating-scorer/settings">Rating Scorer settings</a>.') . '</p>',
+      '#weight' => -10,
+    ];
+
     $form['number_of_ratings'] = [
       '#type' => 'number',
       '#title' => $this->t('Number of Ratings'),

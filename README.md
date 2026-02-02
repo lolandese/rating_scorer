@@ -177,7 +177,7 @@ Because scores are calculated and stored in the database (not virtual fields), t
 The module includes comprehensive PHPUnit tests covering unit and functional scenarios:
 
 ```bash
-cd /home/martinus/ddev-projects/green
+cd <drupal-project-root>
 ddev exec bash -c 'export SIMPLETEST_BASE_URL="http://web" && php vendor/bin/phpunit --configuration web/modules/custom/rating_scorer/phpunit.xml'
 ```
 

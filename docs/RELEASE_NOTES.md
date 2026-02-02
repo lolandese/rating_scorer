@@ -47,6 +47,6 @@ Found a bug or have a feature request? Visit the module's issue queue on Drupal.
 
 ---
 
-**Version:** 1.0.0  
-**Release Date:** January 18, 2026  
+**Version:** 1.0.0
+**Release Date:** January 18, 2026
 **Drupal Compatibility:** 10.0+ and 11.x
