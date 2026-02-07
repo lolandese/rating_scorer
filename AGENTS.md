@@ -140,10 +140,10 @@ ddev exec vendor/bin/phpstan analyse web/modules/custom/rating_scorer/src/
 # Check for deprecated code
 ddev exec vendor/bin/drupal-check web/modules/custom/rating_scorer/
 
-# Export configuration changes
+# Export configuration changes (MANDATORY after any config changes)
 ddev exec drush config:export
 
-# Database snapshot before testing
+# Database snapshot before testing (MANDATORY after any database changes)
 ddev snapshot
 ```
 
@@ -316,6 +316,7 @@ When you receive requests to "configure the module," they typically fall into th
 5. Use `\Drupal::config('rating_scorer.settings')->get('setting_key')`
 6. Add tests to `tests/src/Kernel/RatingScorerServiceTest.php`
 7. Run `ddev exec drush cr` to clear caches and register new config
+8. **MANDATORY**: Run `ddev exec drush config:export` to export configuration changes
 
 **Example**: Adding a new default scoring algorithm selection:
 - Add to settings.yml: `default_algorithm: bayesian`
@@ -334,7 +335,8 @@ When you receive requests to "configure the module," they typically fall into th
 5. Update `RatingScorerFieldMappingListBuilder.php` if adding display columns
 6. Add validation logic to entity class
 7. Add tests to `tests/src/Kernel/` for entity functionality
-8. Export config: `ddev exec drush config:export`
+8. **MANDATORY**: Export config: `ddev exec drush config:export`
+9. **MANDATORY**: Create database snapshot: `ddev snapshot`
 
 **Example**: Adding algorithm selection per field mapping:
 - Add property `$algorithm` to entity class
@@ -566,6 +568,8 @@ function rating_scorer_example($parameter) {
 7. **Export Configuration** - Use `ddev exec drush config:export` to export changes to files
 8. **Add CLI Interface** - **REQUIRED**: When adding new module configuration, always create corresponding Drush commands for AI agent CLI access
 9. **Test CLI Commands** - Write comprehensive tests for Drush commands, especially unit tests for command logic validation
+10. **Auto-Export After Config Changes** - **MANDATORY**: Always run `ddev exec drush config:export` immediately after making any configuration changes
+11. **Auto-Snapshot After Database Changes** - **MANDATORY**: Always run `ddev snapshot` immediately after making any database schema changes or significant data modifications
 
 ### Common Configuration-Related Tasks
 
@@ -576,7 +580,9 @@ function rating_scorer_example($parameter) {
 4. Update schema in `rating_scorer.schema.yml`
 5. **ADD DRUSH COMMAND**: Create command to set/list algorithm options via CLI
 6. **WRITE TESTS**: Unit tests for command logic, kernel tests for integration
-7. Test algorithm selection persists across save/load
+7. **MANDATORY**: Run `ddev exec drush config:export` to export configuration changes
+8. **MANDATORY**: Create database snapshot: `ddev snapshot`
+9. Test algorithm selection persists across save/load
 
 #### Task: Create default field mappings for demo content
 1. Add YAML files in `config/install/` with `rating_scorer_field_mapping.*.yml` naming
@@ -584,7 +590,8 @@ function rating_scorer_example($parameter) {
 3. Include all required fields from entity class
 4. **ADD DRUSH COMMAND**: Create command for batch field mapping creation
 5. **WRITE TESTS**: Test batch processing logic and validation
-6. Test with `ddev exec drush config:import` or fresh install
+6. **MANDATORY**: Run `ddev exec drush config:export` to export configuration changes
+7. Test with `ddev exec drush config:import` or fresh install
 
 #### Task: Add global module preference setting
 1. Add to `config/install/rating_scorer.settings.yml`
@@ -594,6 +601,7 @@ function rating_scorer_example($parameter) {
 5. Use via `\Drupal::config('rating_scorer.settings')->get('key')`
 6. **ADD DRUSH COMMAND**: Create command to get/set preferences via CLI
 7. **WRITE TESTS**: Test setting validation and persistence
+8. **MANDATORY**: Run `ddev exec drush config:export` to export configuration changes
 
 ## Common Development Tasks
 
@@ -639,6 +647,7 @@ function rating_scorer_example($parameter) {
 7. Add tests to verify setting integration
 8. Update documentation
 9. Run `ddev exec drush cr` to clear caches
+10. **MANDATORY**: Run `ddev exec drush config:export` to export configuration changes
 
 ## Admin Routes
 
@@ -703,6 +712,39 @@ ddev exec drush eval "print_r(\Drupal::entityTypeManager()->getStorage('rating_s
 - **Secondary Remote**: `git@github.com:lolandese/rating_scorer.git` (github)
 - **Commit Format**: `[#issue_number] Brief descriptive title`
 - **Branch Strategy**: Feature branches from main/develop
+
+### Git Workflow for AI Agents
+
+**CRITICAL**: When multiple remotes exist, **always push to ALL remotes** to prevent synchronization issues.
+
+#### Standard Push Workflow
+```bash
+# Check all remotes
+git remote -v
+
+# Push to primary repository (Drupal.org)
+git push origin branch-name
+
+# Push to secondary repository (GitHub)
+git push github branch-name
+```
+
+#### Why Push to All Remotes
+- **Prevents desynchronization** between repositories
+- **Ensures backup redundancy** across platforms
+- **Maintains consistency** for collaborators using different remotes
+- **Avoids merge conflicts** from diverged histories
+
+#### Automated Push Script (Optional)
+```bash
+# Push to all configured remotes
+for remote in $(git remote); do
+  echo "Pushing to $remote..."
+  git push $remote branch-name
+done
+```
+
+**Always verify** both remotes are updated after pushing changes.
 
 ## Drush Commands
 
