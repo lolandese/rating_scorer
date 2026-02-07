@@ -50,8 +50,37 @@ function rating_scorer_theme($existing, $type, $theme, $path) {
 /**
  * Implements hook_entity_presave().
  *
- * Update rating_score fields when source fields change using the
- * RatingScoreCalculator service.
+ * Automatically calculates and updates rating score fields when content
+ * entities are saved. This hook is triggered before an entity is saved to
+ * the database, allowing the module to recalculate scores based on current
+ * rating data.
+ *
+ * The hook only processes content entities that have field mappings configured.
+ * It uses the RatingScoreCalculator service to determine if the entity has
+ * rating score fields and updates them with freshly calculated values.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   The entity being saved. Must be a ContentEntityInterface to be processed.
+ *   Non-content entities (like configuration entities) are ignored.
+ *
+ * @return void
+ *   This hook does not return a value.
+ *
+ * @throws \Exception
+ *   May throw exceptions during score calculation, which are caught and logged.
+ *
+ * @see \Drupal\rating_scorer\Service\RatingScoreCalculator::updateScoreFieldsOnEntity()
+ *
+ * Example usage by other modules:
+ * @code
+ * // Other modules can implement this hook to react to entity saves
+ * function mymodule_entity_presave(\Drupal\Core\Entity\EntityInterface $entity) {
+ *   // React to entities before Rating Scorer calculates scores
+ *   if ($entity->getEntityTypeId() === 'node') {
+ *     // Custom logic before score calculation
+ *   }
+ * }
+ * @endcode
  */
 function rating_scorer_entity_presave(\Drupal\Core\Entity\EntityInterface $entity) {
   if (!($entity instanceof \Drupal\Core\Entity\ContentEntityInterface)) {
@@ -120,6 +149,43 @@ function _rating_scorer_calculate_score($number_of_ratings, $average_rating, $me
 
 /**
  * Implements hook_views_pre_render().
+ *
+ * Handles sorting of Views results by rating score fields. This hook is
+ * triggered after the view query has been executed but before the results
+ * are rendered, allowing modification of the result set.
+ *
+ * The hook specifically looks for:
+ * - Views with rating_score sort criteria
+ * - Views with rating_score field handlers
+ * - Views that have actual results to sort
+ *
+ * When found, it ensures all rating scores are calculated by rendering the
+ * field, then sorts the results in memory according to the configured sort
+ * order (ASC/DESC).
+ *
+ * @param \Drupal\views\ViewExecutable $view
+ *   The view object being rendered. Contains the query results, field handlers,
+ *   and sort criteria that will be processed for rating score sorting.
+ *
+ * @return void
+ *   This hook does not return a value. It modifies the $view object directly
+ *   by reordering the $view->result array.
+ *
+ * @see \Drupal\views\ViewExecutable
+ * @see \Drupal\rating_scorer\Plugin\Field\FieldType\RatingScoreItem
+ *
+ * Example usage by other modules:
+ * @code
+ * // Other modules can implement this hook to modify view results
+ * function mymodule_views_pre_render(\Drupal\views\ViewExecutable $view) {
+ *   if ($view->id() === 'my_view_with_ratings') {
+ *     // Custom sorting or filtering logic
+ *     foreach ($view->result as $row) {
+ *       // Modify result data
+ *     }
+ *   }
+ * }
+ * @endcode
  */
 function rating_scorer_views_pre_render(\Drupal\views\ViewExecutable $view) {
   // Check if the view has rating_score sort criteria.
@@ -176,8 +242,46 @@ function rating_scorer_views_pre_render(\Drupal\views\ViewExecutable $view) {
 /**
  * Implements hook_entity_update().
  *
- * Recalculates rating scores for all nodes of a content type when its Field
- * Mapping configuration is updated.
+ * Triggers mass recalculation of rating scores when field mapping
+ * configuration entities are updated. This ensures that changes to scoring
+ * algorithms, field mappings, or thresholds are immediately applied to all
+ * existing content.
+ *
+ * The hook specifically processes updates to 'rating_scorer_field_mapping'
+ * configuration entities. When such an entity is updated, it:
+ * 1. Extracts the affected content type from the mapping ID
+ * 2. Loads all entities of that content type
+ * 3. Recalculates and saves updated scores for each entity
+ * 4. Logs the number of entities updated
+ *
+ * This process can be resource-intensive for content types with many entities.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   The entity being updated. Only rating_scorer_field_mapping entities
+ *   trigger the recalculation process. Other entity types are ignored.
+ *
+ * @return void
+ *   This hook does not return a value.
+ *
+ * @throws \Exception
+ *   May throw exceptions during entity loading or score calculation.
+ *   Exceptions are logged but do not prevent the update process.
+ *
+ * @see \Drupal\rating_scorer\Entity\RatingScorerFieldMapping
+ * @see \Drupal\rating_scorer\Service\RatingScoreCalculator::updateScoreFieldsOnEntity()
+ *
+ * Example usage by other modules:
+ * @code
+ * // Other modules can implement this hook to react to entity updates
+ * function mymodule_entity_update(\Drupal\Core\Entity\EntityInterface $entity) {
+ *   if ($entity->getEntityTypeId() === 'rating_scorer_field_mapping') {
+ *     // React to field mapping changes
+ *     \Drupal::logger('mymodule')->info('Rating mapping updated: @id', [
+ *       '@id' => $entity->id(),
+ *     ]);
+ *   }
+ * }
+ * @endcode
  */
 function rating_scorer_entity_update(Drupal\Core\Entity\EntityInterface $entity) {
   if ($entity->getEntityTypeId() !== 'rating_scorer_field_mapping') {

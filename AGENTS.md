@@ -147,6 +147,90 @@ ddev exec drush config:export
 ddev snapshot
 ```
 
+## Dependency Management
+
+### Adding New Dependencies
+
+When adding new dependencies to the module, follow these guidelines to ensure stability and predictable builds:
+
+#### Development Version Dependencies
+
+When adding dependencies that use development versions (e.g., `dev-main`, `3.0.x-dev`, `4.x-dev`), **always pin to a specific commit hash** to prevent unexpected code changes during `composer update`.
+
+**Why This Matters:**
+- Development branches change frequently
+- `composer update` can pull in breaking changes unexpectedly
+- Pinning ensures reproducible builds across environments
+- Prevents CI/testing failures due to upstream changes
+
+**Correct Format:**
+```json
+{
+  "require": {
+    "drupal/fivestar": "3.0.x-dev#abc123def456",
+    "vendor/package": "dev-main#789xyz012345"
+  }
+}
+```
+
+**Incorrect Format (Avoid):**
+```json
+{
+  "require": {
+    "drupal/fivestar": "3.0.x-dev",
+    "vendor/package": "dev-main"
+  }
+}
+```
+
+#### How to Find Commit Hashes
+
+1. **Via Git Repository:**
+   ```bash
+   git log --oneline -n 10
+   # Copy the commit hash from desired commit
+   ```
+
+2. **Via Composer Show:**
+   ```bash
+   composer show vendor/package --all
+   # Look for the commit hash in version information
+   ```
+
+3. **Via GitHub/GitLab:**
+   - Navigate to the repository
+   - Go to the specific branch
+   - Copy the latest commit hash
+
+#### When to Update Commit Hashes
+
+- **Before major releases** - Update to latest stable commits
+- **When fixing bugs** - Update if upstream fixes are needed
+- **During security updates** - Update immediately if security fixes are available
+- **Regular maintenance** - Review and update quarterly
+
+#### Stable Version Dependencies
+
+For stable releases, use semantic versioning constraints:
+
+```json
+{
+  "require": {
+    "drupal/core": "^10.0 || ^11.0",
+    "drupal/votingapi": "^3.0"
+  }
+}
+```
+
+### Dependency Documentation
+
+When adding new dependencies:
+
+1. **Document the purpose** in commit messages
+2. **Update README.md** if it affects installation
+3. **Add to integration tests** if it affects functionality
+4. **Note version requirements** in module documentation
+
 ## Testing Guidelines
 
 ### Test Organization
@@ -199,6 +283,309 @@ ddev exec bash -c 'export SIMPLETEST_BASE_URL="http://web" && php vendor/bin/php
 # Clear caches
 ddev exec drush cr
 ```
+
+## Module Configuration Guide
+
+### Configuration Architecture
+
+The Rating Scorer module uses two types of configuration:
+
+1. **Simple Configuration** - Stored in `rating_scorer.settings` (YAML file)
+   - Default settings for new field mappings
+   - Global preferences
+   - Located at `config/install/rating_scorer.settings.yml`
+
+2. **Configuration Entities** - Stored as entity records (database)
+   - Field mappings per content type
+   - Configuration type: `rating_scorer_field_mapping`
+   - Defined in `src/Entity/RatingScorerFieldMapping.php`
+   - Schema: `config/schema/rating_scorer.schema.yml`
+
+### Configuration Tasks for AI Agents
+
+When you receive requests to "configure the module," they typically fall into these categories:
+
+#### 1. Adding Module-Level Settings
+**When to use**: Requests like "add a setting for...", "create a configuration option for...", "allow users to set..."
+
+**Steps**:
+1. Define setting in `config/install/rating_scorer.settings.yml`
+2. Add schema entry in `config/schema/rating_scorer.schema.yml`
+3. Create/update form in `src/Form/RatingScorerSettingsForm.php` to expose setting to UI
+4. Add getter method in appropriate service to retrieve setting
+5. Use `\Drupal::config('rating_scorer.settings')->get('setting_key')`
+6. Add tests to `tests/src/Kernel/RatingScorerServiceTest.php`
+7. Run `ddev exec drush cr` to clear caches and register new config
+
+**Example**: Adding a new default scoring algorithm selection:
+- Add to settings.yml: `default_algorithm: bayesian`
+- Add to schema with validation
+- Add form field to `RatingScorerSettingsForm`
+- Use in `RatingScoreCalculator` for defaults
+
+#### 2. Modifying Field Mapping Configuration Entity
+**When to use**: Requests like "add a field to field mappings", "change how field mappings work", "store additional metadata"
+
+**Steps**:
+1. Edit `src/Entity/RatingScorerFieldMapping.php` to add new property/method
+2. Update schema in `config/schema/rating_scorer.schema.yml` with field validation
+3. Update form in `src/Form/RatingScorerFieldMappingForm.php` with new form field
+4. Update wizard in `src/Form/FieldMappingWizardForm.php` if applicable
+5. Update `RatingScorerFieldMappingListBuilder.php` if adding display columns
+6. Add validation logic to entity class
+7. Add tests to `tests/src/Kernel/` for entity functionality
+8. Export config: `ddev exec drush config:export`
+
+**Example**: Adding algorithm selection per field mapping:
+- Add property `$algorithm` to entity class
+- Define in schema with allowed values
+- Add dropdown to form
+- Store in configuration
+
+#### 3. Default Configuration Installation
+**When to use**: Requests like "set up default field mappings", "create sample configuration", "initialize default settings"
+
+**Steps**:
+1. Create YAML files in `config/install/`
+2. Use format: `rating_scorer_field_mapping.MAPPING_ID.yml`
+3. Configure in `rating_scorer.install` hook_install() if programmatic setup needed
+4. Test with fresh install: `ddev reinstall` or similar DDEV command
+5. Verify configuration is applied
+
+#### 4. Configuration Dependencies
+**When to use**: Requests like "make this field required only if...", "enable setting when module detected"
+
+**Implementation**:
+- Use conditional logic in forms and services
+- Check configuration in `EventSubscriber` classes
+- Validate dependencies in entity constraints
+- Document in config schema
+
+### Configuration File Locations Reference
+
+| File | Purpose | Editing Method |
+|------|---------|-----------------|
+| `config/install/rating_scorer.settings.yml` | Default module settings | Edit directly, or via form |
+| `config/schema/rating_scorer.schema.yml` | Configuration schema & validation | Edit directly, affects form/entity validation |
+| `src/Entity/RatingScorerFieldMapping.php` | Field mapping entity definition | Update class properties, getters/setters |
+| `src/Form/RatingScorerSettingsForm.php` | Settings UI form | Add form fields here |
+| `src/Form/RatingScorerFieldMappingForm.php` | Field mapping UI form | Add/modify form fields |
+| `src/Form/FieldMappingWizardForm.php` | Field mapping creation wizard | Add wizard steps here |
+| `rating_scorer.services.yml` | Service definitions and parameters | For service configuration |
+
+### Configuration Schema Documentation
+
+The module defines its configuration structure in [config/schema/rating_scorer.schema.yml](config/schema/rating_scorer.schema.yml). This schema validates configuration data and provides documentation for the existing settings.
+
+#### Current Configuration Schema
+
+**rating_scorer.settings** - Module-level settings for default values and testing parameters:
+
+```yaml
+rating_scorer.settings:
+  type: config_object
+  label: 'Rating Scorer settings'
+  mapping:
+    default_minimum_ratings:
+      type: integer
+      label: 'Default minimum ratings threshold'
+      # Default: 7 - Minimum number of ratings for Bayesian calculation
+    bayesian_assumed_average:
+      type: float
+      label: 'Bayesian assumed average'
+      # Default: 3.5 - Global average rating used in Bayesian algorithm
+    default_rating:
+      type: float
+      label: 'Default rating value'
+      # Default: 4.5 - Default rating for calculator testing
+    default_num_ratings:
+      type: integer
+      label: 'Default number of ratings'
+      # Default: 100 - Default number of ratings for calculator testing
+    scenario_rating_deviation:
+      type: float
+      label: 'Scenario rating deviation (%)'
+      # Default: 5 - Percentage deviation for rating in scenario testing
+    scenario_reviews_deviation:
+      type: float
+      label: 'Scenario reviews deviation (%)'
+      # Default: 30 - Percentage deviation for review count in scenario testing
+```
+
+**rating_scorer_field_mapping** - Configuration entity properties exported to YAML:
+
+Defined in `src/Entity/RatingScorerFieldMapping.php`, these properties are stored per field mapping:
+
+- `id` (string) - Unique machine name for the mapping
+- `label` (string) - Human-readable label for the mapping
+- `content_type` (string) - Target content type machine name (e.g., 'article', 'product')
+- `source_type` (string) - Data source type: 'FIELD' or 'VOTINGAPI'
+- `number_of_ratings_field` (string) - Field name storing the count of ratings
+- `average_rating_field` (string) - Field name storing the average rating value
+- `vote_field` (string) - Field name for VotingAPI/Fivestar vote collection
+- `scoring_method` (string) - Algorithm: 'weighted', 'bayesian', or 'wilson'
+- `bayesian_threshold` (integer) - Minimum ratings threshold for Bayesian calculation
+
+These properties are automatically validated by Drupal's configuration system when saved or imported.
+
+## Hooks and Events
+
+### Drupal Hooks Provided
+
+The module implements several Drupal hooks that other modules can interact with. All hooks are **thoroughly documented** with PHPDoc including parameter types, return values, and usage examples in [rating_scorer.module](rating_scorer.module).
+
+#### Core Hooks Implemented
+
+**1. `hook_entity_presave()`** - Primary score calculation hook
+- **Purpose**: Automatically calculates rating scores when content entities are saved
+- **Trigger**: Before any content entity is saved to database
+- **Usage**: Processes entities with field mappings configured
+- **Service**: Uses `rating_scorer.calculator` service
+- **Documentation**: Complete PHPDoc with examples in `rating_scorer_entity_presave()`
+
+**2. `hook_entity_update()`** - Mass recalculation trigger
+- **Purpose**: Recalculates all scores when field mapping configuration changes
+- **Trigger**: When `rating_scorer_field_mapping` entities are updated
+- **Usage**: Ensures configuration changes apply to existing content
+- **Performance**: Can be resource-intensive for large content sets
+- **Documentation**: Complete PHPDoc with examples in `rating_scorer_entity_update()`
+
+**3. `hook_views_pre_render()`** - Views sorting support  
+- **Purpose**: Enables proper sorting of Views by rating score fields
+- **Trigger**: After view query execution, before rendering
+- **Usage**: Automatically sorts results by calculated scores
+- **Documentation**: Complete PHPDoc with examples in `rating_scorer_views_pre_render()`
+
+**4. `hook_theme()`** - Template registration
+- **Purpose**: Registers Twig templates for calculator and dashboard
+- **Templates**: `rating-scorer.html.twig`, `rating-scorer-dashboard.html.twig`
+
+**5. `hook_help()`** - Help system integration
+- **Purpose**: Provides module help text on admin/help page
+
+#### Event Subscribers
+
+**FieldStorageConfigSubscriber** - Automatic field mapping management
+- **Events**: `field_storage_config.insert`, `field_storage_config.delete`, `field_config.insert`, `field_config.delete`
+- **Purpose**: Auto-creates/deletes field mappings when Fivestar fields are added/removed
+- **Location**: `src/EventSubscriber/FieldStorageConfigSubscriber.php`
+- **Registration**: Tagged as `event_subscriber` in `rating_scorer.services.yml`
+
+### Integration Points for Other Modules
+
+When other modules need to integrate with Rating Scorer:
+
+1. **Use Services Directly** - Access `rating_scorer.calculator` service for score calculations
+2. **Implement Standard Hooks** - React to same `hook_entity_presave()` events  
+3. **Configuration API** - Create/modify field mappings programmatically via configuration entities
+4. **Field API** - Add rating score fields to content types using field creation service
+
+### Hook Documentation Standards
+
+All hooks follow Drupal PHPDoc standards with:
+- `@param` tags with types and descriptions
+- `@return` tags for return values  
+- `@throws` tags for exception handling
+- Detailed functional descriptions
+- `@see` cross-references to related classes
+- Usage examples for other module developers
+- Performance and behavior notes
+
+### Guidelines for AI Agents: Adding New Hooks or Events
+
+When extending the module with new hooks or events, **always** follow these documentation requirements:
+
+#### For New Hook Implementations
+1. **Complete PHPDoc documentation** - Include all standard tags (`@param`, `@return`, `@throws`)
+2. **Detailed descriptions** - Explain when the hook is triggered and what it accomplishes
+3. **Usage examples** - Provide code examples showing how other modules can implement the hook
+4. **Cross-references** - Link to related services, classes, or documentation with `@see` tags
+5. **Performance notes** - Document any performance considerations or limitations
+
+#### For New Event Subscribers
+1. **Class-level PHPDoc** - Document the subscriber's purpose and what events it handles
+2. **Method documentation** - Document each event handler method with parameter types
+3. **Service registration** - Ensure proper tagging in `rating_scorer.services.yml`
+4. **Event documentation** - Document what triggers each event and expected behavior
+
+#### Documentation Template for New Hooks
+```php
+/**
+ * Implements hook_example().
+ *
+ * [Detailed description of when this hook is triggered and what it does.
+ * Include information about the module's behavior and how other modules
+ * can use this hook.]
+ *
+ * @param \\Fully\\Qualified\\ClassName $parameter
+ *   Description of the parameter, including what data it contains and
+ *   any important properties or methods other modules might use.
+ *
+ * @return void|array|mixed
+ *   Description of return value and what it means. Use void for hooks
+ *   that don't return values.
+ *
+ * @throws \\Exception
+ *   Document any exceptions that might be thrown during hook execution.
+ *
+ * @see \\Related\\Class\\Name
+ * @see \\Another\\Related\\Service
+ *
+ * Example usage by other modules:
+ * @code
+ * function mymodule_example($parameter) {
+ *   // Show how other modules would implement this hook
+ *   if ($parameter->someCondition()) {
+ *     // Example logic
+ *   }
+ * }
+ * @endcode
+ */
+function rating_scorer_example($parameter) {
+  // Implementation
+}
+```
+
+#### Requirements Checklist
+- [ ] PHPDoc includes all parameter types and descriptions
+- [ ] Return value is documented (even if void)
+- [ ] Exception handling is documented if applicable
+- [ ] Hook purpose and trigger conditions are clearly explained
+- [ ] Usage example is provided for other module developers
+- [ ] Cross-references point to related code
+- [ ] Performance implications are noted if relevant
+
+### Configuration Best Practices for AI Agents
+
+1. **Always Update Schema** - When adding config, always add schema definition
+2. **Clear Caches** - Always end configuration changes with `ddev exec drush cr`
+3. **Test Configuration** - Write tests that load and validate configuration
+4. **Documentation** - Document new settings in code comments and README
+5. **Validation** - Add constraints and validation rules to configuration entities
+6. **Backward Compatibility** - When modifying config, ensure upgrades paths don't break
+7. **Export Configuration** - Use `ddev exec drush config:export` to export changes to files
+
+### Common Configuration-Related Tasks
+
+#### Task: Add a new algorithm option
+1. Update `RatingScorerFieldMapping.php` with algorithm property
+2. Add validation in entity constraints
+3. Add to `RatingScorerFieldMappingForm.php` as dropdown
+4. Update schema in `rating_scorer.schema.yml`
+5. Test algorithm selection persists across save/load
+
+#### Task: Create default field mappings for demo content
+1. Add YAML files in `config/install/` with `rating_scorer_field_mapping.*.yml` naming
+2. Or update `modules/demo/config/install/` for demo-only defaults
+3. Include all required fields from entity class
+4. Test with `ddev exec drush config:import` or fresh install
+
+#### Task: Add global module preference setting
+1. Add to `config/install/rating_scorer.settings.yml`
+2. Add schema with type and constraints
+3. Add form field to `RatingScorerSettingsForm.php`
+4. Create getter method in appropriate service
+5. Use via `\Drupal::config('rating_scorer.settings')->get('key')`
 
 ## Common Development Tasks
 
