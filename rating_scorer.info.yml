@@ -2,7 +2,7 @@ name: 'Rating Scorer'
 description: 'Calculates fair ranking scores using Bayesian Average, Weighted, or Wilson algorithms. Prevents items with few perfect votes from outranking well-reviewed items. Integrates with Fivestar and VotingAPI.'
 type: module
 core_version_requirement: ^10 || ^11
-package: 'Content'
+package: 'Voting'
 dependencies:
   - drupal:field
   - drupal:config
