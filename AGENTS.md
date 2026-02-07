@@ -450,7 +450,7 @@ The module implements several Drupal hooks that other modules can interact with.
 - **Performance**: Can be resource-intensive for large content sets
 - **Documentation**: Complete PHPDoc with examples in `rating_scorer_entity_update()`
 
-**3. `hook_views_pre_render()`** - Views sorting support  
+**3. `hook_views_pre_render()`** - Views sorting support
 - **Purpose**: Enables proper sorting of Views by rating score fields
 - **Trigger**: After view query execution, before rendering
 - **Usage**: Automatically sorts results by calculated scores
@@ -476,7 +476,7 @@ The module implements several Drupal hooks that other modules can interact with.
 When other modules need to integrate with Rating Scorer:
 
 1. **Use Services Directly** - Access `rating_scorer.calculator` service for score calculations
-2. **Implement Standard Hooks** - React to same `hook_entity_presave()` events  
+2. **Implement Standard Hooks** - React to same `hook_entity_presave()` events
 3. **Configuration API** - Create/modify field mappings programmatically via configuration entities
 4. **Field API** - Add rating score fields to content types using field creation service
 
@@ -484,7 +484,7 @@ When other modules need to integrate with Rating Scorer:
 
 All hooks follow Drupal PHPDoc standards with:
 - `@param` tags with types and descriptions
-- `@return` tags for return values  
+- `@return` tags for return values
 - `@throws` tags for exception handling
 - Detailed functional descriptions
 - `@see` cross-references to related classes
@@ -564,6 +564,8 @@ function rating_scorer_example($parameter) {
 5. **Validation** - Add constraints and validation rules to configuration entities
 6. **Backward Compatibility** - When modifying config, ensure upgrades paths don't break
 7. **Export Configuration** - Use `ddev exec drush config:export` to export changes to files
+8. **Add CLI Interface** - **REQUIRED**: When adding new module configuration, always create corresponding Drush commands for AI agent CLI access
+9. **Test CLI Commands** - Write comprehensive tests for Drush commands, especially unit tests for command logic validation
 
 ### Common Configuration-Related Tasks
 
@@ -572,13 +574,17 @@ function rating_scorer_example($parameter) {
 2. Add validation in entity constraints
 3. Add to `RatingScorerFieldMappingForm.php` as dropdown
 4. Update schema in `rating_scorer.schema.yml`
-5. Test algorithm selection persists across save/load
+5. **ADD DRUSH COMMAND**: Create command to set/list algorithm options via CLI
+6. **WRITE TESTS**: Unit tests for command logic, kernel tests for integration
+7. Test algorithm selection persists across save/load
 
 #### Task: Create default field mappings for demo content
 1. Add YAML files in `config/install/` with `rating_scorer_field_mapping.*.yml` naming
 2. Or update `modules/demo/config/install/` for demo-only defaults
 3. Include all required fields from entity class
-4. Test with `ddev exec drush config:import` or fresh install
+4. **ADD DRUSH COMMAND**: Create command for batch field mapping creation
+5. **WRITE TESTS**: Test batch processing logic and validation
+6. Test with `ddev exec drush config:import` or fresh install
 
 #### Task: Add global module preference setting
 1. Add to `config/install/rating_scorer.settings.yml`
@@ -586,6 +592,8 @@ function rating_scorer_example($parameter) {
 3. Add form field to `RatingScorerSettingsForm.php`
 4. Create getter method in appropriate service
 5. Use via `\Drupal::config('rating_scorer.settings')->get('key')`
+6. **ADD DRUSH COMMAND**: Create command to get/set preferences via CLI
+7. **WRITE TESTS**: Test setting validation and persistence
 
 ## Common Development Tasks
 
@@ -593,23 +601,44 @@ function rating_scorer_example($parameter) {
 
 1. Add calculation method to `RatingScoreCalculator::calculateScore()`
 2. Add option to `RatingScorerFieldMappingForm`
-3. Add unit tests in `RatingScorerAlgorithmsTest`
-4. Update calculator form and block
-5. Update documentation
+3. Update config schema in `config/schema/rating_scorer.schema.yml` with new algorithm validation
+4. **EXTEND EXISTING COMMANDS**: Update `rating_scorer:create-mapping` and `rating_scorer:list-mappings` to support new algorithm
+5. **UPDATE TESTS**: Add unit tests for algorithm logic in `RatingScorerAlgorithmsTest` and command validation in `RatingScorerCommandsLogicTest`
+6. Update calculator form and block
+7. Update documentation
+8. Test algorithm selection persists across save/load using existing `rating_scorer:status` command
 
 ### Adding a New Data Provider
 
 1. Create class in `src/Service/DataProvider/` implementing `RatingDataProviderInterface`
 2. Register with `RatingDataProviderManager`
 3. Add detection logic to `RatingModuleDetectionService`
-4. Add unit tests
+4. **EXTEND EXISTING COMMANDS**: Update `rating_scorer:status` command to display new provider information
+5. **UPDATE TESTS**: Add unit tests for provider logic and update `RatingScorerCommandsLogicTest` for provider detection
+6. Add unit tests for provider functionality
+7. Update documentation
 
 ### Modifying Field Mappings
 
 1. Update `RatingScorerFieldMapping` entity
 2. Update config schema in `config/schema/rating_scorer.schema.yml`
 3. Add/update form fields in `RatingScorerFieldMappingForm`
-4. Run `ddev exec drush cr` to clear caches
+4. **USE EXISTING COMMANDS**: Test changes using `rating_scorer:create-mapping`, `rating_scorer:list-mappings`, and `rating_scorer:delete-mapping`
+5. **UPDATE TESTS**: Extend `RatingScorerCommandsLogicTest` with validation for new mapping properties
+6. Run `ddev exec drush cr` to clear caches
+7. Test field mapping functionality through existing CLI commands and UI
+
+### Adding a New Configuration Setting
+
+1. Add setting to `config/install/rating_scorer.settings.yml`
+2. Add schema entry in `config/schema/rating_scorer.schema.yml`
+3. Add form field to `RatingScorerSettingsForm.php`
+4. Create getter method in appropriate service
+5. **EXTEND EXISTING COMMANDS**: Update `rating_scorer:status` to display new setting, or create dedicated setting commands if needed
+6. **UPDATE TESTS**: Add unit tests for setting validation in `RatingScorerCommandsLogicTest`
+7. Add tests to verify setting integration
+8. Update documentation
+9. Run `ddev exec drush cr` to clear caches
 
 ## Admin Routes
 
@@ -674,3 +703,275 @@ ddev exec drush eval "print_r(\Drupal::entityTypeManager()->getStorage('rating_s
 - **Secondary Remote**: `git@github.com:lolandese/rating_scorer.git` (github)
 - **Commit Format**: `[#issue_number] Brief descriptive title`
 - **Branch Strategy**: Feature branches from main/develop
+
+## Drush Commands
+
+### Available Commands
+
+**Current Status**: The module provides Drush commands but there are registration issues in some environments.
+
+**1. `rating_scorer:auto-map`** - Auto-create field mappings
+- **Purpose**: Automatically creates Rating Scorer field mappings for all Fivestar fields
+- **Usage**: `ddev exec drush rating_scorer:auto-map [dry-run]`
+- **Options**:
+  - `dry-run` - Show what would be created without making changes
+- **Location**: `src/Commands/RatingScorerCommands.php`
+- **Help**: Detailed description and usage examples included
+
+**Command Registration Issues**: If commands don't appear in `drush list`, this indicates:
+- Service registration issues in `rating_scorer.services.yml`
+- PHP annotation syntax compatibility with Drush version
+- Cache clearing needed after command modifications
+- Module may need reinstallation in some environments
+
+### For AI Agents: Adding Drush Commands
+
+When adding new Drush commands for configuration tasks:
+
+1. **Use annotation syntax** (not attributes) for broader compatibility:
+   ```php
+   /**
+    * Command description.
+    *
+    * @command module:command-name
+    * @description Brief description of what the command does.
+    * @argument name Description of argument.
+    * @option name Description of option.
+    * @usage module:command-name Example usage.
+    */
+   ```
+
+2. **Register in `rating_scorer.services.yml`**:
+   ```yaml
+   rating_scorer.commands:
+     class: Drupal\rating_scorer\Commands\RatingScorerCommands
+     arguments:
+       - '@config.factory'
+       - '@entity_type.manager'
+     tags:
+       - { name: 'drush.command_provider' }
+   ```
+
+3. **Test command registration**:
+   ```bash
+   ddev exec drush cr
+   ddev exec drush list | grep rating
+   ddev exec drush module:command-name --help
+   ```
+
+### Recommended CLI Commands for Configuration
+
+AI agents should implement these commands for easier configuration management:
+
+- `rating_scorer:list-mappings` - List all field mappings
+- `rating_scorer:create-mapping` - Create a specific field mapping
+- `rating_scorer:delete-mapping` - Delete a field mapping
+- `rating_scorer:recalculate` - Recalculate scores for content types
+- `rating_scorer:status` - Show module status and health metrics
+
+## Drush Command Development for AI Agents
+
+### Why AI Agents Need CLI Commands
+
+**AI agents strongly prefer CLI interfaces** over web UI manipulation for configuration tasks because:
+- CLI commands provide consistent, predictable interfaces
+- Commands can be scripted and automated
+- No need to parse HTML or interact with complex forms
+- Better error handling and status reporting
+- Can be tested independently of web interface
+
+### Creating Drush Commands for Configuration
+
+When adding new module configuration, **always create corresponding Drush commands** to enable AI agent interaction.
+
+#### Command Development Steps
+
+1. **Define Command Class**
+   ```php
+   // src/Commands/ModuleCommands.php
+   class ModuleCommands extends DrushCommands {
+   ```
+
+2. **Service Registration**
+   ```yaml
+   # module.services.yml
+   module.commands:
+     class: Drupal\module\Commands\ModuleCommands
+     arguments:
+       - '@config.factory'
+       - '@entity_type.manager'
+       - '@database'
+     tags:
+       - { name: 'drush.command_provider' }
+   ```
+
+3. **Use Annotation Format** (not attributes) for broader compatibility:
+   ```php
+   /**
+    * Command description.
+    *
+    * @command module:command-name
+    * @description Brief description of what the command does.
+    * @argument name Description of argument.
+    * @option name Description of option.
+    * @usage module:command-name Example usage.
+    */
+   ```
+
+4. **Inject Required Services**
+   - `@config.factory` - For configuration access
+   - `@entity_type.manager` - For entity operations
+   - `@database` - For direct database queries
+   - `@module_handler` - For module detection
+   - `@plugin.manager.field.field_type` - For field operations
+
+### Command Testing Strategy
+
+Based on practical experience, use this testing approach:
+
+#### 1. Unit Tests (Preferred for Logic Validation)
+- **Test Base**: Use `PHPUnit\Framework\TestCase` instead of Drupal's `UnitTestCase`
+- **Purpose**: Test command logic without database dependencies
+- **Benefits**: Fast execution, no infrastructure requirements, reliable in CI/CD
+- **Coverage**: Validation logic, data processing, batch operations, error handling
+
+```php
+<?php
+use PHPUnit\Framework\TestCase;
+
+class CommandsLogicTest extends TestCase {
+  public function testValidationLogic() {
+    // Test command validation without Drupal bootstrap
+    $this->assertTrue($some_validation_result);
+  }
+}
+```
+
+#### 2. Kernel Tests (For Integration Testing)
+- **Purpose**: Test full command execution with database
+- **Requirements**: `SIMPLETEST_DB` environment variable must be configured
+- **Challenges**: Database connection setup, longer execution time
+- **Use Case**: Test actual configuration creation and persistence
+
+#### 3. Testing Without Permanent Changes
+**Critical Requirement**: Tests must not modify permanent configuration
+
+**Safe Testing Strategies:**
+- Use mock data for validation testing
+- Test logic separately from persistence
+- Use transaction rollback for database tests
+- Validate algorithms with known inputs/outputs
+
+### Command Registration Troubleshooting
+
+**Common Issues and Solutions:**
+
+#### Commands Not Appearing in `drush list`
+1. **Service Registration**: Verify command service has `drush.command_provider` tag
+2. **Clear Caches**: Always run `ddev exec drush cr` after changes
+3. **PHP Syntax**: Check `php -l` on command class file
+4. **Dependencies**: Ensure all injected services exist and are properly typed
+5. **Annotation Format**: Use `/** */` annotations, not `#[]` attributes
+
+#### Dependency Injection Errors
+```yaml
+# Correct service registration
+module.commands:
+  class: Drupal\module\Commands\ModuleCommands
+  arguments:
+    - '@config.factory'           # Always available
+    - '@entity_type.manager'      # Always available
+    - '@database'                 # For queries
+    - '@module_handler'           # For module detection
+    - '@plugin.manager.field.field_type'  # For field operations
+  tags:
+    - { name: 'drush.command_provider' }
+```
+
+#### Testing Command Registration
+```bash
+# Test service registration
+ddev exec drush cr
+ddev exec drush list | grep module_name
+
+# Test specific command
+ddev exec drush module:command-name --help
+
+# Check for PHP errors
+ddev exec php -l web/modules/custom/module/src/Commands/Commands.php
+```
+
+### Essential Commands for AI Agents
+
+When extending module configuration, implement these command patterns:
+
+#### 1. List/Status Commands
+- `module:list-items` - Display current configuration
+- `module:status` - Show health metrics and statistics
+- Format: Human-readable output with clear labels
+
+#### 2. CRUD Commands
+- `module:create-item` - Create new configuration
+- `module:update-item` - Modify existing configuration
+- `module:delete-item` - Remove configuration
+- Include validation and confirmation prompts
+
+#### 3. Batch Operation Commands
+- `module:recalculate` - Process existing data
+- `module:sync` - Synchronize configurations
+- Support `--dry-run` option for safe testing
+
+#### 4. Import/Export Commands
+- `module:export` - Export configuration for backup
+- `module:import` - Import configuration from file
+- Support standard Drupal configuration formats
+
+### Command Documentation Requirements
+
+**Always provide comprehensive help text:**
+
+```php
+/**
+ * Create a new field mapping configuration.
+ *
+ * @command module:create-mapping
+ * @description Creates a new field mapping with validation.
+ * @argument content-type The machine name of the content type.
+ * @argument rating-field The name of the rating field.
+ * @option algorithm The scoring algorithm to use (weighted|bayesian|wilson).
+ * @option dry-run Show what would be created without making changes.
+ * @usage module:create-mapping article field_rating Create mapping for article type.
+ * @usage module:create-mapping article field_rating --algorithm=bayesian Use Bayesian algorithm.
+ * @usage module:create-mapping article field_rating --dry-run Preview without creating.
+ */
+```
+
+### Testing Checklist for New Commands
+
+- [ ] **Command Registration**: Appears in `drush list`
+- [ ] **Help Text**: `drush command --help` works correctly
+- [ ] **Unit Tests**: Logic validation without database
+- [ ] **Kernel Tests**: Integration testing with database
+- [ ] **Error Handling**: Invalid inputs handled gracefully
+- [ ] **Dry Run**: `--dry-run` option for safe testing
+- [ ] **Output Format**: Clear, consistent formatting
+- [ ] **Documentation**: Complete PHPDoc with examples
+
+### Performance Considerations
+
+**For commands processing large datasets:**
+- Implement batch processing with configurable batch sizes
+- Provide progress indicators for long-running operations
+- Use database queries instead of entity loading when possible
+- Implement memory management for large result sets
+
+**Example Batch Processing:**
+```php
+$batch_size = 50;
+$batches = array_chunk($entity_ids, $batch_size);
+foreach ($batches as $i => $batch) {
+  $progress = round(($i / count($batches)) * 100, 1);
+  $this->io()->writeln("Processing batch " . ($i + 1) . "/" . count($batches) . " ({$progress}%)");
+  // Process batch
+}
+```

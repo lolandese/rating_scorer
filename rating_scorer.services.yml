@@ -48,5 +48,8 @@ services:
     arguments:
       - '@config.factory'
       - '@entity_type.manager'
+      - '@database'
+      - '@module_handler'
+      - '@plugin.manager.field.field_type'
     tags:
       - { name: 'drush.command_provider' }
