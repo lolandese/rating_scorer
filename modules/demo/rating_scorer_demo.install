@@ -27,6 +27,12 @@ function _rating_scorer_demo_fivestar_enabled() {
 function rating_scorer_demo_install() {
   $fivestar_enabled = _rating_scorer_demo_fivestar_enabled();
 
+  // Add prominent demo ready message at the top
+  $base_url = \Drupal::request()->getSchemeAndHttpHost();
+  \Drupal::messenger()->addStatus(t('🎯 <strong>Demo ready!</strong> View the demo articles and rating scores at: <a href="@url" target="_blank">@url</a>', [
+    '@url' => $base_url . '/articles-by-rating'
+  ]));
+
   // Create Article content type (standard numeric rating)
   if (!NodeType::load('article')) {
     $type = NodeType::create([
@@ -336,12 +342,6 @@ function rating_scorer_demo_install() {
 
   // View is configured in config/install/views.view.articles_by_rating_demo.yml
   \Drupal::messenger()->addStatus(t('Rating Scorer Demo module installed successfully!'));
-
-  // Provide helpful next steps
-  $base_url = \Drupal::request()->getSchemeAndHttpHost();
-  \Drupal::messenger()->addStatus(t('🎯 <strong>Demo ready!</strong> View the demo articles and rating scores at: <a href="@url" target="_blank">@url</a>', [
-    '@url' => $base_url . '/articles-by-rating'
-  ]));
 
   if ($fivestar_enabled) {
     \Drupal::messenger()->addStatus(t('Fivestar integration enabled! Check the Fivestar field on articles.'));
